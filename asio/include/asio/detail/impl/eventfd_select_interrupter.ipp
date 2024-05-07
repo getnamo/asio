@@ -35,7 +35,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 eventfd_select_interrupter::eventfd_select_interrupter()
@@ -85,9 +85,9 @@ void eventfd_select_interrupter::open_descriptors()
     }
     else
     {
-      asio::error_code ec(errno,
-          asio::error::get_system_category());
-      asio::detail::throw_error(ec, "eventfd_select_interrupter");
+      asio_sockio::error_code ec(errno,
+          asio_sockio::error::get_system_category());
+      asio_sockio::detail::throw_error(ec, "eventfd_select_interrupter");
     }
   }
 }
@@ -156,7 +156,7 @@ bool eventfd_select_interrupter::reset()
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -22,7 +22,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// An object of type @c executor_work_guard controls ownership of executor work
 /// within a scope.
@@ -163,7 +163,7 @@ make_work_guard(const T& t, ExecutionContext& ctx,
         t, ctx.get_executor()));
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

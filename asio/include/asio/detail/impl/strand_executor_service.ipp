@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 strand_executor_service::strand_executor_service(execution_context& ctx)
@@ -35,7 +35,7 @@ void strand_executor_service::shutdown()
 {
   op_queue<scheduler_operation> ops;
 
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
 
   strand_impl* impl = impl_list_;
   while (impl)
@@ -56,7 +56,7 @@ strand_executor_service::create_implementation()
   new_impl->locked_ = false;
   new_impl->shutdown_ = false;
 
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
 
   // Select a mutex from the pool of shared mutexes.
   std::size_t salt = salt_++;
@@ -81,7 +81,7 @@ strand_executor_service::create_implementation()
 
 strand_executor_service::strand_impl::~strand_impl()
 {
-  asio::detail::mutex::scoped_lock lock(service_->mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(service_->mutex_);
 
   // Remove implementation from linked list of all implementations.
   if (service_->impl_list_ == this)
@@ -127,7 +127,7 @@ bool strand_executor_service::running_in_this_thread(
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

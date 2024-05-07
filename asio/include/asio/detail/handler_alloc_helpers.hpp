@@ -35,8 +35,8 @@ inline void* allocate(std::size_t s, Handler& h)
 #if !defined(ASIO_HAS_HANDLER_HOOKS)
   return ::operator new(s);
 #else
-  using asio::asio_handler_allocate;
-  return asio_handler_allocate(s, asio::detail::addressof(h));
+  using asio_sockio::asio_handler_allocate;
+  return asio_handler_allocate(s, asio_sockio::detail::addressof(h));
 #endif
 }
 
@@ -46,14 +46,14 @@ inline void deallocate(void* p, std::size_t s, Handler& h)
 #if !defined(ASIO_HAS_HANDLER_HOOKS)
   ::operator delete(p);
 #else
-  using asio::asio_handler_deallocate;
-  asio_handler_deallocate(p, s, asio::detail::addressof(h));
+  using asio_sockio::asio_handler_deallocate;
+  asio_handler_deallocate(p, s, asio_sockio::detail::addressof(h));
 #endif
 }
 
-} // namespace asio_handler_alloc_helpers
+} // namespace asio_sockio_handler_alloc_helpers
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Handler, typename T>
@@ -144,7 +144,7 @@ struct get_hook_allocator<Handler, std::allocator<T> >
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #define ASIO_DEFINE_HANDLER_PTR(op) \
   struct ptr \
@@ -158,14 +158,14 @@ struct get_hook_allocator<Handler, std::allocator<T> >
     } \
     static op* allocate(Handler& handler) \
     { \
-      typedef typename ::asio::associated_allocator< \
+      typedef typename ::asio_sockio::associated_allocator< \
         Handler>::type associated_allocator_type; \
-      typedef typename ::asio::detail::get_hook_allocator< \
+      typedef typename ::asio_sockio::detail::get_hook_allocator< \
         Handler, associated_allocator_type>::type hook_allocator_type; \
       ASIO_REBIND_ALLOC(hook_allocator_type, op) a( \
-            ::asio::detail::get_hook_allocator< \
+            ::asio_sockio::detail::get_hook_allocator< \
               Handler, associated_allocator_type>::get( \
-                handler, ::asio::get_associated_allocator(handler))); \
+                handler, ::asio_sockio::get_associated_allocator(handler))); \
       return a.allocate(1); \
     } \
     void reset() \
@@ -177,14 +177,14 @@ struct get_hook_allocator<Handler, std::allocator<T> >
       } \
       if (v) \
       { \
-        typedef typename ::asio::associated_allocator< \
+        typedef typename ::asio_sockio::associated_allocator< \
           Handler>::type associated_allocator_type; \
-        typedef typename ::asio::detail::get_hook_allocator< \
+        typedef typename ::asio_sockio::detail::get_hook_allocator< \
           Handler, associated_allocator_type>::type hook_allocator_type; \
         ASIO_REBIND_ALLOC(hook_allocator_type, op) a( \
-              ::asio::detail::get_hook_allocator< \
+              ::asio_sockio::detail::get_hook_allocator< \
                 Handler, associated_allocator_type>::get( \
-                  *h, ::asio::get_associated_allocator(*h))); \
+                  *h, ::asio_sockio::get_associated_allocator(*h))); \
         a.deallocate(static_cast<op*>(v), 1); \
         v = 0; \
       } \
@@ -204,10 +204,10 @@ struct get_hook_allocator<Handler, std::allocator<T> >
     } \
     static op* allocate(const Alloc& a) \
     { \
-      typedef typename ::asio::detail::get_recycling_allocator< \
+      typedef typename ::asio_sockio::detail::get_recycling_allocator< \
         Alloc, purpose>::type recycling_allocator_type; \
       ASIO_REBIND_ALLOC(recycling_allocator_type, op) a1( \
-            ::asio::detail::get_recycling_allocator< \
+            ::asio_sockio::detail::get_recycling_allocator< \
               Alloc, purpose>::get(a)); \
       return a1.allocate(1); \
     } \
@@ -220,10 +220,10 @@ struct get_hook_allocator<Handler, std::allocator<T> >
       } \
       if (v) \
       { \
-        typedef typename ::asio::detail::get_recycling_allocator< \
+        typedef typename ::asio_sockio::detail::get_recycling_allocator< \
           Alloc, purpose>::type recycling_allocator_type; \
         ASIO_REBIND_ALLOC(recycling_allocator_type, op) a1( \
-              ::asio::detail::get_recycling_allocator< \
+              ::asio_sockio::detail::get_recycling_allocator< \
                 Alloc, purpose>::get(*a)); \
         a1.deallocate(static_cast<op*>(v), 1); \
         v = 0; \
@@ -234,7 +234,7 @@ struct get_hook_allocator<Handler, std::allocator<T> >
 
 #define ASIO_DEFINE_HANDLER_ALLOCATOR_PTR(op) \
   ASIO_DEFINE_TAGGED_HANDLER_ALLOCATOR_PTR( \
-      ::asio::detail::thread_info_base::default_tag, op ) \
+      ::asio_sockio::detail::thread_info_base::default_tag, op ) \
   /**/
 
 #include "asio/detail/pop_options.hpp"

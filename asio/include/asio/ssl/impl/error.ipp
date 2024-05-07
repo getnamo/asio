@@ -21,11 +21,11 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace error {
 namespace detail {
 
-class ssl_category : public asio::error_category
+class ssl_category : public asio_sockio::error_category
 {
 public:
   const char* name() const ASIO_ERROR_CATEGORY_NOEXCEPT
@@ -42,7 +42,7 @@ public:
 
 } // namespace detail
 
-const asio::error_category& get_ssl_category()
+const asio_sockio::error_category& get_ssl_category()
 {
   static detail::ssl_category instance;
   return instance;
@@ -54,16 +54,16 @@ namespace error {
 
 #if (OPENSSL_VERSION_NUMBER < 0x10100000L) && !defined(OPENSSL_IS_BORINGSSL)
 
-const asio::error_category& get_stream_category()
+const asio_sockio::error_category& get_stream_category()
 {
-  return asio::error::get_ssl_category();
+  return asio_sockio::error::get_ssl_category();
 }
 
 #else
 
 namespace detail {
 
-class stream_category : public asio::error_category
+class stream_category : public asio_sockio::error_category
 {
 public:
   const char* name() const ASIO_ERROR_CATEGORY_NOEXCEPT
@@ -83,7 +83,7 @@ public:
 
 } // namespace detail
 
-const asio::error_category& get_stream_category()
+const asio_sockio::error_category& get_stream_category()
 {
   static detail::stream_category instance;
   return instance;
@@ -93,7 +93,7 @@ const asio::error_category& get_stream_category()
 
 } // namespace error
 } // namespace ssl
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

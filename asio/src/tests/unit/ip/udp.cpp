@@ -43,7 +43,7 @@ namespace ip_udp_socket_compile {
 struct connect_handler
 {
   connect_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   connect_handler(connect_handler&&) {}
 private:
@@ -54,7 +54,7 @@ private:
 struct wait_handler
 {
   wait_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   wait_handler(wait_handler&&) {}
 private:
@@ -65,7 +65,7 @@ private:
 struct send_handler
 {
   send_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   send_handler(send_handler&&) {}
 private:
@@ -76,7 +76,7 @@ private:
 struct receive_handler
 {
   receive_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   receive_handler(receive_handler&&) {}
 private:
@@ -86,8 +86,8 @@ private:
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -106,7 +106,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_datagram_socket constructors.
 
@@ -540,14 +540,14 @@ void test()
 namespace ip_udp_socket_runtime {
 
 void handle_send(size_t expected_bytes_sent,
-    const asio::error_code& err, size_t bytes_sent)
+    const asio_sockio::error_code& err, size_t bytes_sent)
 {
   ASIO_CHECK(!err);
   ASIO_CHECK(expected_bytes_sent == bytes_sent);
 }
 
 void handle_recv(size_t expected_bytes_recvd,
-    const asio::error_code& err, size_t bytes_recvd)
+    const asio_sockio::error_code& err, size_t bytes_recvd)
 {
   ASIO_CHECK(!err);
   ASIO_CHECK(expected_bytes_recvd == bytes_recvd);
@@ -556,8 +556,8 @@ void handle_recv(size_t expected_bytes_recvd,
 void test()
 {
   using namespace std; // For memcmp and memset.
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
 #if defined(ASIO_HAS_BOOST_BIND)
   namespace bindns = boost;
@@ -614,8 +614,8 @@ namespace ip_udp_resolver_compile {
 struct resolve_handler
 {
   resolve_handler() {}
-  void operator()(const asio::error_code&,
-      asio::ip::udp::resolver::results_type) {}
+  void operator()(const asio_sockio::error_code&,
+      asio_sockio::ip::udp::resolver::results_type) {}
 #if defined(ASIO_HAS_MOVE)
   resolve_handler(resolve_handler&&) {}
 private:
@@ -625,8 +625,8 @@ private:
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -635,7 +635,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 #if !defined(ASIO_NO_DEPRECATED)
     ip::udp::resolver::query q(ip::udp::v4(), "localhost", "0");
 #endif // !defined(ASIO_NO_DEPRECATED)

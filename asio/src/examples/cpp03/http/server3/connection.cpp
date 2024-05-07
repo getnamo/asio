@@ -16,7 +16,7 @@
 namespace http {
 namespace server3 {
 
-connection::connection(asio::io_context& io_context,
+connection::connection(asio_sockio::io_context& io_context,
     request_handler& handler)
   : strand_(io_context),
     socket_(io_context),
@@ -24,21 +24,21 @@ connection::connection(asio::io_context& io_context,
 {
 }
 
-asio::ip::tcp::socket& connection::socket()
+asio_sockio::ip::tcp::socket& connection::socket()
 {
   return socket_;
 }
 
 void connection::start()
 {
-  socket_.async_read_some(asio::buffer(buffer_),
-      asio::bind_executor(strand_,
+  socket_.async_read_some(asio_sockio::buffer(buffer_),
+      asio_sockio::bind_executor(strand_,
         boost::bind(&connection::handle_read, shared_from_this(),
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred)));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred)));
 }
 
-void connection::handle_read(const asio::error_code& e,
+void connection::handle_read(const asio_sockio::error_code& e,
     std::size_t bytes_transferred)
 {
   if (!e)
@@ -50,26 +50,26 @@ void connection::handle_read(const asio::error_code& e,
     if (result)
     {
       request_handler_.handle_request(request_, reply_);
-      asio::async_write(socket_, reply_.to_buffers(),
-          asio::bind_executor(strand_,
+      asio_sockio::async_write(socket_, reply_.to_buffers(),
+          asio_sockio::bind_executor(strand_,
             boost::bind(&connection::handle_write, shared_from_this(),
-              asio::placeholders::error)));
+              asio_sockio::placeholders::error)));
     }
     else if (!result)
     {
       reply_ = reply::stock_reply(reply::bad_request);
-      asio::async_write(socket_, reply_.to_buffers(),
-          asio::bind_executor(strand_,
+      asio_sockio::async_write(socket_, reply_.to_buffers(),
+          asio_sockio::bind_executor(strand_,
             boost::bind(&connection::handle_write, shared_from_this(),
-              asio::placeholders::error)));
+              asio_sockio::placeholders::error)));
     }
     else
     {
-      socket_.async_read_some(asio::buffer(buffer_),
-          asio::bind_executor(strand_,
+      socket_.async_read_some(asio_sockio::buffer(buffer_),
+          asio_sockio::bind_executor(strand_,
             boost::bind(&connection::handle_read, shared_from_this(),
-              asio::placeholders::error,
-              asio::placeholders::bytes_transferred)));
+              asio_sockio::placeholders::error,
+              asio_sockio::placeholders::bytes_transferred)));
     }
   }
 
@@ -79,13 +79,13 @@ void connection::handle_read(const asio::error_code& e,
   // handler returns. The connection class's destructor closes the socket.
 }
 
-void connection::handle_write(const asio::error_code& e)
+void connection::handle_write(const asio_sockio::error_code& e)
 {
   if (!e)
   {
     // Initiate graceful connection closure.
-    asio::error_code ignored_ec;
-    socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
+    asio_sockio::error_code ignored_ec;
+    socket_.shutdown(asio_sockio::ip::tcp::socket::shutdown_both, ignored_ec);
   }
 
   // No new asynchronous operations are started. This means that all shared_ptr

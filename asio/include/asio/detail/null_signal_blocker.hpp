@@ -27,7 +27,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class null_signal_blocker
@@ -56,7 +56,7 @@ public:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -77,11 +77,11 @@
 
 * Updated timeout examples to use latest features.
 
-  * Used `asio::steady_timer` rather than `asio::deadline_timer`.
+  * Used `asio_sockio::steady_timer` rather than `asio_sockio::deadline_timer`.
 
-  * Used `asio::dynamic_buffer` rather than `asio::streambuf`.
+  * Used `asio_sockio::dynamic_buffer` rather than `asio_sockio::streambuf`.
 
-  * Used timed `asio::io_context::run_for()` function for blocking clients.
+  * Used timed `asio_sockio::io_context::run_for()` function for blocking clients.
 
   * Added example showing a custom completion token for blocking with timeouts.
 
@@ -236,7 +236,7 @@
 
   * Support for dynamic buffer sequences that automatically grow and shrink to
     accomodate data as it is read or written. This is a generic facility
-    similar to the existing `asio::streambuf` class. This support includes:
+    similar to the existing `asio_sockio::streambuf` class. This support includes:
 
     * New `dynamic_string_buffer` and `dynamic_vector_buffer` adapter classes
       that meet the `DynamicBufferSequence` type requirements.
@@ -321,8 +321,8 @@
 * Changed documentation to indicate that `use_future` and `spawn()` are not
   made available when including the `asio.hpp` convenience header.
 
-* Explicitly marked `asio::strand` as deprecated. Use
-  `asio::io_service::strand` instead.
+* Explicitly marked `asio_sockio::strand` as deprecated. Use
+  `asio_sockio::io_service::strand` instead.
 
 [heading Asio 1.10.4]
 
@@ -361,9 +361,9 @@
 
 [heading Asio 1.10.2]
 
-* Fixed `asio::spawn()` to work correctly with new Boost.Coroutine interface.
+* Fixed `asio_sockio::spawn()` to work correctly with new Boost.Coroutine interface.
 
-* Ensured that incomplete `asio::spawn()` coroutines are correctly unwound when
+* Ensured that incomplete `asio_sockio::spawn()` coroutines are correctly unwound when
   cleaned up by the `io_service` destructor.
 
 * Fixed delegation of continuation hook for handlers produced by
@@ -507,17 +507,17 @@
 * Added new traits classes, `handler_type` and `async_result`, that allow the
   customisation of the return type of an initiating function.
 
-* Added the `asio::spawn()` function, a high-level wrapper for running
+* Added the `asio_sockio::spawn()` function, a high-level wrapper for running
   stackful coroutines, based on the Boost.Coroutine library. The `spawn()`
   function enables programs to implement asynchronous logic in a synchronous
   manner. For example: `size_t n = my_socket.async_read_some(my_buffer, yield);`.
   For further information, see [link asio.overview.core.spawn Stackful
   Coroutines].
 
-* Added the `asio::use_future` special value, which provides first-class
+* Added the `asio_sockio::use_future` special value, which provides first-class
   support for returning a C++11 `std::future` from an asynchronous
   operation's initiating function. For example:
-  `future<size_t> = my_socket.async_read_some(my_buffer, asio::use_future);`.
+  `future<size_t> = my_socket.async_read_some(my_buffer, asio_sockio::use_future);`.
   For further information, see [link asio.overview.cpp2011.futures C++
   2011 Support - Futures].
 
@@ -824,7 +824,7 @@
   However, if necessary, the old implementation may still be used by defining
   `(BOOST_)ASIO_ENABLE_OLD_SSL`.
 
-* Added new `asio::buffer()` overloads for `std::array`, when available. The
+* Added new `asio_sockio::buffer()` overloads for `std::array`, when available. The
   support is automatically enabled when compiling in [^-std=c++0x] mode on g++
   4.3 or higher, or when using MSVC 10. The support may be explicitly enabled
   by defining `(BOOST_)ASIO_HAS_STD_ARRAY`, or disabled by defining
@@ -894,9 +894,9 @@
   included [^handlerviz.pl] tool to create a visual representation of the
   handlers (requires GraphViz).
 
-* Fixed a bug in `asio::streambuf` where the `consume()` function did not
+* Fixed a bug in `asio_sockio::streambuf` where the `consume()` function did not
   always update the internal buffer pointers correctly. The problem may occur
-  when the `asio::streambuf` is filled with data using the standard C++ member
+  when the `asio_sockio::streambuf` is filled with data using the standard C++ member
   functions such as `sputn()`. (Note: the problem does not manifest when the
   streambuf is populated by the Asio free functions `read()`,
   `async_read()`, `read_until()` or `async_read_until()`.)
@@ -1093,7 +1093,7 @@
 * Improved multiprocessor scalability on Windows by using a dedicated hidden
   thread to wait for timers.
 
-* Improved performance of `asio::streambuf` with `async_read()` and
+* Improved performance of `asio_sockio::streambuf` with `async_read()` and
   `async_read_until()`. These read operations now use the existing capacity of
   the `streambuf` when reading, rather than limiting the read to 512 bytes.
 

@@ -15,8 +15,8 @@
 class printer
 {
 public:
-  printer(asio::io_context& io)
-    : timer_(io, asio::chrono::seconds(1)),
+  printer(asio_sockio::io_context& io)
+    : timer_(io, asio_sockio::chrono::seconds(1)),
       count_(0)
   {
     timer_.async_wait(boost::bind(&printer::print, this));
@@ -34,19 +34,19 @@ public:
       std::cout << count_ << std::endl;
       ++count_;
 
-      timer_.expires_at(timer_.expiry() + asio::chrono::seconds(1));
+      timer_.expires_at(timer_.expiry() + asio_sockio::chrono::seconds(1));
       timer_.async_wait(boost::bind(&printer::print, this));
     }
   }
 
 private:
-  asio::steady_timer timer_;
+  asio_sockio::steady_timer timer_;
   int count_;
 };
 
 int main()
 {
-  asio::io_context io;
+  asio_sockio::io_context io;
   printer p(io);
   io.run();
 

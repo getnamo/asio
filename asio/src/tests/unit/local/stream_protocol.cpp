@@ -30,31 +30,31 @@
 
 namespace local_stream_protocol_socket_compile {
 
-void connect_handler(const asio::error_code&)
+void connect_handler(const asio_sockio::error_code&)
 {
 }
 
-void send_handler(const asio::error_code&, std::size_t)
+void send_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void receive_handler(const asio::error_code&, std::size_t)
+void receive_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void write_some_handler(const asio::error_code&, std::size_t)
+void write_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void read_some_handler(const asio::error_code&, std::size_t)
+void read_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
 void test()
 {
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
-  using namespace asio;
-  namespace local = asio::local;
+  using namespace asio_sockio;
+  namespace local = asio_sockio::local;
   typedef local::stream_protocol sp;
 
   try
@@ -65,7 +65,7 @@ void test()
     socket_base::message_flags in_flags = 0;
     socket_base::keep_alive socket_option;
     socket_base::bytes_readable io_control_command;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_stream_socket constructors.
 

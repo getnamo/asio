@@ -34,8 +34,8 @@
 [section:system_error System Errors and Error Codes]
 
 When available, Asio can use the `std::error_code` and `std::system_error`
-classes for reporting errors. In this case, the names `asio::error_code` and
-`asio::system_error` will be typedefs for these standard classes.
+classes for reporting errors. In this case, the names `asio_sockio::error_code` and
+`asio_sockio::system_error` will be typedefs for these standard classes.
 
 System error support is automatically enabled for [^g++] 4.6 and later, when
 the [^-std=c++0x] or [^-std=gnu++0x] compiler options are used. It may be
@@ -140,7 +140,7 @@ arguments to `async_XYZ()` are members of the handler. For example:
     void operator(error_code ec, size_t length)
     {
       ...
-      socket->async_read_some(asio::buffer(*buffer), std::move(*this));
+      socket->async_read_some(asio_sockio::buffer(*buffer), std::move(*this));
       ...
     }
   };
@@ -240,18 +240,18 @@ class template may be used with either.
 
 [section:futures Futures]
 
-The `asio::use_future` special value provides first-class support for returning a
+The `asio_sockio::use_future` special value provides first-class support for returning a
 C++11 `std::future` from an asynchronous operation's initiating function.
 
-To use `asio::use_future`, pass it to an asynchronous operation instead of
+To use `asio_sockio::use_future`, pass it to an asynchronous operation instead of
 a normal completion handler. For example:
 
   std::future<std::size_t> length =
-    my_socket.async_read_some(my_buffer, asio::use_future);
+    my_socket.async_read_some(my_buffer, asio_sockio::use_future);
 
 Where a handler signature has the form:
 
-  void handler(asio::error_code ec, result_type result);
+  void handler(asio_sockio::error_code ec, result_type result);
 
 the initiating function returns a `std::future` templated on `result_type`.
 In the above example, this is `std::size_t`. If the asynchronous operation
@@ -260,7 +260,7 @@ passed back to the caller through the future.
 
 Where a handler signature has the form:
 
-  void handler(asio::error_code ec);
+  void handler(asio_sockio::error_code ec);
 
 the initiating function returns `std::future<void>`. As above, an error
 is passed back in the future as a `system_error` exception.

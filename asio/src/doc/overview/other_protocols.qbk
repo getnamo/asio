@@ -22,24 +22,24 @@ These classes implement the [link asio.reference.Protocol protocol type
 requirements], but allow the user to specify the address family (e.g. `AF_INET`)
 and protocol type (e.g. `IPPROTO_TCP`) at runtime. For example:
 
-  asio::generic::stream_protocol::socket my_socket(my_io_context);
-  my_socket.open(asio::generic::stream_protocol(AF_INET, IPPROTO_TCP));
+  asio_sockio::generic::stream_protocol::socket my_socket(my_io_context);
+  my_socket.open(asio_sockio::generic::stream_protocol(AF_INET, IPPROTO_TCP));
   ...
 
 An endpoint class template, [link asio.reference.generic__basic_endpoint
-`asio::generic::basic_endpoint`], is included to support these protocol
+`asio_sockio::generic::basic_endpoint`], is included to support these protocol
 classes. This endpoint can hold any other endpoint type, provided its native
 representation fits into a `sockaddr_storage` object. This class will also
 convert from other types that implement the [link asio.reference.Endpoint
 endpoint] type requirements:
 
-  asio::ip::tcp::endpoint my_endpoint1 = ...;
-  asio::generic::stream_protocol::endpoint my_endpoint2(my_endpoint1);
+  asio_sockio::ip::tcp::endpoint my_endpoint1 = ...;
+  asio_sockio::generic::stream_protocol::endpoint my_endpoint2(my_endpoint1);
 
 The conversion is implicit, so as to support the following use cases:
 
-  asio::generic::stream_protocol::socket my_socket(my_io_context);
-  asio::ip::tcp::endpoint my_endpoint = ...;
+  asio_sockio::generic::stream_protocol::socket my_socket(my_io_context);
+  asio_sockio::ip::tcp::endpoint my_endpoint = ...;
   my_socket.connect(my_endpoint);
 
 [heading C++11 Move Construction]
@@ -60,9 +60,9 @@ then the corresponding socket conversion is allowed:
 For example, one possible conversion is from a TCP socket to a generic
 stream-oriented socket:
 
-  asio::ip::tcp::socket my_socket1(my_io_context);
+  asio_sockio::ip::tcp::socket my_socket1(my_io_context);
   ...
-  asio::generic::stream_protocol::socket my_socket2(std::move(my_socket1));
+  asio_sockio::generic::stream_protocol::socket my_socket2(std::move(my_socket1));
 
 These conversions are also available for move-assignment.
 
@@ -75,12 +75,12 @@ the conversion from `Protocol1` to `Protocol2` is valid, as above.
 As a convenience, a socket acceptor's `accept()` and `async_accept()` functions
 can directly accept into a different protocol's socket type, provided the
 corresponding protocol conversion is valid. For example, the following is
-supported because the protocol `asio::ip::tcp` is convertible to
-`asio::generic::stream_protocol`:
+supported because the protocol `asio_sockio::ip::tcp` is convertible to
+`asio_sockio::generic::stream_protocol`:
 
-  asio::ip::tcp::acceptor my_acceptor(my_io_context);
+  asio_sockio::ip::tcp::acceptor my_acceptor(my_io_context);
   ...
-  asio::generic::stream_protocol::socket my_socket(my_io_context);
+  asio_sockio::generic::stream_protocol::socket my_socket(my_io_context);
   my_acceptor.accept(my_socket);
 
 [heading See Also]

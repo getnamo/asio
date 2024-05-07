@@ -23,9 +23,9 @@
 #include "asio/steady_timer.hpp"
 #include "asio/write.hpp"
 
-using asio::steady_timer;
-using asio::ip::tcp;
-using asio::ip::udp;
+using asio_sockio::steady_timer;
+using asio_sockio::ip::tcp;
+using asio_sockio::ip::udp;
 
 //----------------------------------------------------------------------
 
@@ -200,8 +200,8 @@ private:
 
     // Start an asynchronous operation to read a newline-delimited message.
     auto self(shared_from_this());
-    asio::async_read_until(socket_,
-        asio::dynamic_buffer(input_buffer_), '\n',
+    asio_sockio::async_read_until(socket_,
+        asio_sockio::dynamic_buffer(input_buffer_), '\n',
         [this, self](const std::error_code& error, std::size_t n)
         {
           // Check if the session was stopped while the operation was pending.
@@ -278,8 +278,8 @@ private:
 
     // Start an asynchronous operation to send a message.
     auto self(shared_from_this());
-    asio::async_write(socket_,
-        asio::buffer(output_queue_.front()),
+    asio_sockio::async_write(socket_,
+        asio_sockio::buffer(output_queue_.front()),
         [this, self](const std::error_code& error, std::size_t /*n*/)
         {
           // Check if the session was stopped while the operation was pending.
@@ -343,7 +343,7 @@ class udp_broadcaster
   : public subscriber
 {
 public:
-  udp_broadcaster(asio::io_context& io_context,
+  udp_broadcaster(asio_sockio::io_context& io_context,
       const udp::endpoint& broadcast_endpoint)
     : socket_(io_context)
   {
@@ -355,7 +355,7 @@ private:
   void deliver(const std::string& msg)
   {
     std::error_code ignored_error;
-    socket_.send(asio::buffer(msg), 0, ignored_error);
+    socket_.send(asio_sockio::buffer(msg), 0, ignored_error);
   }
 
   udp::socket socket_;
@@ -366,7 +366,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context,
+  server(asio_sockio::io_context& io_context,
       const tcp::endpoint& listen_endpoint,
       const udp::endpoint& broadcast_endpoint)
     : io_context_(io_context),
@@ -394,7 +394,7 @@ private:
         });
   }
 
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   tcp::acceptor acceptor_;
   channel channel_;
 };
@@ -413,12 +413,12 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::endpoint listen_endpoint(tcp::v4(), atoi(argv[1]));
 
     udp::endpoint broadcast_endpoint(
-        asio::ip::make_address(argv[2]), atoi(argv[3]));
+        asio_sockio::ip::make_address(argv[2]), atoi(argv[3]));
 
     server s(io_context, listen_endpoint, broadcast_endpoint);
 

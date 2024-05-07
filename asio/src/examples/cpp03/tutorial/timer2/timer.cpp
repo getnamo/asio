@@ -11,16 +11,16 @@
 #include <iostream>
 #include <asio.hpp>
 
-void print(const asio::error_code& /*e*/)
+void print(const asio_sockio::error_code& /*e*/)
 {
   std::cout << "Hello, world!" << std::endl;
 }
 
 int main()
 {
-  asio::io_context io;
+  asio_sockio::io_context io;
 
-  asio::steady_timer t(io, asio::chrono::seconds(5));
+  asio_sockio::steady_timer t(io, asio_sockio::chrono::seconds(5));
   t.async_wait(&print);
 
   io.run();

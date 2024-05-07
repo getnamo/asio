@@ -16,7 +16,7 @@
 struct time_t_clock
 {
   // The duration type.
-  typedef asio::chrono::steady_clock::duration duration;
+  typedef asio_sockio::chrono::steady_clock::duration duration;
 
   // The duration's underlying arithmetic representation.
   typedef duration::rep rep;
@@ -25,7 +25,7 @@ struct time_t_clock
   typedef duration::period period;
 
   // An absolute time point represented using the clock.
-  typedef asio::chrono::time_point<time_t_clock> time_point;
+  typedef asio_sockio::chrono::time_point<time_t_clock> time_point;
 
   // The clock is not monotonically increasing.
   static const bool is_steady = false;
@@ -33,11 +33,11 @@ struct time_t_clock
   // Get the current time.
   static time_point now()
   {
-    return time_point() + asio::chrono::seconds(std::time(0));
+    return time_point() + asio_sockio::chrono::seconds(std::time(0));
   }
 };
 
-// The asio::basic_waitable_timer template accepts an optional WaitTraits
+// The asio_sockio::basic_waitable_timer template accepts an optional WaitTraits
 // template parameter. The underlying time_t clock has one-second granularity,
 // so these traits may be customised to reduce the latency between the clock
 // ticking over and a wait operation's completion. When the timeout is near
@@ -53,12 +53,12 @@ struct time_t_wait_traits
   static time_t_clock::duration to_wait_duration(
       const time_t_clock::duration& d)
   {
-    if (d > asio::chrono::seconds(1))
-      return d - asio::chrono::seconds(1);
-    else if (d > asio::chrono::seconds(0))
-      return asio::chrono::milliseconds(10);
+    if (d > asio_sockio::chrono::seconds(1))
+      return d - asio_sockio::chrono::seconds(1);
+    else if (d > asio_sockio::chrono::seconds(0))
+      return asio_sockio::chrono::milliseconds(10);
     else
-      return asio::chrono::seconds(0);
+      return asio_sockio::chrono::seconds(0);
   }
 
   // Determine how long until the clock should be next polled to determine
@@ -70,10 +70,10 @@ struct time_t_wait_traits
   }
 };
 
-typedef asio::basic_waitable_timer<
+typedef asio_sockio::basic_waitable_timer<
   time_t_clock, time_t_wait_traits> time_t_timer;
 
-void handle_timeout(const asio::error_code&)
+void handle_timeout(const asio_sockio::error_code&)
 {
   std::cout << "handle_timeout\n";
 }
@@ -82,16 +82,16 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     time_t_timer timer(io_context);
 
-    timer.expires_after(asio::chrono::seconds(5));
+    timer.expires_after(asio_sockio::chrono::seconds(5));
     std::cout << "Starting synchronous wait\n";
     timer.wait();
     std::cout << "Finished synchronous wait\n";
 
-    timer.expires_after(asio::chrono::seconds(5));
+    timer.expires_after(asio_sockio::chrono::seconds(5));
     std::cout << "Starting asynchronous wait\n";
     timer.async_wait(&handle_timeout);
     io_context.run();

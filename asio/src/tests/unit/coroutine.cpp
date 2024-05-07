@@ -25,7 +25,7 @@
 
 // Coroutine completes via yield break.
 
-void yield_break_coro(asio::coroutine& coro)
+void yield_break_coro(asio_sockio::coroutine& coro)
 {
   reenter (coro)
   {
@@ -36,7 +36,7 @@ void yield_break_coro(asio::coroutine& coro)
 
 void yield_break_test()
 {
-  asio::coroutine coro;
+  asio_sockio::coroutine coro;
   ASIO_CHECK(!coro.is_complete());
   yield_break_coro(coro);
   ASIO_CHECK(!coro.is_complete());
@@ -48,7 +48,7 @@ void yield_break_test()
 
 // Coroutine completes via return.
 
-void return_coro(asio::coroutine& coro)
+void return_coro(asio_sockio::coroutine& coro)
 {
   reenter (coro)
   {
@@ -58,7 +58,7 @@ void return_coro(asio::coroutine& coro)
 
 void return_test()
 {
-  asio::coroutine coro;
+  asio_sockio::coroutine coro;
   return_coro(coro);
   ASIO_CHECK(coro.is_complete());
 }
@@ -67,7 +67,7 @@ void return_test()
 
 // Coroutine completes via exception.
 
-void exception_coro(asio::coroutine& coro)
+void exception_coro(asio_sockio::coroutine& coro)
 {
   reenter (coro)
   {
@@ -77,7 +77,7 @@ void exception_coro(asio::coroutine& coro)
 
 void exception_test()
 {
-  asio::coroutine coro;
+  asio_sockio::coroutine coro;
   try { exception_coro(coro); } catch (int) {}
   ASIO_CHECK(coro.is_complete());
 }
@@ -86,7 +86,7 @@ void exception_test()
 
 // Coroutine completes by falling off the end.
 
-void fall_off_end_coro(asio::coroutine& coro)
+void fall_off_end_coro(asio_sockio::coroutine& coro)
 {
   reenter (coro)
   {
@@ -95,7 +95,7 @@ void fall_off_end_coro(asio::coroutine& coro)
 
 void fall_off_end_test()
 {
-  asio::coroutine coro;
+  asio_sockio::coroutine coro;
   fall_off_end_coro(coro);
   ASIO_CHECK(coro.is_complete());
 }

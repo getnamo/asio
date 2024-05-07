@@ -21,7 +21,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ssl {
 namespace detail {
 
@@ -33,22 +33,22 @@ public:
       const ConstBufferSequence& buffers)
     : type_(type),
       buffers_(buffers),
-      total_buffer_size_(asio::buffer_size(buffers_))
+      total_buffer_size_(asio_sockio::buffer_size(buffers_))
   {
   }
 
   engine::want operator()(engine& eng,
-      asio::error_code& ec,
+      asio_sockio::error_code& ec,
       std::size_t& bytes_transferred) const
   {
     return this->process(eng, ec, bytes_transferred,
-        asio::buffer_sequence_begin(buffers_),
-        asio::buffer_sequence_end(buffers_));
+        asio_sockio::buffer_sequence_begin(buffers_),
+        asio_sockio::buffer_sequence_end(buffers_));
   }
 
   template <typename Handler>
   void call_handler(Handler& handler,
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       const std::size_t& bytes_transferred) const
   {
     handler(ec, bytes_transferred);
@@ -57,7 +57,7 @@ public:
 private:
   template <typename Iterator>
   engine::want process(engine& eng,
-      asio::error_code& ec,
+      asio_sockio::error_code& ec,
       std::size_t& bytes_transferred,
       Iterator begin, Iterator end) const
   {
@@ -107,7 +107,7 @@ private:
 
 } // namespace detail
 } // namespace ssl
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

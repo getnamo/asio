@@ -23,13 +23,13 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ssl {
 namespace detail {
 
 template <typename Stream, typename Operation>
 std::size_t io(Stream& next_layer, stream_core& core,
-    const Operation& op, asio::error_code& ec)
+    const Operation& op, asio_sockio::error_code& ec)
 {
   std::size_t bytes_transferred = 0;
   do switch (op(core.engine_, ec, bytes_transferred))
@@ -39,7 +39,7 @@ std::size_t io(Stream& next_layer, stream_core& core,
     // If the input buffer is empty then we need to read some more data from
     // the underlying transport.
     if (core.input_.size() == 0)
-      core.input_ = asio::buffer(core.input_buffer_,
+      core.input_ = asio_sockio::buffer(core.input_buffer_,
           next_layer.read_some(core.input_buffer_, ec));
 
     // Pass the new input data to the engine.
@@ -52,7 +52,7 @@ std::size_t io(Stream& next_layer, stream_core& core,
 
     // Get output data from the engine and write it to the underlying
     // transport.
-    asio::write(next_layer,
+    asio_sockio::write(next_layer,
         core.engine_.get_output(core.output_buffer_), ec);
 
     // Try the operation again.
@@ -62,7 +62,7 @@ std::size_t io(Stream& next_layer, stream_core& core,
 
     // Get output data from the engine and write it to the underlying
     // transport.
-    asio::write(next_layer,
+    asio_sockio::write(next_layer,
         core.engine_.get_output(core.output_buffer_), ec);
 
     // Operation is complete. Return result to caller.
@@ -124,7 +124,7 @@ public:
   }
 #endif // defined(ASIO_HAS_MOVE)
 
-  void operator()(asio::error_code ec,
+  void operator()(asio_sockio::error_code ec,
       std::size_t bytes_transferred = ~std::size_t(0), int start = 0)
   {
     switch (start_ = start)
@@ -155,7 +155,7 @@ public:
 
             // Start reading some data from the underlying transport.
             next_layer_.async_read_some(
-                asio::buffer(core_.input_buffer_),
+                asio_sockio::buffer(core_.input_buffer_),
                 ASIO_MOVE_CAST(io_op)(*this));
           }
           else
@@ -181,7 +181,7 @@ public:
             core_.pending_write_.expires_at(core_.pos_infin());
 
             // Start writing all the data to the underlying transport.
-            asio::async_write(next_layer_,
+            asio_sockio::async_write(next_layer_,
                 core_.engine_.get_output(core_.output_buffer_),
                 ASIO_MOVE_CAST(io_op)(*this));
           }
@@ -205,7 +205,7 @@ public:
           if (start)
           {
             next_layer_.async_read_some(
-                asio::buffer(core_.input_buffer_, 0),
+                asio_sockio::buffer(core_.input_buffer_, 0),
                 ASIO_MOVE_CAST(io_op)(*this));
 
             // Yield control until asynchronous operation completes. Control
@@ -230,7 +230,7 @@ public:
         case engine::want_input_and_retry:
 
           // Add received data to the engine's input.
-          core_.input_ = asio::buffer(
+          core_.input_ = asio_sockio::buffer(
               core_.input_buffer_, bytes_transferred);
           core_.input_ = core_.engine_.put_input(core_.input_);
 
@@ -278,7 +278,7 @@ public:
   Operation op_;
   int start_;
   engine::want want_;
-  asio::error_code ec_;
+  asio_sockio::error_code ec_;
   std::size_t bytes_transferred_;
   Handler handler_;
 };
@@ -331,7 +331,7 @@ inline void async_io(Stream& next_layer, stream_core& core,
 {
   io_op<Stream, Operation, Handler>(
     next_layer, core, op, handler)(
-      asio::error_code(), 0, 1);
+      asio_sockio::error_code(), 0, 1);
 }
 
 } // namespace detail
@@ -365,7 +365,7 @@ struct associated_executor<
   }
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

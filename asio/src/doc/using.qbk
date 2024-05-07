@@ -239,7 +239,7 @@ Asio.
     [
       Enables use of the `CancelIo` function on older versions of Windows. If
       not enabled, calls to `cancel()` on a socket object will always fail with
-      `asio::error::operation_not_supported` when run on Windows XP, Windows
+      `asio_sockio::error::operation_not_supported` when run on Windows XP, Windows
       Server 2003, and earlier versions of Windows. When running on Windows
       Vista, Windows Server 2008, and later, the `CancelIoEx` function is
       always used.

@@ -14,7 +14,7 @@
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 
-using asio::local::stream_protocol;
+using asio_sockio::local::stream_protocol;
 
 constexpr std::size_t max_length = 1024;
 

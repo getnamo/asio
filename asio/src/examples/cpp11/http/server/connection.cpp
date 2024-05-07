@@ -17,7 +17,7 @@
 namespace http {
 namespace server {
 
-connection::connection(asio::ip::tcp::socket socket,
+connection::connection(asio_sockio::ip::tcp::socket socket,
     connection_manager& manager, request_handler& handler)
   : socket_(std::move(socket)),
     connection_manager_(manager),
@@ -38,7 +38,7 @@ void connection::stop()
 void connection::do_read()
 {
   auto self(shared_from_this());
-  socket_.async_read_some(asio::buffer(buffer_),
+  socket_.async_read_some(asio_sockio::buffer(buffer_),
       [this, self](std::error_code ec, std::size_t bytes_transferred)
       {
         if (!ec)
@@ -62,7 +62,7 @@ void connection::do_read()
             do_read();
           }
         }
-        else if (ec != asio::error::operation_aborted)
+        else if (ec != asio_sockio::error::operation_aborted)
         {
           connection_manager_.stop(shared_from_this());
         }
@@ -72,18 +72,18 @@ void connection::do_read()
 void connection::do_write()
 {
   auto self(shared_from_this());
-  asio::async_write(socket_, reply_.to_buffers(),
+  asio_sockio::async_write(socket_, reply_.to_buffers(),
       [this, self](std::error_code ec, std::size_t)
       {
         if (!ec)
         {
           // Initiate graceful connection closure.
-          asio::error_code ignored_ec;
-          socket_.shutdown(asio::ip::tcp::socket::shutdown_both,
+          asio_sockio::error_code ignored_ec;
+          socket_.shutdown(asio_sockio::ip::tcp::socket::shutdown_both,
             ignored_ec);
         }
 
-        if (ec != asio::error::operation_aborted)
+        if (ec != asio_sockio::error::operation_aborted)
         {
           connection_manager_.stop(shared_from_this());
         }

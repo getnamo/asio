@@ -21,10 +21,10 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 execution_context::execution_context()
-  : service_registry_(new asio::detail::service_registry(*this))
+  : service_registry_(new asio_sockio::detail::service_registry(*this))
 {
 }
 
@@ -46,7 +46,7 @@ void execution_context::destroy()
 }
 
 void execution_context::notify_fork(
-    asio::execution_context::fork_event event)
+    asio_sockio::execution_context::fork_event event)
 {
   service_registry_->notify_fork(event);
 }
@@ -75,7 +75,7 @@ invalid_service_owner::invalid_service_owner()
 {
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

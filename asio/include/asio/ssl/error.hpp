@@ -21,7 +21,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace error {
 
 enum ssl_errors
@@ -30,11 +30,11 @@ enum ssl_errors
 };
 
 extern ASIO_DECL
-const asio::error_category& get_ssl_category();
+const asio_sockio::error_category& get_ssl_category();
 
-static const asio::error_category&
+static const asio_sockio::error_category&
   ssl_category ASIO_UNUSED_VARIABLE
-  = asio::error::get_ssl_category();
+  = asio_sockio::error::get_ssl_category();
 
 } // namespace error
 namespace ssl {
@@ -53,25 +53,25 @@ enum stream_errors
 };
 
 extern ASIO_DECL
-const asio::error_category& get_stream_category();
+const asio_sockio::error_category& get_stream_category();
 
-static const asio::error_category&
+static const asio_sockio::error_category&
   stream_category ASIO_UNUSED_VARIABLE
-  = asio::ssl::error::get_stream_category();
+  = asio_sockio::ssl::error::get_stream_category();
 
 } // namespace error
 } // namespace ssl
-} // namespace asio
+} // namespace asio_sockio
 
 #if defined(ASIO_HAS_STD_SYSTEM_ERROR)
 namespace std {
 
-template<> struct is_error_code_enum<asio::error::ssl_errors>
+template<> struct is_error_code_enum<asio_sockio::error::ssl_errors>
 {
   static const bool value = true;
 };
 
-template<> struct is_error_code_enum<asio::ssl::error::stream_errors>
+template<> struct is_error_code_enum<asio_sockio::ssl::error::stream_errors>
 {
   static const bool value = true;
 };
@@ -79,12 +79,12 @@ template<> struct is_error_code_enum<asio::ssl::error::stream_errors>
 } // namespace std
 #endif // defined(ASIO_HAS_STD_SYSTEM_ERROR)
 
-namespace asio {
+namespace asio_sockio {
 namespace error {
 
-inline asio::error_code make_error_code(ssl_errors e)
+inline asio_sockio::error_code make_error_code(ssl_errors e)
 {
-  return asio::error_code(
+  return asio_sockio::error_code(
       static_cast<int>(e), get_ssl_category());
 }
 
@@ -92,15 +92,15 @@ inline asio::error_code make_error_code(ssl_errors e)
 namespace ssl {
 namespace error {
 
-inline asio::error_code make_error_code(stream_errors e)
+inline asio_sockio::error_code make_error_code(stream_errors e)
 {
-  return asio::error_code(
+  return asio_sockio::error_code(
       static_cast<int>(e), get_stream_category());
 }
 
 } // namespace error
 } // namespace ssl
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

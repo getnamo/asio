@@ -12,7 +12,7 @@
 #include <boost/array.hpp>
 #include <asio.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 int main(int argc, char* argv[])
 {
@@ -24,26 +24,26 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::resolver resolver(io_context);
     tcp::resolver::results_type endpoints =
       resolver.resolve(argv[1], "daytime");
 
     tcp::socket socket(io_context);
-    asio::connect(socket, endpoints);
+    asio_sockio::connect(socket, endpoints);
 
     for (;;)
     {
       boost::array<char, 128> buf;
-      asio::error_code error;
+      asio_sockio::error_code error;
 
-      size_t len = socket.read_some(asio::buffer(buf), error);
+      size_t len = socket.read_some(asio_sockio::buffer(buf), error);
 
-      if (error == asio::error::eof)
+      if (error == asio_sockio::error::eof)
         break; // Connection closed cleanly by peer.
       else if (error)
-        throw asio::system_error(error); // Some other error.
+        throw asio_sockio::system_error(error); // Some other error.
 
       std::cout.write(buf.data(), len);
     }

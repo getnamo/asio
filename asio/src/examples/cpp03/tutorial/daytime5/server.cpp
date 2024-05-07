@@ -14,7 +14,7 @@
 #include <boost/array.hpp>
 #include <asio.hpp>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 std::string make_daytime_string()
 {
@@ -27,7 +27,7 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     udp::socket socket(io_context, udp::endpoint(udp::v4(), 13));
 
@@ -35,13 +35,13 @@ int main()
     {
       boost::array<char, 1> recv_buf;
       udp::endpoint remote_endpoint;
-      asio::error_code error;
-      socket.receive_from(asio::buffer(recv_buf), remote_endpoint);
+      asio_sockio::error_code error;
+      socket.receive_from(asio_sockio::buffer(recv_buf), remote_endpoint);
 
       std::string message = make_daytime_string();
 
-      asio::error_code ignored_error;
-      socket.send_to(asio::buffer(message),
+      asio_sockio::error_code ignored_error;
+      socket.send_to(asio_sockio::buffer(message),
           remote_endpoint, 0, ignored_error);
     }
   }

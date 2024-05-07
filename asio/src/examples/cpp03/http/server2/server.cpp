@@ -33,11 +33,11 @@ server::server(const std::string& address, const std::string& port,
   signals_.async_wait(boost::bind(&server::handle_stop, this));
 
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
-  asio::ip::tcp::resolver resolver(acceptor_.get_executor().context());
-  asio::ip::tcp::endpoint endpoint =
+  asio_sockio::ip::tcp::resolver resolver(acceptor_.get_executor().context());
+  asio_sockio::ip::tcp::endpoint endpoint =
     *resolver.resolve(address, port).begin();
   acceptor_.open(endpoint.protocol());
-  acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(true));
+  acceptor_.set_option(asio_sockio::ip::tcp::acceptor::reuse_address(true));
   acceptor_.bind(endpoint);
   acceptor_.listen();
 
@@ -55,10 +55,10 @@ void server::start_accept()
         io_context_pool_.get_io_context(), request_handler_));
   acceptor_.async_accept(new_connection_->socket(),
       boost::bind(&server::handle_accept, this,
-        asio::placeholders::error));
+        asio_sockio::placeholders::error));
 }
 
-void server::handle_accept(const asio::error_code& e)
+void server::handle_accept(const asio_sockio::error_code& e)
 {
   if (!e)
   {

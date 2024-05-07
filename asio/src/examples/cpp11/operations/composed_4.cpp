@@ -20,7 +20,7 @@
 #include <type_traits>
 #include <utility>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 //------------------------------------------------------------------------------
 
@@ -34,18 +34,18 @@ auto async_write_message(tcp::socket& socket,
   // The return type of the initiating function is deduced from the combination
   // of CompletionToken type and the completion handler's signature. When the
   // completion token is a simple callback, the return type is always void.
-  // In this example, when the completion token is asio::yield_context
+  // In this example, when the completion token is asio_sockio::yield_context
   // (used for stackful coroutines) the return type would be also be void, as
   // there is no non-error argument to the completion handler. When the
-  // completion token is asio::use_future it would be std::future<void>.
-  -> typename asio::async_result<
+  // completion token is asio_sockio::use_future it would be std::future<void>.
+  -> typename asio_sockio::async_result<
     typename std::decay<CompletionToken>::type,
     void(std::error_code)>::return_type
 {
   // Define a type alias for the concrete completion handler, as we will use
   // the type in several places in the implementation below.
   using completion_handler_type =
-    typename asio::async_completion<CompletionToken,
+    typename asio_sockio::async_completion<CompletionToken,
       void(std::error_code)>::completion_handler_type;
 
   // In this example, the composed operation's intermediate completion handler
@@ -85,12 +85,12 @@ auto async_write_message(tcp::socket& socket,
     // completion handler's associated executor, and default to the I/O
     // executor - in this case the executor of the socket - if the completion
     // handler does not have its own.
-    using executor_type = asio::associated_executor_t<
+    using executor_type = asio_sockio::associated_executor_t<
       completion_handler_type, tcp::socket::executor_type>;
 
     executor_type get_executor() const noexcept
     {
-      return asio::get_associated_executor(
+      return asio_sockio::get_associated_executor(
           handler_, socket_.get_executor());
     }
 
@@ -99,17 +99,17 @@ auto async_write_message(tcp::socket& socket,
     // defining a nested type allocator_type and member function get_allocator.
     // These obtain the completion handler's associated allocator, and default
     // to std::allocator<void> if the completion handler does not have its own.
-    using allocator_type = asio::associated_allocator_t<
+    using allocator_type = asio_sockio::associated_allocator_t<
       completion_handler_type, std::allocator<void>>;
 
     allocator_type get_allocator() const noexcept
     {
-      return asio::get_associated_allocator(
+      return asio_sockio::get_associated_allocator(
           handler_, std::allocator<void>{});
     }
   };
 
-  // The asio::async_completion object takes the completion token and
+  // The asio_sockio::async_completion object takes the completion token and
   // from it creates:
   //
   // - completion.completion_handler:
@@ -117,7 +117,7 @@ auto async_write_message(tcp::socket& socket,
   //
   // - completion.result:
   //     An object from which we obtain the result of the initiating function.
-  asio::async_completion<CompletionToken,
+  asio_sockio::async_completion<CompletionToken,
     void(std::error_code)> completion(token);
 
   // Encode the message and copy it into an allocated buffer. The buffer will
@@ -128,7 +128,7 @@ auto async_write_message(tcp::socket& socket,
 
   // Initiate the underlying async_write operation using our intermediate
   // completion handler.
-  asio::async_write(socket, asio::buffer(*encoded_message),
+  asio_sockio::async_write(socket, asio_sockio::buffer(*encoded_message),
       intermediate_completion_handler{socket, std::move(encoded_message),
         std::move(completion.completion_handler)});
 
@@ -140,7 +140,7 @@ auto async_write_message(tcp::socket& socket,
 
 void test_callback()
 {
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
   tcp::acceptor acceptor(io_context, {tcp::v4(), 55555});
   tcp::socket socket = acceptor.accept();
@@ -166,7 +166,7 @@ void test_callback()
 
 void test_future()
 {
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
   tcp::acceptor acceptor(io_context, {tcp::v4(), 55555});
   tcp::socket socket = acceptor.accept();
@@ -175,7 +175,7 @@ void test_future()
   // This token causes the operation's initiating function to return a future,
   // which may be used to synchronously wait for the result of the operation.
   std::future<void> f = async_write_message(
-      socket, "Testing future\r\n", asio::use_future);
+      socket, "Testing future\r\n", asio_sockio::use_future);
 
   io_context.run();
 

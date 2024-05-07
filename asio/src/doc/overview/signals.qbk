@@ -15,7 +15,7 @@ registered with multiple [link asio.reference.signal_set signal_set] objects,
 however the signal number must be used only with Asio.
 
   void handler(
-      const asio::error_code& error,
+      const asio_sockio::error_code& error,
       int signal_number)
   {
     if (!error)
@@ -27,7 +27,7 @@ however the signal number must be used only with Asio.
   ...
 
   // Construct a signal set registered for process termination.
-  asio::signal_set signals(io_context, SIGINT, SIGTERM);
+  asio_sockio::signal_set signals(io_context, SIGINT, SIGTERM);
 
   // Start an asynchronous wait for one of the signals to occur.
   signals.async_wait(handler);

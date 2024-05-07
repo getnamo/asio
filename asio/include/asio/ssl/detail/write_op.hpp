@@ -22,7 +22,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ssl {
 namespace detail {
 
@@ -36,11 +36,11 @@ public:
   }
 
   engine::want operator()(engine& eng,
-      asio::error_code& ec,
+      asio_sockio::error_code& ec,
       std::size_t& bytes_transferred) const
   {
-    asio::const_buffer buffer =
-      asio::detail::buffer_sequence_adapter<asio::const_buffer,
+    asio_sockio::const_buffer buffer =
+      asio_sockio::detail::buffer_sequence_adapter<asio_sockio::const_buffer,
         ConstBufferSequence>::first(buffers_);
 
     return eng.write(buffer, ec, bytes_transferred);
@@ -48,7 +48,7 @@ public:
 
   template <typename Handler>
   void call_handler(Handler& handler,
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       const std::size_t& bytes_transferred) const
   {
     handler(ec, bytes_transferred);
@@ -60,7 +60,7 @@ private:
 
 } // namespace detail
 } // namespace ssl
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

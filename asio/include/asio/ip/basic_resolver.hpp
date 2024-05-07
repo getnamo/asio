@@ -39,17 +39,17 @@
 # if defined(ASIO_WINDOWS_RUNTIME)
 #  include "asio/detail/winrt_resolver_service.hpp"
 #  define ASIO_SVC_T \
-    asio::detail::winrt_resolver_service<InternetProtocol>
+    asio_sockio::detail::winrt_resolver_service<InternetProtocol>
 # else
 #  include "asio/detail/resolver_service.hpp"
 #  define ASIO_SVC_T \
-    asio::detail::resolver_service<InternetProtocol>
+    asio_sockio::detail::resolver_service<InternetProtocol>
 # endif
 #endif // defined(ASIO_ENABLE_OLD_SERVICES)
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ip {
 
 /// Provides endpoint resolution functionality.
@@ -96,7 +96,7 @@ public:
    * dispatch handlers for any asynchronous operations performed on the
    * resolver.
    */
-  explicit basic_resolver(asio::io_context& io_context)
+  explicit basic_resolver(asio_sockio::io_context& io_context)
     : basic_io_object<ASIO_SVC_T>(io_context)
   {
   }
@@ -159,7 +159,7 @@ public:
    * @return A reference to the io_context object that the I/O object will use
    * to dispatch handlers. Ownership is not transferred to the caller.
    */
-  asio::io_context& get_io_context()
+  asio_sockio::io_context& get_io_context()
   {
     return basic_io_object<ASIO_SVC_T>::get_io_context();
   }
@@ -173,7 +173,7 @@ public:
    * @return A reference to the io_context object that the I/O object will use
    * to dispatch handlers. Ownership is not transferred to the caller.
    */
-  asio::io_context& get_io_service()
+  asio_sockio::io_context& get_io_service()
   {
     return basic_io_object<ASIO_SVC_T>::get_io_service();
   }
@@ -190,7 +190,7 @@ public:
   /**
    * This function forces the completion of any pending asynchronous
    * operations on the host resolver. The handler for each cancelled operation
-   * will be invoked with the asio::error::operation_aborted error code.
+   * will be invoked with the asio_sockio::error::operation_aborted error code.
    */
   void cancel()
   {
@@ -209,14 +209,14 @@ public:
    * successful call to this function is guaranteed to return a non-empty
    * range.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   results_type resolve(const query& q)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     results_type r = this->get_service().resolve(
         this->get_implementation(), q, ec);
-    asio::detail::throw_error(ec, "resolve");
+    asio_sockio::detail::throw_error(ec, "resolve");
     return r;
   }
 
@@ -233,7 +233,7 @@ public:
    * empty range is returned if an error occurs. A successful call to this
    * function is guaranteed to return a non-empty range.
    */
-  results_type resolve(const query& q, asio::error_code& ec)
+  results_type resolve(const query& q, asio_sockio::error_code& ec)
   {
     return this->get_service().resolve(this->get_implementation(), q, ec);
   }
@@ -259,7 +259,7 @@ public:
    * successful call to this function is guaranteed to return a non-empty
    * range.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note On POSIX systems, host names may be locally defined in the file
    * <tt>/etc/hosts</tt>. On Windows, host names may be defined in the file
@@ -312,7 +312,7 @@ public:
    * may use additional locations when resolving service names.
    */
   results_type resolve(ASIO_STRING_VIEW_PARAM host,
-      ASIO_STRING_VIEW_PARAM service, asio::error_code& ec)
+      ASIO_STRING_VIEW_PARAM service, asio_sockio::error_code& ec)
   {
     return resolve(host, service, resolver_base::flags(), ec);
   }
@@ -341,7 +341,7 @@ public:
    * successful call to this function is guaranteed to return a non-empty
    * range.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note On POSIX systems, host names may be locally defined in the file
    * <tt>/etc/hosts</tt>. On Windows, host names may be defined in the file
@@ -357,12 +357,12 @@ public:
   results_type resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service, resolver_base::flags resolve_flags)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
     results_type r = this->get_service().resolve(
         this->get_implementation(), q, ec);
-    asio::detail::throw_error(ec, "resolve");
+    asio_sockio::detail::throw_error(ec, "resolve");
     return r;
   }
 
@@ -405,7 +405,7 @@ public:
    */
   results_type resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service, resolver_base::flags resolve_flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     basic_resolver_query<protocol_type> q(static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
@@ -435,7 +435,7 @@ public:
    * successful call to this function is guaranteed to return a non-empty
    * range.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note On POSIX systems, host names may be locally defined in the file
    * <tt>/etc/hosts</tt>. On Windows, host names may be defined in the file
@@ -492,7 +492,7 @@ public:
    */
   results_type resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return resolve(protocol, host, service, resolver_base::flags(), ec);
   }
@@ -524,7 +524,7 @@ public:
    * successful call to this function is guaranteed to return a non-empty
    * range.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note On POSIX systems, host names may be locally defined in the file
    * <tt>/etc/hosts</tt>. On Windows, host names may be defined in the file
@@ -541,13 +541,13 @@ public:
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
       resolver_base::flags resolve_flags)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     basic_resolver_query<protocol_type> q(
         protocol, static_cast<std::string>(host),
         static_cast<std::string>(service), resolve_flags);
     results_type r = this->get_service().resolve(
         this->get_implementation(), q, ec);
-    asio::detail::throw_error(ec, "resolve");
+    asio_sockio::detail::throw_error(ec, "resolve");
     return r;
   }
 
@@ -593,7 +593,7 @@ public:
    */
   results_type resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
-      resolver_base::flags resolve_flags, asio::error_code& ec)
+      resolver_base::flags resolve_flags, asio_sockio::error_code& ec)
   {
     basic_resolver_query<protocol_type> q(
         protocol, static_cast<std::string>(host),
@@ -614,20 +614,20 @@ public:
    * completes. Copies will be made of the handler as required. The function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
    */
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(const query& q,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
@@ -640,8 +640,8 @@ public:
     return this->get_service().async_resolve(this->get_implementation(), q,
         ASIO_MOVE_CAST(ResolveHandler)(handler));
 #else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
+    asio_sockio::async_completion<ResolveHandler,
+      void (asio_sockio::error_code, results_type)> init(handler);
 
     this->get_service().async_resolve(
         this->get_implementation(), q, init.completion_handler);
@@ -671,13 +671,13 @@ public:
    * completes. Copies will be made of the handler as required. The function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -695,7 +695,7 @@ public:
    */
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service,
       ASIO_MOVE_ARG(ResolveHandler) handler)
@@ -728,13 +728,13 @@ public:
    * completes. Copies will be made of the handler as required. The function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -752,7 +752,7 @@ public:
    */
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(ASIO_STRING_VIEW_PARAM host,
       ASIO_STRING_VIEW_PARAM service,
       resolver_base::flags resolve_flags,
@@ -770,8 +770,8 @@ public:
     return this->get_service().async_resolve(this->get_implementation(), q,
         ASIO_MOVE_CAST(ResolveHandler)(handler));
 #else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
+    asio_sockio::async_completion<ResolveHandler,
+      void (asio_sockio::error_code, results_type)> init(handler);
 
     this->get_service().async_resolve(
         this->get_implementation(), q, init.completion_handler);
@@ -803,13 +803,13 @@ public:
    * completes. Copies will be made of the handler as required. The function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -827,7 +827,7 @@ public:
    */
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
       ASIO_MOVE_ARG(ResolveHandler) handler)
@@ -863,13 +863,13 @@ public:
    * completes. Copies will be made of the handler as required. The function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
@@ -887,7 +887,7 @@ public:
    */
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(const protocol_type& protocol,
       ASIO_STRING_VIEW_PARAM host, ASIO_STRING_VIEW_PARAM service,
       resolver_base::flags resolve_flags,
@@ -906,8 +906,8 @@ public:
     return this->get_service().async_resolve(this->get_implementation(), q,
         ASIO_MOVE_CAST(ResolveHandler)(handler));
 #else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
+    asio_sockio::async_completion<ResolveHandler,
+      void (asio_sockio::error_code, results_type)> init(handler);
 
     this->get_service().async_resolve(
         this->get_implementation(), q, init.completion_handler);
@@ -928,14 +928,14 @@ public:
    * successful call to this function is guaranteed to return a non-empty
    * range.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   results_type resolve(const endpoint_type& e)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     results_type i = this->get_service().resolve(
         this->get_implementation(), e, ec);
-    asio::detail::throw_error(ec, "resolve");
+    asio_sockio::detail::throw_error(ec, "resolve");
     return i;
   }
 
@@ -953,7 +953,7 @@ public:
    * empty range is returned if an error occurs. A successful call to this
    * function is guaranteed to return a non-empty range.
    */
-  results_type resolve(const endpoint_type& e, asio::error_code& ec)
+  results_type resolve(const endpoint_type& e, asio_sockio::error_code& ec)
   {
     return this->get_service().resolve(this->get_implementation(), e, ec);
   }
@@ -971,20 +971,20 @@ public:
    * completes. Copies will be made of the handler as required. The function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   resolver::results_type results // Resolved endpoints as a range.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * A successful resolve operation is guaranteed to pass a non-empty range to
    * the handler.
    */
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(const endpoint_type& e,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
@@ -997,8 +997,8 @@ public:
     return this->get_service().async_resolve(this->get_implementation(), e,
         ASIO_MOVE_CAST(ResolveHandler)(handler));
 #else // defined(ASIO_ENABLE_OLD_SERVICES)
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
+    asio_sockio::async_completion<ResolveHandler,
+      void (asio_sockio::error_code, results_type)> init(handler);
 
     this->get_service().async_resolve(
         this->get_implementation(), e, init.completion_handler);
@@ -1009,7 +1009,7 @@ public:
 };
 
 } // namespace ip
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

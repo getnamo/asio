@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 #if defined(ASIO_HAS_VARIADIC_TEMPLATES)
@@ -299,13 +299,13 @@ class promise_handler_ec_0
   : public promise_creator<void>
 {
 public:
-  void operator()(const asio::error_code& ec)
+  void operator()(const asio_sockio::error_code& ec)
   {
     if (ec)
     {
       this->p_->set_exception(
           std::make_exception_ptr(
-            asio::system_error(ec)));
+            asio_sockio::system_error(ec)));
     }
     else
     {
@@ -352,14 +352,14 @@ class promise_handler_ec_1
 {
 public:
   template <typename Arg>
-  void operator()(const asio::error_code& ec,
+  void operator()(const asio_sockio::error_code& ec,
       ASIO_MOVE_ARG(Arg) arg)
   {
     if (ec)
     {
       this->p_->set_exception(
           std::make_exception_ptr(
-            asio::system_error(ec)));
+            asio_sockio::system_error(ec)));
     }
     else
       this->p_->set_value(ASIO_MOVE_CAST(Arg)(arg));
@@ -425,14 +425,14 @@ public:
 #if defined(ASIO_HAS_VARIADIC_TEMPLATES)
 
   template <typename... Args>
-  void operator()(const asio::error_code& ec,
+  void operator()(const asio_sockio::error_code& ec,
       ASIO_MOVE_ARG(Args)... args)
   {
     if (ec)
     {
       this->p_->set_exception(
           std::make_exception_ptr(
-            asio::system_error(ec)));
+            asio_sockio::system_error(ec)));
     }
     else
     {
@@ -446,14 +446,14 @@ public:
 
 #define ASIO_PRIVATE_CALL_OP_DEF(n) \
   template <ASIO_VARIADIC_TPARAMS(n)> \
-  void operator()(const asio::error_code& ec, \
+  void operator()(const asio_sockio::error_code& ec, \
       ASIO_VARIADIC_MOVE_PARAMS(n)) \
   {\
     if (ec) \
     { \
       this->p_->set_exception( \
           std::make_exception_ptr( \
-            asio::system_error(ec))); \
+            asio_sockio::system_error(ec))); \
     } \
     else \
     { \
@@ -523,7 +523,7 @@ class promise_handler_selector<void()>
   : public promise_handler_0 {};
 
 template <>
-class promise_handler_selector<void(asio::error_code)>
+class promise_handler_selector<void(asio_sockio::error_code)>
   : public promise_handler_ec_0 {};
 
 template <>
@@ -535,7 +535,7 @@ class promise_handler_selector<void(Arg)>
   : public promise_handler_1<Arg> {};
 
 template <typename Arg>
-class promise_handler_selector<void(asio::error_code, Arg)>
+class promise_handler_selector<void(asio_sockio::error_code, Arg)>
   : public promise_handler_ec_1<Arg> {};
 
 template <typename Arg>
@@ -549,7 +549,7 @@ class promise_handler_selector<void(Arg...)>
   : public promise_handler_n<std::tuple<Arg...> > {};
 
 template <typename... Arg>
-class promise_handler_selector<void(asio::error_code, Arg...)>
+class promise_handler_selector<void(asio_sockio::error_code, Arg...)>
   : public promise_handler_ec_n<std::tuple<Arg...> > {};
 
 template <typename... Arg>
@@ -567,7 +567,7 @@ class promise_handler_selector<void(std::exception_ptr, Arg...)>
   \
   template <typename Arg, ASIO_VARIADIC_TPARAMS(n)> \
   class promise_handler_selector< \
-    void(asio::error_code, Arg, ASIO_VARIADIC_TARGS(n))> \
+    void(asio_sockio::error_code, Arg, ASIO_VARIADIC_TARGS(n))> \
       : public promise_handler_ec_n< \
         std::tuple<Arg, ASIO_VARIADIC_TARGS(n)> > {}; \
   \
@@ -930,7 +930,7 @@ public:
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

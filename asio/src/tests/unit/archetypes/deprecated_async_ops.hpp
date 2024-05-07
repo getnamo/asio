@@ -34,18 +34,18 @@ namespace bindns = std;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void()>::type>::type
-deprecated_async_op_0(asio::io_context& ctx,
+deprecated_async_op_0(asio_sockio::io_context& ctx,
     ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void()>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler)));
 
@@ -53,46 +53,46 @@ deprecated_async_op_0(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
-    void(asio::error_code)>::type>::type
-deprecated_async_op_ec_0(asio::io_context& ctx,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code)>::type>::type
+deprecated_async_op_ec_0(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
-    void(asio::error_code)>::type handler_type;
+  typedef typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code()));
+          asio_sockio::error_code()));
   }
   else
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(asio::error::operation_aborted)));
+          asio_sockio::error_code(asio_sockio::error::operation_aborted)));
   }
 
   return result.get();
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr)>::type>::type
-deprecated_async_op_ex_0(asio::io_context& ctx,
+deprecated_async_op_ex_0(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
@@ -109,18 +109,18 @@ deprecated_async_op_ex_0(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(int)>::type>::type
-deprecated_async_op_1(asio::io_context& ctx,
+deprecated_async_op_1(asio_sockio::io_context& ctx,
     ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(int)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler), 42));
 
@@ -128,46 +128,46 @@ deprecated_async_op_1(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
-    void(asio::error_code, int)>::type>::type
-deprecated_async_op_ec_1(asio::io_context& ctx,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code, int)>::type>::type
+deprecated_async_op_ec_1(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
-    void(asio::error_code, int)>::type handler_type;
+  typedef typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code, int)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(), 42));
+          asio_sockio::error_code(), 42));
   }
   else
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(asio::error::operation_aborted), 0));
+          asio_sockio::error_code(asio_sockio::error::operation_aborted), 0));
   }
 
   return result.get();
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr, int)>::type>::type
-deprecated_async_op_ex_1(asio::io_context& ctx,
+deprecated_async_op_ex_1(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr, int)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
@@ -184,18 +184,18 @@ deprecated_async_op_ex_1(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(int, double)>::type>::type
-deprecated_async_op_2(asio::io_context& ctx,
+deprecated_async_op_2(asio_sockio::io_context& ctx,
     ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(int, double)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
         42, 2.0));
@@ -204,28 +204,28 @@ deprecated_async_op_2(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
-    void(asio::error_code, int, double)>::type>::type
-deprecated_async_op_ec_2(asio::io_context& ctx,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code, int, double)>::type>::type
+deprecated_async_op_ec_2(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
-    void(asio::error_code, int, double)>::type handler_type;
+  typedef typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code, int, double)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(), 42, 2.0));
+          asio_sockio::error_code(), 42, 2.0));
   }
   else
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(asio::error::operation_aborted),
+          asio_sockio::error_code(asio_sockio::error::operation_aborted),
           0, 0.0));
   }
 
@@ -233,18 +233,18 @@ deprecated_async_op_ec_2(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr, int, double)>::type>::type
-deprecated_async_op_ex_2(asio::io_context& ctx,
+deprecated_async_op_ex_2(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr, int, double)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
@@ -261,18 +261,18 @@ deprecated_async_op_ex_2(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(int, double, char)>::type>::type
-deprecated_async_op_3(asio::io_context& ctx,
+deprecated_async_op_3(asio_sockio::io_context& ctx,
     ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(int, double, char)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
         42, 2.0, 'a'));
@@ -281,28 +281,28 @@ deprecated_async_op_3(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
-    void(asio::error_code, int, double, char)>::type>::type
-deprecated_async_op_ec_3(asio::io_context& ctx,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code, int, double, char)>::type>::type
+deprecated_async_op_ec_3(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
-    void(asio::error_code, int, double, char)>::type handler_type;
+  typedef typename asio_sockio::handler_type<CompletionToken,
+    void(asio_sockio::error_code, int, double, char)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(), 42, 2.0, 'a'));
+          asio_sockio::error_code(), 42, 2.0, 'a'));
   }
   else
   {
     ctx.post(bindns::bind(ASIO_MOVE_CAST(handler_type)(handler),
-          asio::error_code(asio::error::operation_aborted),
+          asio_sockio::error_code(asio_sockio::error::operation_aborted),
           0, 0.0, 'z'));
   }
 
@@ -310,18 +310,18 @@ deprecated_async_op_ec_3(asio::io_context& ctx,
 }
 
 template <typename CompletionToken>
-typename asio::async_result<
-  typename asio::handler_type<CompletionToken,
+typename asio_sockio::async_result<
+  typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr, int, double, char)>::type>::type
-deprecated_async_op_ex_3(asio::io_context& ctx,
+deprecated_async_op_ex_3(asio_sockio::io_context& ctx,
     bool ok, ASIO_MOVE_ARG(CompletionToken) token)
 {
-  typedef typename asio::handler_type<CompletionToken,
+  typedef typename asio_sockio::handler_type<CompletionToken,
     void(std::exception_ptr, int, double, char)>::type handler_type;
 
   handler_type handler(ASIO_MOVE_CAST(CompletionToken)(token));
 
-  asio::async_result<handler_type> result(handler);
+  asio_sockio::async_result<handler_type> result(handler);
 
   if (ok)
   {

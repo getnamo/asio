@@ -48,7 +48,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 #if defined(ASIO_ENABLE_OLD_SERVICES)
 // Typedef for the typical usage of a serial port.
@@ -87,7 +87,7 @@ public:
    * @param io_context The io_context object that the serial port will use to
    * dispatch handlers for any asynchronous operations performed on the port.
    */
-  explicit serial_port(asio::io_context& io_context)
+  explicit serial_port(asio_sockio::io_context& io_context)
     : basic_io_object<ASIO_SVC_T>(io_context)
   {
   }
@@ -103,13 +103,13 @@ public:
    * @param device The platform-specific device name for this serial
    * port.
    */
-  explicit serial_port(asio::io_context& io_context,
+  explicit serial_port(asio_sockio::io_context& io_context,
       const char* device)
     : basic_io_object<ASIO_SVC_T>(io_context)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().open(this->get_implementation(), device, ec);
-    asio::detail::throw_error(ec, "open");
+    asio_sockio::detail::throw_error(ec, "open");
   }
 
   /// Construct and open a serial_port.
@@ -123,13 +123,13 @@ public:
    * @param device The platform-specific device name for this serial
    * port.
    */
-  explicit serial_port(asio::io_context& io_context,
+  explicit serial_port(asio_sockio::io_context& io_context,
       const std::string& device)
     : basic_io_object<ASIO_SVC_T>(io_context)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().open(this->get_implementation(), device, ec);
-    asio::detail::throw_error(ec, "open");
+    asio_sockio::detail::throw_error(ec, "open");
   }
 
   /// Construct a serial_port on an existing native serial port.
@@ -142,16 +142,16 @@ public:
    *
    * @param native_serial_port A native serial port.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
-  serial_port(asio::io_context& io_context,
+  serial_port(asio_sockio::io_context& io_context,
       const native_handle_type& native_serial_port)
     : basic_io_object<ASIO_SVC_T>(io_context)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().assign(this->get_implementation(),
         native_serial_port, ec);
-    asio::detail::throw_error(ec, "assign");
+    asio_sockio::detail::throw_error(ec, "assign");
   }
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
@@ -207,7 +207,7 @@ public:
    * @return A reference to the io_context object that the I/O object will use
    * to dispatch handlers. Ownership is not transferred to the caller.
    */
-  asio::io_context& get_io_context()
+  asio_sockio::io_context& get_io_context()
   {
     return basic_io_object<ASIO_SVC_T>::get_io_context();
   }
@@ -221,7 +221,7 @@ public:
    * @return A reference to the io_context object that the I/O object will use
    * to dispatch handlers. Ownership is not transferred to the caller.
    */
-  asio::io_context& get_io_service()
+  asio_sockio::io_context& get_io_service()
   {
     return basic_io_object<ASIO_SVC_T>::get_io_service();
   }
@@ -267,13 +267,13 @@ public:
    *
    * @param device The platform-specific device name.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void open(const std::string& device)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().open(this->get_implementation(), device, ec);
-    asio::detail::throw_error(ec, "open");
+    asio_sockio::detail::throw_error(ec, "open");
   }
 
   /// Open the serial port using the specified device name.
@@ -286,7 +286,7 @@ public:
    * @param ec Set the indicate what error occurred, if any.
    */
   ASIO_SYNC_OP_VOID open(const std::string& device,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     this->get_service().open(this->get_implementation(), device, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -298,14 +298,14 @@ public:
    *
    * @param native_serial_port A native serial port.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void assign(const native_handle_type& native_serial_port)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().assign(this->get_implementation(),
         native_serial_port, ec);
-    asio::detail::throw_error(ec, "assign");
+    asio_sockio::detail::throw_error(ec, "assign");
   }
 
   /// Assign an existing native serial port to the serial port.
@@ -317,7 +317,7 @@ public:
    * @param ec Set to indicate what error occurred, if any.
    */
   ASIO_SYNC_OP_VOID assign(const native_handle_type& native_serial_port,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     this->get_service().assign(this->get_implementation(),
         native_serial_port, ec);
@@ -334,26 +334,26 @@ public:
   /**
    * This function is used to close the serial port. Any asynchronous read or
    * write operations will be cancelled immediately, and will complete with the
-   * asio::error::operation_aborted error.
+   * asio_sockio::error::operation_aborted error.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void close()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().close(this->get_implementation(), ec);
-    asio::detail::throw_error(ec, "close");
+    asio_sockio::detail::throw_error(ec, "close");
   }
 
   /// Close the serial port.
   /**
    * This function is used to close the serial port. Any asynchronous read or
    * write operations will be cancelled immediately, and will complete with the
-   * asio::error::operation_aborted error.
+   * asio_sockio::error::operation_aborted error.
    *
    * @param ec Set to indicate what error occurred, if any.
    */
-  ASIO_SYNC_OP_VOID close(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID close(asio_sockio::error_code& ec)
   {
     this->get_service().close(this->get_implementation(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -374,26 +374,26 @@ public:
   /**
    * This function causes all outstanding asynchronous read or write operations
    * to finish immediately, and the handlers for cancelled operations will be
-   * passed the asio::error::operation_aborted error.
+   * passed the asio_sockio::error::operation_aborted error.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void cancel()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().cancel(this->get_implementation(), ec);
-    asio::detail::throw_error(ec, "cancel");
+    asio_sockio::detail::throw_error(ec, "cancel");
   }
 
   /// Cancel all asynchronous operations associated with the serial port.
   /**
    * This function causes all outstanding asynchronous read or write operations
    * to finish immediately, and the handlers for cancelled operations will be
-   * passed the asio::error::operation_aborted error.
+   * passed the asio_sockio::error::operation_aborted error.
    *
    * @param ec Set to indicate what error occurred, if any.
    */
-  ASIO_SYNC_OP_VOID cancel(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID cancel(asio_sockio::error_code& ec)
   {
     this->get_service().cancel(this->get_implementation(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -404,13 +404,13 @@ public:
    * This function causes a break sequence of platform-specific duration to be
    * sent out the serial port.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void send_break()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().send_break(this->get_implementation(), ec);
-    asio::detail::throw_error(ec, "send_break");
+    asio_sockio::detail::throw_error(ec, "send_break");
   }
 
   /// Send a break sequence to the serial port.
@@ -420,7 +420,7 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    */
-  ASIO_SYNC_OP_VOID send_break(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID send_break(asio_sockio::error_code& ec)
   {
     this->get_service().send_break(this->get_implementation(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -432,21 +432,21 @@ public:
    *
    * @param option The option value to be set on the serial port.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @sa SettableSerialPortOption @n
-   * asio::serial_port_base::baud_rate @n
-   * asio::serial_port_base::flow_control @n
-   * asio::serial_port_base::parity @n
-   * asio::serial_port_base::stop_bits @n
-   * asio::serial_port_base::character_size
+   * asio_sockio::serial_port_base::baud_rate @n
+   * asio_sockio::serial_port_base::flow_control @n
+   * asio_sockio::serial_port_base::parity @n
+   * asio_sockio::serial_port_base::stop_bits @n
+   * asio_sockio::serial_port_base::character_size
    */
   template <typename SettableSerialPortOption>
   void set_option(const SettableSerialPortOption& option)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().set_option(this->get_implementation(), option, ec);
-    asio::detail::throw_error(ec, "set_option");
+    asio_sockio::detail::throw_error(ec, "set_option");
   }
 
   /// Set an option on the serial port.
@@ -458,15 +458,15 @@ public:
    * @param ec Set to indicate what error occurred, if any.
    *
    * @sa SettableSerialPortOption @n
-   * asio::serial_port_base::baud_rate @n
-   * asio::serial_port_base::flow_control @n
-   * asio::serial_port_base::parity @n
-   * asio::serial_port_base::stop_bits @n
-   * asio::serial_port_base::character_size
+   * asio_sockio::serial_port_base::baud_rate @n
+   * asio_sockio::serial_port_base::flow_control @n
+   * asio_sockio::serial_port_base::parity @n
+   * asio_sockio::serial_port_base::stop_bits @n
+   * asio_sockio::serial_port_base::character_size
    */
   template <typename SettableSerialPortOption>
   ASIO_SYNC_OP_VOID set_option(const SettableSerialPortOption& option,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     this->get_service().set_option(this->get_implementation(), option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -479,21 +479,21 @@ public:
    *
    * @param option The option value to be obtained from the serial port.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @sa GettableSerialPortOption @n
-   * asio::serial_port_base::baud_rate @n
-   * asio::serial_port_base::flow_control @n
-   * asio::serial_port_base::parity @n
-   * asio::serial_port_base::stop_bits @n
-   * asio::serial_port_base::character_size
+   * asio_sockio::serial_port_base::baud_rate @n
+   * asio_sockio::serial_port_base::flow_control @n
+   * asio_sockio::serial_port_base::parity @n
+   * asio_sockio::serial_port_base::stop_bits @n
+   * asio_sockio::serial_port_base::character_size
    */
   template <typename GettableSerialPortOption>
   void get_option(GettableSerialPortOption& option)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().get_option(this->get_implementation(), option, ec);
-    asio::detail::throw_error(ec, "get_option");
+    asio_sockio::detail::throw_error(ec, "get_option");
   }
 
   /// Get an option from the serial port.
@@ -506,15 +506,15 @@ public:
    * @param ec Set to indicate what error occurred, if any.
    *
    * @sa GettableSerialPortOption @n
-   * asio::serial_port_base::baud_rate @n
-   * asio::serial_port_base::flow_control @n
-   * asio::serial_port_base::parity @n
-   * asio::serial_port_base::stop_bits @n
-   * asio::serial_port_base::character_size
+   * asio_sockio::serial_port_base::baud_rate @n
+   * asio_sockio::serial_port_base::flow_control @n
+   * asio_sockio::serial_port_base::parity @n
+   * asio_sockio::serial_port_base::stop_bits @n
+   * asio_sockio::serial_port_base::character_size
    */
   template <typename GettableSerialPortOption>
   ASIO_SYNC_OP_VOID get_option(GettableSerialPortOption& option,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     this->get_service().get_option(this->get_implementation(), option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -530,8 +530,8 @@ public:
    *
    * @returns The number of bytes written.
    *
-   * @throws asio::system_error Thrown on failure. An error code of
-   * asio::error::eof indicates that the connection was closed by the
+   * @throws asio_sockio::system_error Thrown on failure. An error code of
+   * asio_sockio::error::eof indicates that the connection was closed by the
    * peer.
    *
    * @note The write_some operation may not transmit all of the data to the
@@ -541,7 +541,7 @@ public:
    * @par Example
    * To write a single data buffer use the @ref buffer function as follows:
    * @code
-   * serial_port.write_some(asio::buffer(data, size));
+   * serial_port.write_some(asio_sockio::buffer(data, size));
    * @endcode
    * See the @ref buffer documentation for information on writing multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -550,10 +550,10 @@ public:
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t s = this->get_service().write_some(
         this->get_implementation(), buffers, ec);
-    asio::detail::throw_error(ec, "write_some");
+    asio_sockio::detail::throw_error(ec, "write_some");
     return s;
   }
 
@@ -575,7 +575,7 @@ public:
    */
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return this->get_service().write_some(
         this->get_implementation(), buffers, ec);
@@ -595,13 +595,13 @@ public:
    * Copies will be made of the handler as required. The function signature of
    * the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred           // Number of bytes written.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * @note The write operation may not transmit all of the data to the peer.
    * Consider using the @ref async_write function if you need to ensure that all
@@ -610,7 +610,7 @@ public:
    * @par Example
    * To write a single data buffer use the @ref buffer function as follows:
    * @code
-   * serial_port.async_write_some(asio::buffer(data, size), handler);
+   * serial_port.async_write_some(asio_sockio::buffer(data, size), handler);
    * @endcode
    * See the @ref buffer documentation for information on writing multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -618,7 +618,7 @@ public:
    */
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
@@ -627,7 +627,7 @@ public:
     ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
     async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     this->get_service().async_write_some(
         this->get_implementation(), buffers, init.completion_handler);
@@ -645,8 +645,8 @@ public:
    *
    * @returns The number of bytes read.
    *
-   * @throws asio::system_error Thrown on failure. An error code of
-   * asio::error::eof indicates that the connection was closed by the
+   * @throws asio_sockio::system_error Thrown on failure. An error code of
+   * asio_sockio::error::eof indicates that the connection was closed by the
    * peer.
    *
    * @note The read_some operation may not read all of the requested number of
@@ -657,7 +657,7 @@ public:
    * @par Example
    * To read into a single data buffer use the @ref buffer function as follows:
    * @code
-   * serial_port.read_some(asio::buffer(data, size));
+   * serial_port.read_some(asio_sockio::buffer(data, size));
    * @endcode
    * See the @ref buffer documentation for information on reading into multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -666,10 +666,10 @@ public:
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t s = this->get_service().read_some(
         this->get_implementation(), buffers, ec);
-    asio::detail::throw_error(ec, "read_some");
+    asio_sockio::detail::throw_error(ec, "read_some");
     return s;
   }
 
@@ -692,7 +692,7 @@ public:
    */
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return this->get_service().read_some(
         this->get_implementation(), buffers, ec);
@@ -712,13 +712,13 @@ public:
    * Copies will be made of the handler as required. The function signature of
    * the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred           // Number of bytes read.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * @note The read operation may not read all of the requested number of bytes.
    * Consider using the @ref async_read function if you need to ensure that the
@@ -728,7 +728,7 @@ public:
    * @par Example
    * To read into a single data buffer use the @ref buffer function as follows:
    * @code
-   * serial_port.async_read_some(asio::buffer(data, size), handler);
+   * serial_port.async_read_some(asio_sockio::buffer(data, size), handler);
    * @endcode
    * See the @ref buffer documentation for information on reading into multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -736,7 +736,7 @@ public:
    */
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
@@ -745,7 +745,7 @@ public:
     ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
     async_completion<ReadHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     this->get_service().async_read_some(
         this->get_implementation(), buffers, init.completion_handler);
@@ -755,7 +755,7 @@ public:
 };
 #endif // defined(ASIO_ENABLE_OLD_SERVICES)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

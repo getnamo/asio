@@ -22,7 +22,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Time_Traits>
@@ -84,7 +84,7 @@ void kqueue_reactor::move_timer(timer_queue<Time_Traits>& queue,
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -49,44 +49,44 @@ const std::string bad_gateway =
 const std::string service_unavailable =
   "HTTP/1.0 503 Service Unavailable\r\n";
 
-asio::const_buffer to_buffer(reply::status_type status)
+asio_sockio::const_buffer to_buffer(reply::status_type status)
 {
   switch (status)
   {
   case reply::ok:
-    return asio::buffer(ok);
+    return asio_sockio::buffer(ok);
   case reply::created:
-    return asio::buffer(created);
+    return asio_sockio::buffer(created);
   case reply::accepted:
-    return asio::buffer(accepted);
+    return asio_sockio::buffer(accepted);
   case reply::no_content:
-    return asio::buffer(no_content);
+    return asio_sockio::buffer(no_content);
   case reply::multiple_choices:
-    return asio::buffer(multiple_choices);
+    return asio_sockio::buffer(multiple_choices);
   case reply::moved_permanently:
-    return asio::buffer(moved_permanently);
+    return asio_sockio::buffer(moved_permanently);
   case reply::moved_temporarily:
-    return asio::buffer(moved_temporarily);
+    return asio_sockio::buffer(moved_temporarily);
   case reply::not_modified:
-    return asio::buffer(not_modified);
+    return asio_sockio::buffer(not_modified);
   case reply::bad_request:
-    return asio::buffer(bad_request);
+    return asio_sockio::buffer(bad_request);
   case reply::unauthorized:
-    return asio::buffer(unauthorized);
+    return asio_sockio::buffer(unauthorized);
   case reply::forbidden:
-    return asio::buffer(forbidden);
+    return asio_sockio::buffer(forbidden);
   case reply::not_found:
-    return asio::buffer(not_found);
+    return asio_sockio::buffer(not_found);
   case reply::internal_server_error:
-    return asio::buffer(internal_server_error);
+    return asio_sockio::buffer(internal_server_error);
   case reply::not_implemented:
-    return asio::buffer(not_implemented);
+    return asio_sockio::buffer(not_implemented);
   case reply::bad_gateway:
-    return asio::buffer(bad_gateway);
+    return asio_sockio::buffer(bad_gateway);
   case reply::service_unavailable:
-    return asio::buffer(service_unavailable);
+    return asio_sockio::buffer(service_unavailable);
   default:
-    return asio::buffer(internal_server_error);
+    return asio_sockio::buffer(internal_server_error);
   }
 }
 
@@ -99,20 +99,20 @@ const char crlf[] = { '\r', '\n' };
 
 } // namespace misc_strings
 
-std::vector<asio::const_buffer> reply::to_buffers()
+std::vector<asio_sockio::const_buffer> reply::to_buffers()
 {
-  std::vector<asio::const_buffer> buffers;
+  std::vector<asio_sockio::const_buffer> buffers;
   buffers.push_back(status_strings::to_buffer(status));
   for (std::size_t i = 0; i < headers.size(); ++i)
   {
     header& h = headers[i];
-    buffers.push_back(asio::buffer(h.name));
-    buffers.push_back(asio::buffer(misc_strings::name_value_separator));
-    buffers.push_back(asio::buffer(h.value));
-    buffers.push_back(asio::buffer(misc_strings::crlf));
+    buffers.push_back(asio_sockio::buffer(h.name));
+    buffers.push_back(asio_sockio::buffer(misc_strings::name_value_separator));
+    buffers.push_back(asio_sockio::buffer(h.value));
+    buffers.push_back(asio_sockio::buffer(misc_strings::crlf));
   }
-  buffers.push_back(asio::buffer(misc_strings::crlf));
-  buffers.push_back(asio::buffer(content));
+  buffers.push_back(asio_sockio::buffer(misc_strings::crlf));
+  buffers.push_back(asio_sockio::buffer(content));
   return buffers;
 }
 

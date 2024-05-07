@@ -14,13 +14,13 @@
 #include "asio.hpp"
 #include "asio/ssl.hpp"
 
-typedef asio::ssl::stream<asio::ip::tcp::socket> ssl_socket;
+typedef asio_sockio::ssl::stream<asio_sockio::ip::tcp::socket> ssl_socket;
 
 class session
 {
 public:
-  session(asio::io_context& io_context,
-      asio::ssl::context& context)
+  session(asio_sockio::io_context& io_context,
+      asio_sockio::ssl::context& context)
     : socket_(io_context, context)
   {
   }
@@ -32,19 +32,19 @@ public:
 
   void start()
   {
-    socket_.async_handshake(asio::ssl::stream_base::server,
+    socket_.async_handshake(asio_sockio::ssl::stream_base::server,
         boost::bind(&session::handle_handshake, this,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
-  void handle_handshake(const asio::error_code& error)
+  void handle_handshake(const asio_sockio::error_code& error)
   {
     if (!error)
     {
-      socket_.async_read_some(asio::buffer(data_, max_length),
+      socket_.async_read_some(asio_sockio::buffer(data_, max_length),
           boost::bind(&session::handle_read, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
     else
     {
@@ -52,15 +52,15 @@ public:
     }
   }
 
-  void handle_read(const asio::error_code& error,
+  void handle_read(const asio_sockio::error_code& error,
       size_t bytes_transferred)
   {
     if (!error)
     {
-      asio::async_write(socket_,
-          asio::buffer(data_, bytes_transferred),
+      asio_sockio::async_write(socket_,
+          asio_sockio::buffer(data_, bytes_transferred),
           boost::bind(&session::handle_write, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -68,14 +68,14 @@ public:
     }
   }
 
-  void handle_write(const asio::error_code& error)
+  void handle_write(const asio_sockio::error_code& error)
   {
     if (!error)
     {
-      socket_.async_read_some(asio::buffer(data_, max_length),
+      socket_.async_read_some(asio_sockio::buffer(data_, max_length),
           boost::bind(&session::handle_read, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
     else
     {
@@ -92,19 +92,19 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : io_context_(io_context),
       acceptor_(io_context,
-          asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
-      context_(asio::ssl::context::sslv23)
+          asio_sockio::ip::tcp::endpoint(asio_sockio::ip::tcp::v4(), port)),
+      context_(asio_sockio::ssl::context::sslv23)
   {
     context_.set_options(
-        asio::ssl::context::default_workarounds
-        | asio::ssl::context::no_sslv2
-        | asio::ssl::context::single_dh_use);
+        asio_sockio::ssl::context::default_workarounds
+        | asio_sockio::ssl::context::no_sslv2
+        | asio_sockio::ssl::context::single_dh_use);
     context_.set_password_callback(boost::bind(&server::get_password, this));
     context_.use_certificate_chain_file("server.pem");
-    context_.use_private_key_file("server.pem", asio::ssl::context::pem);
+    context_.use_private_key_file("server.pem", asio_sockio::ssl::context::pem);
     context_.use_tmp_dh_file("dh2048.pem");
 
     start_accept();
@@ -120,11 +120,11 @@ public:
     session* new_session = new session(io_context_, context_);
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(session* new_session,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -139,9 +139,9 @@ public:
   }
 
 private:
-  asio::io_context& io_context_;
-  asio::ip::tcp::acceptor acceptor_;
-  asio::ssl::context context_;
+  asio_sockio::io_context& io_context_;
+  asio_sockio::ip::tcp::acceptor acceptor_;
+  asio_sockio::ssl::context context_;
 };
 
 int main(int argc, char* argv[])
@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

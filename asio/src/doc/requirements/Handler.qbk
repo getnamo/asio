@@ -19,7 +19,7 @@ object taking no arguments.
   [[expression] [return type] [assertion/note\npre/post-conditions]]
   [
     [``
-      using asio::asio_handler_allocate;
+      using asio_sockio::asio_handler_allocate;
       asio_handler_allocate(s, &h);
     ``]
     [`void*`]
@@ -28,13 +28,13 @@ object taking no arguments.
       satisfy the same alignment requirements as a pointer returned by
       `::operator new()`. Throws `bad_alloc` on failure.\n\n The
       `asio_handler_allocate()` function is located using argument-dependent
-      lookup. The function `asio::asio_handler_allocate()` serves as a
+      lookup. The function `asio_sockio::asio_handler_allocate()` serves as a
       default if no user-supplied function is available.
     ]
   ]
   [
     [``
-      using asio::asio_handler_deallocate;
+      using asio_sockio::asio_handler_deallocate;
       asio_handler_deallocate(p, s, &h);
     ``]
     []
@@ -42,20 +42,20 @@ object taking no arguments.
       Frees a block of memory associated with a pointer `p`, of at least size
       `s`, that was previously allocated using `asio_handler_allocate()`.\n\n The
       `asio_handler_deallocate()` function is located using argument-dependent
-      lookup. The function `asio::asio_handler_deallocate()` serves as a
+      lookup. The function `asio_sockio::asio_handler_deallocate()` serves as a
       default if no user-supplied function is available.
     ]
   ]
   [
     [``
-      using asio::asio_handler_invoke;
+      using asio_sockio::asio_handler_invoke;
       asio_handler_invoke(f, &h);
     ``]
     []
     [
       Causes the function object `f` to be executed as if by calling `f()`.\n\n
       The `asio_handler_invoke()` function is located using argument-dependent
-      lookup. The function `asio::asio_handler_invoke()` serves as a
+      lookup. The function `asio_sockio::asio_handler_invoke()` serves as a
       default if no user-supplied function is available.
     ]
   ]

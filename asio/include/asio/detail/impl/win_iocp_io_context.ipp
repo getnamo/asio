@@ -29,7 +29,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 struct win_iocp_io_context::work_finished_on_block_exit
@@ -62,7 +62,7 @@ struct win_iocp_io_context::timer_thread_function
 };
 
 win_iocp_io_context::win_iocp_io_context(
-    asio::execution_context& ctx, int concurrency_hint)
+    asio_sockio::execution_context& ctx, int concurrency_hint)
   : execution_context_service_base<win_iocp_io_context>(ctx),
     iocp_(),
     outstanding_work_(0),
@@ -80,9 +80,9 @@ win_iocp_io_context::win_iocp_io_context(
   if (!iocp_.handle)
   {
     DWORD last_error = ::GetLastError();
-    asio::error_code ec(last_error,
-        asio::error::get_system_category());
-    asio::detail::throw_error(ec, "iocp");
+    asio_sockio::error_code ec(last_error,
+        asio_sockio::error::get_system_category());
+    asio_sockio::detail::throw_error(ec, "iocp");
   }
 }
 
@@ -130,28 +130,28 @@ void win_iocp_io_context::shutdown()
     timer_thread_->join();
 }
 
-asio::error_code win_iocp_io_context::register_handle(
-    HANDLE handle, asio::error_code& ec)
+asio_sockio::error_code win_iocp_io_context::register_handle(
+    HANDLE handle, asio_sockio::error_code& ec)
 {
   if (::CreateIoCompletionPort(handle, iocp_.handle, 0, 0) == 0)
   {
     DWORD last_error = ::GetLastError();
-    ec = asio::error_code(last_error,
-        asio::error::get_system_category());
+    ec = asio_sockio::error_code(last_error,
+        asio_sockio::error::get_system_category());
   }
   else
   {
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
   }
   return ec;
 }
 
-size_t win_iocp_io_context::run(asio::error_code& ec)
+size_t win_iocp_io_context::run(asio_sockio::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
     stop();
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
@@ -165,12 +165,12 @@ size_t win_iocp_io_context::run(asio::error_code& ec)
   return n;
 }
 
-size_t win_iocp_io_context::run_one(asio::error_code& ec)
+size_t win_iocp_io_context::run_one(asio_sockio::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
     stop();
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
@@ -180,12 +180,12 @@ size_t win_iocp_io_context::run_one(asio::error_code& ec)
   return do_one(INFINITE, ec);
 }
 
-size_t win_iocp_io_context::wait_one(long usec, asio::error_code& ec)
+size_t win_iocp_io_context::wait_one(long usec, asio_sockio::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
     stop();
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
@@ -195,12 +195,12 @@ size_t win_iocp_io_context::wait_one(long usec, asio::error_code& ec)
   return do_one(usec < 0 ? INFINITE : ((usec - 1) / 1000 + 1), ec);
 }
 
-size_t win_iocp_io_context::poll(asio::error_code& ec)
+size_t win_iocp_io_context::poll(asio_sockio::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
     stop();
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
@@ -214,12 +214,12 @@ size_t win_iocp_io_context::poll(asio::error_code& ec)
   return n;
 }
 
-size_t win_iocp_io_context::poll_one(asio::error_code& ec)
+size_t win_iocp_io_context::poll_one(asio_sockio::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
     stop();
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
@@ -238,9 +238,9 @@ void win_iocp_io_context::stop()
       if (!::PostQueuedCompletionStatus(iocp_.handle, 0, 0, 0))
       {
         DWORD last_error = ::GetLastError();
-        asio::error_code ec(last_error,
-            asio::error::get_system_category());
-        asio::detail::throw_error(ec, "pqcs");
+        asio_sockio::error_code ec(last_error,
+            asio_sockio::error::get_system_category());
+        asio_sockio::detail::throw_error(ec, "pqcs");
       }
     }
   }
@@ -318,7 +318,7 @@ void win_iocp_io_context::on_completion(win_iocp_operation* op,
 
   // Store results in the OVERLAPPED structure.
   op->Internal = reinterpret_cast<ulong_ptr_t>(
-      &asio::error::get_system_category());
+      &asio_sockio::error::get_system_category());
   op->Offset = last_error;
   op->OffsetHigh = bytes_transferred;
 
@@ -334,7 +334,7 @@ void win_iocp_io_context::on_completion(win_iocp_operation* op,
 }
 
 void win_iocp_io_context::on_completion(win_iocp_operation* op,
-    const asio::error_code& ec, DWORD bytes_transferred)
+    const asio_sockio::error_code& ec, DWORD bytes_transferred)
 {
   // Flag that the operation is ready for invocation.
   op->ready_ = 1;
@@ -355,7 +355,7 @@ void win_iocp_io_context::on_completion(win_iocp_operation* op,
   }
 }
 
-size_t win_iocp_io_context::do_one(DWORD msec, asio::error_code& ec)
+size_t win_iocp_io_context::do_one(DWORD msec, asio_sockio::error_code& ec)
 {
   for (;;)
   {
@@ -385,15 +385,15 @@ size_t win_iocp_io_context::do_one(DWORD msec, asio::error_code& ec)
     if (overlapped)
     {
       win_iocp_operation* op = static_cast<win_iocp_operation*>(overlapped);
-      asio::error_code result_ec(last_error,
-          asio::error::get_system_category());
+      asio_sockio::error_code result_ec(last_error,
+          asio_sockio::error::get_system_category());
 
       // We may have been passed the last_error and bytes_transferred in the
       // OVERLAPPED structure itself.
       if (completion_key == overlapped_contains_result)
       {
-        result_ec = asio::error_code(static_cast<int>(op->Offset),
-            *reinterpret_cast<asio::error_category*>(op->Internal));
+        result_ec = asio_sockio::error_code(static_cast<int>(op->Offset),
+            *reinterpret_cast<asio_sockio::error_category*>(op->Internal));
         bytes_transferred = op->OffsetHigh;
       }
 
@@ -417,7 +417,7 @@ size_t win_iocp_io_context::do_one(DWORD msec, asio::error_code& ec)
         (void)on_exit;
 
         op->complete(this, result_ec, bytes_transferred);
-        ec = asio::error_code();
+        ec = asio_sockio::error_code();
         return 1;
       }
     }
@@ -425,8 +425,8 @@ size_t win_iocp_io_context::do_one(DWORD msec, asio::error_code& ec)
     {
       if (last_error != WAIT_TIMEOUT)
       {
-        ec = asio::error_code(last_error,
-            asio::error::get_system_category());
+        ec = asio_sockio::error_code(last_error,
+            asio_sockio::error::get_system_category());
         return 0;
       }
 
@@ -435,7 +435,7 @@ size_t win_iocp_io_context::do_one(DWORD msec, asio::error_code& ec)
       if (msec == INFINITE)
         continue;
 
-      ec = asio::error_code();
+      ec = asio_sockio::error_code();
       return 0;
     }
     else if (completion_key == wake_for_dispatch)
@@ -458,13 +458,13 @@ size_t win_iocp_io_context::do_one(DWORD msec, asio::error_code& ec)
           if (!::PostQueuedCompletionStatus(iocp_.handle, 0, 0, 0))
           {
             last_error = ::GetLastError();
-            ec = asio::error_code(last_error,
-                asio::error::get_system_category());
+            ec = asio_sockio::error_code(last_error,
+                asio_sockio::error::get_system_category());
             return 0;
           }
         }
 
-        ec = asio::error_code();
+        ec = asio_sockio::error_code();
         return 0;
       }
     }
@@ -499,9 +499,9 @@ void win_iocp_io_context::do_add_timer_queue(timer_queue_base& queue)
     if (waitable_timer_.handle == 0)
     {
       DWORD last_error = ::GetLastError();
-      asio::error_code ec(last_error,
-          asio::error::get_system_category());
-      asio::detail::throw_error(ec, "timer");
+      asio_sockio::error_code ec(last_error,
+          asio_sockio::error::get_system_category());
+      asio_sockio::detail::throw_error(ec, "timer");
     }
 
     LARGE_INTEGER timeout;
@@ -545,7 +545,7 @@ void win_iocp_io_context::update_timeout()
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

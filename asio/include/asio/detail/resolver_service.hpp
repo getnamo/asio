@@ -29,7 +29,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Protocol>
@@ -46,13 +46,13 @@ public:
   typedef typename Protocol::endpoint endpoint_type;
 
   // The query type.
-  typedef asio::ip::basic_resolver_query<Protocol> query_type;
+  typedef asio_sockio::ip::basic_resolver_query<Protocol> query_type;
 
   // The results type.
-  typedef asio::ip::basic_resolver_results<Protocol> results_type;
+  typedef asio_sockio::ip::basic_resolver_results<Protocol> results_type;
 
   // Constructor.
-  resolver_service(asio::io_context& io_context)
+  resolver_service(asio_sockio::io_context& io_context)
     : service_base<resolver_service<Protocol> >(io_context),
       resolver_service_base(io_context)
   {
@@ -65,16 +65,16 @@ public:
   }
 
   // Perform any fork-related housekeeping.
-  void notify_fork(asio::io_context::fork_event fork_ev)
+  void notify_fork(asio_sockio::io_context::fork_event fork_ev)
   {
     this->base_notify_fork(fork_ev);
   }
 
   // Resolve a query to a list of entries.
   results_type resolve(implementation_type&, const query_type& query,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    asio::detail::addrinfo_type* address_info = 0;
+    asio_sockio::detail::addrinfo_type* address_info = 0;
 
     socket_ops::getaddrinfo(query.host_name().c_str(),
         query.service_name().c_str(), query.hints(), &address_info, ec);
@@ -91,7 +91,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef resolve_query_op<Protocol, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl, query, io_context_impl_, handler);
 
@@ -104,7 +104,7 @@ public:
 
   // Resolve an endpoint to a list of entries.
   results_type resolve(implementation_type&,
-      const endpoint_type& endpoint, asio::error_code& ec)
+      const endpoint_type& endpoint, asio_sockio::error_code& ec)
   {
     char host_name[NI_MAXHOST];
     char service_name[NI_MAXSERV];
@@ -123,7 +123,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef resolve_endpoint_op<Protocol, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl, endpoint, io_context_impl_, handler);
 
@@ -136,7 +136,7 @@ public:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

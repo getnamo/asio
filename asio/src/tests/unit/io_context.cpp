@@ -35,7 +35,7 @@
 # include <functional>
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-using namespace asio;
+using namespace asio_sockio;
 
 #if defined(ASIO_HAS_BOOST_BIND)
 namespace bindns = boost;
@@ -48,7 +48,7 @@ typedef deadline_timer timer;
 namespace chronons = boost::posix_time;
 #elif defined(ASIO_HAS_CHRONO)
 typedef steady_timer timer;
-namespace chronons = asio::chrono;
+namespace chronons = asio_sockio::chrono;
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
 
 void increment(int* count)
@@ -63,7 +63,7 @@ void decrement_to_zero(io_context* ioc, int* count)
     --(*count);
 
     int before_value = *count;
-    asio::post(*ioc, bindns::bind(decrement_to_zero, ioc, count));
+    asio_sockio::post(*ioc, bindns::bind(decrement_to_zero, ioc, count));
 
     // Handler execution cannot nest, so count value should remain unchanged.
     ASIO_CHECK(*count == before_value);
@@ -76,7 +76,7 @@ void nested_decrement_to_zero(io_context* ioc, int* count)
   {
     --(*count);
 
-    asio::dispatch(*ioc,
+    asio_sockio::dispatch(*ioc,
         bindns::bind(nested_decrement_to_zero, ioc, count));
 
     // Handler execution is nested, so count value should now be zero.
@@ -90,7 +90,7 @@ void sleep_increment(io_context* ioc, int* count)
   t.wait();
 
   if (++(*count) < 3)
-    asio::post(*ioc, bindns::bind(sleep_increment, ioc, count));
+    asio_sockio::post(*ioc, bindns::bind(sleep_increment, ioc, count));
 }
 
 void start_sleep_increments(io_context* ioc, int* count)
@@ -100,7 +100,7 @@ void start_sleep_increments(io_context* ioc, int* count)
   t.wait();
 
   // Start the first of three increments.
-  asio::post(*ioc, bindns::bind(sleep_increment, ioc, count));
+  asio_sockio::post(*ioc, bindns::bind(sleep_increment, ioc, count));
 }
 
 void throw_exception()
@@ -118,7 +118,7 @@ void io_context_test()
   io_context ioc;
   int count = 0;
 
-  asio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
 
   // No handlers can be called until run() is called.
   ASIO_CHECK(!ioc.stopped());
@@ -132,11 +132,11 @@ void io_context_test()
 
   count = 0;
   ioc.restart();
-  asio::post(ioc, bindns::bind(increment, &count));
-  asio::post(ioc, bindns::bind(increment, &count));
-  asio::post(ioc, bindns::bind(increment, &count));
-  asio::post(ioc, bindns::bind(increment, &count));
-  asio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
 
   // No handlers can be called until run() is called.
   ASIO_CHECK(!ioc.stopped());
@@ -151,7 +151,7 @@ void io_context_test()
   count = 0;
   ioc.restart();
   executor_work_guard<io_context::executor_type> w = make_work_guard(ioc);
-  asio::post(ioc, bindns::bind(&io_context::stop, &ioc));
+  asio_sockio::post(ioc, bindns::bind(&io_context::stop, &ioc));
   ASIO_CHECK(!ioc.stopped());
   ioc.run();
 
@@ -160,7 +160,7 @@ void io_context_test()
   ASIO_CHECK(count == 0);
 
   ioc.restart();
-  asio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
   w.reset();
 
   // No handlers can be called until run() is called.
@@ -175,7 +175,7 @@ void io_context_test()
 
   count = 10;
   ioc.restart();
-  asio::post(ioc, bindns::bind(decrement_to_zero, &ioc, &count));
+  asio_sockio::post(ioc, bindns::bind(decrement_to_zero, &ioc, &count));
 
   // No handlers can be called until run() is called.
   ASIO_CHECK(!ioc.stopped());
@@ -189,7 +189,7 @@ void io_context_test()
 
   count = 10;
   ioc.restart();
-  asio::post(ioc, bindns::bind(nested_decrement_to_zero, &ioc, &count));
+  asio_sockio::post(ioc, bindns::bind(nested_decrement_to_zero, &ioc, &count));
 
   // No handlers can be called until run() is called.
   ASIO_CHECK(!ioc.stopped());
@@ -203,7 +203,7 @@ void io_context_test()
 
   count = 10;
   ioc.restart();
-  asio::dispatch(ioc,
+  asio_sockio::dispatch(ioc,
       bindns::bind(nested_decrement_to_zero, &ioc, &count));
 
   // No handlers can be called until run() is called, even though nested
@@ -221,8 +221,8 @@ void io_context_test()
   int count2 = 0;
   ioc.restart();
   ASIO_CHECK(!ioc.stopped());
-  asio::post(ioc, bindns::bind(start_sleep_increments, &ioc, &count));
-  asio::post(ioc, bindns::bind(start_sleep_increments, &ioc, &count2));
+  asio_sockio::post(ioc, bindns::bind(start_sleep_increments, &ioc, &count));
+  asio_sockio::post(ioc, bindns::bind(start_sleep_increments, &ioc, &count2));
   thread thread1(bindns::bind(io_context_run, &ioc));
   thread thread2(bindns::bind(io_context_run, &ioc));
   thread1.join();
@@ -235,7 +235,7 @@ void io_context_test()
 
   count = 10;
   io_context ioc2;
-  asio::dispatch(ioc, asio::bind_executor(ioc2,
+  asio_sockio::dispatch(ioc, asio_sockio::bind_executor(ioc2,
         bindns::bind(decrement_to_zero, &ioc2, &count)));
   ioc.restart();
   ASIO_CHECK(!ioc.stopped());
@@ -254,11 +254,11 @@ void io_context_test()
   count = 0;
   int exception_count = 0;
   ioc.restart();
-  asio::post(ioc, &throw_exception);
-  asio::post(ioc, bindns::bind(increment, &count));
-  asio::post(ioc, bindns::bind(increment, &count));
-  asio::post(ioc, &throw_exception);
-  asio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, &throw_exception);
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
+  asio_sockio::post(ioc, &throw_exception);
+  asio_sockio::post(ioc, bindns::bind(increment, &count));
 
   // No handlers can be called until run() is called.
   ASIO_CHECK(!ioc.stopped());
@@ -284,37 +284,37 @@ void io_context_test()
   ASIO_CHECK(exception_count == 2);
 }
 
-class test_service : public asio::io_context::service
+class test_service : public asio_sockio::io_context::service
 {
 public:
-  static asio::io_context::id id;
-  test_service(asio::io_context& s)
-    : asio::io_context::service(s) {}
+  static asio_sockio::io_context::id id;
+  test_service(asio_sockio::io_context& s)
+    : asio_sockio::io_context::service(s) {}
 private:
   virtual void shutdown_service() {}
 };
 
-asio::io_context::id test_service::id;
+asio_sockio::io_context::id test_service::id;
 
 void io_context_service_test()
 {
-  asio::io_context ioc1;
-  asio::io_context ioc2;
-  asio::io_context ioc3;
+  asio_sockio::io_context ioc1;
+  asio_sockio::io_context ioc2;
+  asio_sockio::io_context ioc3;
 
   // Implicit service registration.
 
-  asio::use_service<test_service>(ioc1);
+  asio_sockio::use_service<test_service>(ioc1);
 
-  ASIO_CHECK(asio::has_service<test_service>(ioc1));
+  ASIO_CHECK(asio_sockio::has_service<test_service>(ioc1));
 
   test_service* svc1 = new test_service(ioc1);
   try
   {
-    asio::add_service(ioc1, svc1);
+    asio_sockio::add_service(ioc1, svc1);
     ASIO_ERROR("add_service did not throw");
   }
-  catch (asio::service_already_exists&)
+  catch (asio_sockio::service_already_exists&)
   {
   }
   delete svc1;
@@ -322,18 +322,18 @@ void io_context_service_test()
   // Explicit service registration.
 
   test_service* svc2 = new test_service(ioc2);
-  asio::add_service(ioc2, svc2);
+  asio_sockio::add_service(ioc2, svc2);
 
-  ASIO_CHECK(asio::has_service<test_service>(ioc2));
-  ASIO_CHECK(&asio::use_service<test_service>(ioc2) == svc2);
+  ASIO_CHECK(asio_sockio::has_service<test_service>(ioc2));
+  ASIO_CHECK(&asio_sockio::use_service<test_service>(ioc2) == svc2);
 
   test_service* svc3 = new test_service(ioc2);
   try
   {
-    asio::add_service(ioc2, svc3);
+    asio_sockio::add_service(ioc2, svc3);
     ASIO_ERROR("add_service did not throw");
   }
-  catch (asio::service_already_exists&)
+  catch (asio_sockio::service_already_exists&)
   {
   }
   delete svc3;
@@ -343,15 +343,15 @@ void io_context_service_test()
   test_service* svc4 = new test_service(ioc2);
   try
   {
-    asio::add_service(ioc3, svc4);
+    asio_sockio::add_service(ioc3, svc4);
     ASIO_ERROR("add_service did not throw");
   }
-  catch (asio::invalid_service_owner&)
+  catch (asio_sockio::invalid_service_owner&)
   {
   }
   delete svc4;
 
-  ASIO_CHECK(!asio::has_service<test_service>(ioc3));
+  ASIO_CHECK(!asio_sockio::has_service<test_service>(ioc3));
 }
 
 ASIO_TEST_SUITE

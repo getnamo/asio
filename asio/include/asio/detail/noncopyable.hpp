@@ -19,7 +19,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class noncopyable
@@ -34,9 +34,9 @@ private:
 
 } // namespace detail
 
-using asio::detail::noncopyable;
+using asio_sockio::detail::noncopyable;
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

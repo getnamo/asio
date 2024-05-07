@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace experimental {
 namespace detail {
 
@@ -68,7 +68,7 @@ namespace detail {
 template <typename Signature>
 struct async_result<experimental::detached_t, Signature>
 {
-  typedef asio::experimental::detail::detached_handler
+  typedef asio_sockio::experimental::detail::detached_handler
     completion_handler_type;
 
   typedef void return_type;
@@ -84,7 +84,7 @@ struct async_result<experimental::detached_t, Signature>
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

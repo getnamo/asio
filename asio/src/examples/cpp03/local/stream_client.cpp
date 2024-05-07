@@ -15,7 +15,7 @@
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 
-using asio::local::stream_protocol;
+using asio_sockio::local::stream_protocol;
 
 enum { max_length = 1024 };
 
@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     stream_protocol::socket s(io_context);
     s.connect(stream_protocol::endpoint(argv[1]));
@@ -39,11 +39,11 @@ int main(int argc, char* argv[])
     char request[max_length];
     std::cin.getline(request, max_length);
     size_t request_length = strlen(request);
-    asio::write(s, asio::buffer(request, request_length));
+    asio_sockio::write(s, asio_sockio::buffer(request, request_length));
 
     char reply[max_length];
-    size_t reply_length = asio::read(s,
-        asio::buffer(reply, request_length));
+    size_t reply_length = asio_sockio::read(s,
+        asio_sockio::buffer(reply, request_length));
     std::cout << "Reply is: ";
     std::cout.write(reply, reply_length);
     std::cout << "\n";

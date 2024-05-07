@@ -53,8 +53,8 @@ namespace ip_tcp_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -89,12 +89,12 @@ namespace ip_tcp_runtime {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   io_context ioc;
   ip::tcp::socket sock(ioc, ip::tcp::v4());
-  asio::error_code ec;
+  asio_sockio::error_code ec;
 
   // no_delay class.
 
@@ -141,7 +141,7 @@ namespace ip_tcp_socket_compile {
 struct connect_handler
 {
   connect_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   connect_handler(connect_handler&&) {}
 private:
@@ -152,7 +152,7 @@ private:
 struct wait_handler
 {
   wait_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   wait_handler(wait_handler&&) {}
 private:
@@ -163,7 +163,7 @@ private:
 struct send_handler
 {
   send_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   send_handler(send_handler&&) {}
 private:
@@ -174,7 +174,7 @@ private:
 struct receive_handler
 {
   receive_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   receive_handler(receive_handler&&) {}
 private:
@@ -185,7 +185,7 @@ private:
 struct write_some_handler
 {
   write_some_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   write_some_handler(write_some_handler&&) {}
 private:
@@ -196,7 +196,7 @@ private:
 struct read_some_handler
 {
   read_some_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   read_some_handler(read_some_handler&&) {}
 private:
@@ -212,20 +212,20 @@ void test()
   using std::array;
 #endif // defined(ASIO_HAS_BOOST_ARRAY)
 
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
     io_context ioc;
     char mutable_char_buffer[128] = "";
     const char const_char_buffer[128] = "";
-    array<asio::mutable_buffer, 2> mutable_buffers = {{
-        asio::buffer(mutable_char_buffer, 10),
-        asio::buffer(mutable_char_buffer + 10, 10) }};
-    array<asio::const_buffer, 2> const_buffers = {{
-        asio::buffer(const_char_buffer, 10),
-        asio::buffer(const_char_buffer + 10, 10) }};
+    array<asio_sockio::mutable_buffer, 2> mutable_buffers = {{
+        asio_sockio::buffer(mutable_char_buffer, 10),
+        asio_sockio::buffer(mutable_char_buffer + 10, 10) }};
+    array<asio_sockio::const_buffer, 2> const_buffers = {{
+        asio_sockio::buffer(const_char_buffer, 10),
+        asio_sockio::buffer(const_char_buffer + 10, 10) }};
     socket_base::message_flags in_flags = 0;
     archetypes::settable_socket_option<void> settable_socket_option1;
     archetypes::settable_socket_option<int> settable_socket_option2;
@@ -238,7 +238,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_stream_socket constructors.
 
@@ -598,7 +598,7 @@ namespace ip_tcp_socket_runtime {
 static const char write_data[]
   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-void handle_read_noop(const asio::error_code& err,
+void handle_read_noop(const asio_sockio::error_code& err,
     size_t bytes_transferred, bool* called)
 {
   *called = true;
@@ -606,7 +606,7 @@ void handle_read_noop(const asio::error_code& err,
   ASIO_CHECK(bytes_transferred == 0);
 }
 
-void handle_write_noop(const asio::error_code& err,
+void handle_write_noop(const asio_sockio::error_code& err,
     size_t bytes_transferred, bool* called)
 {
   *called = true;
@@ -614,7 +614,7 @@ void handle_write_noop(const asio::error_code& err,
   ASIO_CHECK(bytes_transferred == 0);
 }
 
-void handle_read(const asio::error_code& err,
+void handle_read(const asio_sockio::error_code& err,
     size_t bytes_transferred, bool* called)
 {
   *called = true;
@@ -622,7 +622,7 @@ void handle_read(const asio::error_code& err,
   ASIO_CHECK(bytes_transferred == sizeof(write_data));
 }
 
-void handle_write(const asio::error_code& err,
+void handle_write(const asio_sockio::error_code& err,
     size_t bytes_transferred, bool* called)
 {
   *called = true;
@@ -630,27 +630,27 @@ void handle_write(const asio::error_code& err,
   ASIO_CHECK(bytes_transferred == sizeof(write_data));
 }
 
-void handle_read_cancel(const asio::error_code& err,
+void handle_read_cancel(const asio_sockio::error_code& err,
     size_t bytes_transferred, bool* called)
 {
   *called = true;
-  ASIO_CHECK(err == asio::error::operation_aborted);
+  ASIO_CHECK(err == asio_sockio::error::operation_aborted);
   ASIO_CHECK(bytes_transferred == 0);
 }
 
-void handle_read_eof(const asio::error_code& err,
+void handle_read_eof(const asio_sockio::error_code& err,
     size_t bytes_transferred, bool* called)
 {
   *called = true;
-  ASIO_CHECK(err == asio::error::eof);
+  ASIO_CHECK(err == asio_sockio::error::eof);
   ASIO_CHECK(bytes_transferred == 0);
 }
 
 void test()
 {
   using namespace std; // For memcmp.
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
 #if defined(ASIO_HAS_BOOST_BIND)
   namespace bindns = boost;
@@ -676,7 +676,7 @@ void test()
 
   bool read_noop_completed = false;
   client_side_socket.async_read_some(
-      asio::mutable_buffer(0, 0),
+      asio_sockio::mutable_buffer(0, 0),
       bindns::bind(handle_read_noop,
         _1, _2, &read_noop_completed));
 
@@ -687,7 +687,7 @@ void test()
 
   bool write_noop_completed = false;
   client_side_socket.async_write_some(
-      asio::const_buffer(0, 0),
+      asio_sockio::const_buffer(0, 0),
       bindns::bind(handle_write_noop,
         _1, _2, &write_noop_completed));
 
@@ -699,14 +699,14 @@ void test()
 
   char read_buffer[sizeof(write_data)];
   bool read_completed = false;
-  asio::async_read(client_side_socket,
-      asio::buffer(read_buffer),
+  asio_sockio::async_read(client_side_socket,
+      asio_sockio::buffer(read_buffer),
       bindns::bind(handle_read,
         _1, _2, &read_completed));
 
   bool write_completed = false;
-  asio::async_write(server_side_socket,
-      asio::buffer(write_data),
+  asio_sockio::async_write(server_side_socket,
+      asio_sockio::buffer(write_data),
       bindns::bind(handle_write,
         _1, _2, &write_completed));
 
@@ -719,8 +719,8 @@ void test()
   // Cancelled read.
 
   bool read_cancel_completed = false;
-  asio::async_read(server_side_socket,
-      asio::buffer(read_buffer),
+  asio_sockio::async_read(server_side_socket,
+      asio_sockio::buffer(read_buffer),
       bindns::bind(handle_read_cancel,
         _1, _2, &read_cancel_completed));
 
@@ -737,8 +737,8 @@ void test()
   // A read when the peer closes socket should fail with eof.
 
   bool read_eof_completed = false;
-  asio::async_read(client_side_socket,
-      asio::buffer(read_buffer),
+  asio_sockio::async_read(client_side_socket,
+      asio_sockio::buffer(read_buffer),
       bindns::bind(handle_read_eof,
         _1, _2, &read_eof_completed));
 
@@ -763,7 +763,7 @@ namespace ip_tcp_acceptor_compile {
 struct wait_handler
 {
   wait_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   wait_handler(wait_handler&&) {}
 private:
@@ -774,7 +774,7 @@ private:
 struct accept_handler
 {
   accept_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   accept_handler(accept_handler&&) {}
 private:
@@ -787,7 +787,7 @@ struct move_accept_handler
 {
   move_accept_handler() {}
   void operator()(
-      const asio::error_code&, asio::ip::tcp::socket) {}
+      const asio_sockio::error_code&, asio_sockio::ip::tcp::socket) {}
   move_accept_handler(move_accept_handler&&) {}
 private:
   move_accept_handler(const move_accept_handler&) {}
@@ -796,8 +796,8 @@ private:
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -815,7 +815,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_socket_acceptor constructors.
 
@@ -978,20 +978,20 @@ void test()
 
 namespace ip_tcp_acceptor_runtime {
 
-void handle_accept(const asio::error_code& err)
+void handle_accept(const asio_sockio::error_code& err)
 {
   ASIO_CHECK(!err);
 }
 
-void handle_connect(const asio::error_code& err)
+void handle_connect(const asio_sockio::error_code& err)
 {
   ASIO_CHECK(!err);
 }
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   io_context ioc;
 
@@ -1060,8 +1060,8 @@ namespace ip_tcp_resolver_compile {
 struct resolve_handler
 {
   resolve_handler() {}
-  void operator()(const asio::error_code&,
-      asio::ip::tcp::resolver::results_type) {}
+  void operator()(const asio_sockio::error_code&,
+      asio_sockio::ip::tcp::resolver::results_type) {}
 #if defined(ASIO_HAS_MOVE)
   resolve_handler(resolve_handler&&) {}
 private:
@@ -1073,8 +1073,8 @@ private:
 struct legacy_resolve_handler
 {
   legacy_resolve_handler() {}
-  void operator()(const asio::error_code&,
-      asio::ip::tcp::resolver::iterator) {}
+  void operator()(const asio_sockio::error_code&,
+      asio_sockio::ip::tcp::resolver::iterator) {}
 #if defined(ASIO_HAS_MOVE)
   legacy_resolve_handler(legacy_resolve_handler&&) {}
 private:
@@ -1085,8 +1085,8 @@ private:
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -1095,7 +1095,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 #if !defined(ASIO_NO_DEPRECATED)
     ip::tcp::resolver::query q(ip::tcp::v4(), "localhost", "0");
 #endif // !defined(ASIO_NO_DEPRECATED)
@@ -1265,8 +1265,8 @@ namespace ip_tcp_resolver_entry_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
   const ip::tcp::endpoint endpoint;
   const std::string host_name;
   const std::string service_name;
@@ -1323,11 +1323,11 @@ namespace ip_tcp_iostream_compile {
 void test()
 {
 #if !defined(ASIO_NO_IOSTREAM)
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
-  asio::io_context ioc;
-  asio::ip::tcp::socket sock(ioc);
+  asio_sockio::io_context ioc;
+  asio_sockio::ip::tcp::socket sock(ioc);
 
   // basic_socket_iostream typedefs.
 
@@ -1371,7 +1371,7 @@ void test()
 #endif // defined(ASIO_ENABLE_OLD_SERVICES)
   (void)sref;
 
-  asio::error_code ec = ios1.error();
+  asio_sockio::error_code ec = ios1.error();
   (void)ec;
 
   ip::tcp::iostream::time_point tp = ios1.expiry();

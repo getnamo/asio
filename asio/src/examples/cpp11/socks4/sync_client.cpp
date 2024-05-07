@@ -16,7 +16,7 @@
 #include <asio.hpp>
 #include "socks4.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 int main(int argc, char* argv[])
 {
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Get a list of endpoints corresponding to the SOCKS 4 server name.
     tcp::resolver resolver(io_context);
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     // Try each endpoint until we successfully establish a connection to the
     // SOCKS 4 server.
     tcp::socket socket(io_context);
-    asio::connect(socket, endpoints);
+    asio_sockio::connect(socket, endpoints);
 
     // Get an endpoint for the Boost website. This will be passed to the SOCKS
     // 4 server. Explicitly specify IPv4 since SOCKS 4 does not support IPv6.
@@ -49,11 +49,11 @@ int main(int argc, char* argv[])
     // Send the request to the SOCKS 4 server.
     socks4::request socks_request(
         socks4::request::connect, http_endpoint, argv[3]);
-    asio::write(socket, socks_request.buffers());
+    asio_sockio::write(socket, socks_request.buffers());
 
     // Receive a response from the SOCKS 4 server.
     socks4::reply socks_reply;
-    asio::read(socket, socks_reply.buffers());
+    asio_sockio::read(socket, socks_reply.buffers());
 
     // Check whether we successfully negotiated with the SOCKS 4 server.
     if (!socks_reply.success())
@@ -73,15 +73,15 @@ int main(int argc, char* argv[])
       "Connection: close\r\n\r\n";
 
     // Send the HTTP request.
-    asio::write(socket, asio::buffer(request));
+    asio_sockio::write(socket, asio_sockio::buffer(request));
 
     // Read until EOF, writing data to output as we go.
     std::array<char, 512> response;
     std::error_code error;
     while (std::size_t s = socket.read_some(
-          asio::buffer(response), error))
+          asio_sockio::buffer(response), error))
       std::cout.write(response.data(), s);
-    if (error != asio::error::eof)
+    if (error != asio_sockio::error::eof)
       throw std::system_error(error);
   }
   catch (std::exception& e)

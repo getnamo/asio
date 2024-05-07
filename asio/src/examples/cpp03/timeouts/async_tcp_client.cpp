@@ -18,8 +18,8 @@
 #include <iostream>
 #include <string>
 
-using asio::steady_timer;
-using asio::ip::tcp;
+using asio_sockio::steady_timer;
+using asio_sockio::ip::tcp;
 
 //
 // This class manages socket timeouts by applying the concept of a deadline.
@@ -84,7 +84,7 @@ using asio::ip::tcp;
 class client
 {
 public:
-  client(asio::io_context& io_context)
+  client(asio_sockio::io_context& io_context)
     : stopped_(false),
       socket_(io_context),
       deadline_(io_context),
@@ -112,7 +112,7 @@ public:
   void stop()
   {
     stopped_ = true;
-    asio::error_code ignored_ec;
+    asio_sockio::error_code ignored_ec;
     socket_.close(ignored_ec);
     deadline_.cancel();
     heartbeat_timer_.cancel();
@@ -126,7 +126,7 @@ private:
       std::cout << "Trying " << endpoint_iter->endpoint() << "...\n";
 
       // Set a deadline for the connect operation.
-      deadline_.expires_after(asio::chrono::seconds(60));
+      deadline_.expires_after(asio_sockio::chrono::seconds(60));
 
       // Start the asynchronous connect operation.
       socket_.async_connect(endpoint_iter->endpoint(),
@@ -140,7 +140,7 @@ private:
     }
   }
 
-  void handle_connect(const asio::error_code& ec,
+  void handle_connect(const asio_sockio::error_code& ec,
       tcp::resolver::results_type::iterator endpoint_iter)
   {
     if (stopped_)
@@ -186,15 +186,15 @@ private:
   void start_read()
   {
     // Set a deadline for the read operation.
-    deadline_.expires_after(asio::chrono::seconds(30));
+    deadline_.expires_after(asio_sockio::chrono::seconds(30));
 
     // Start an asynchronous operation to read a newline-delimited message.
-    asio::async_read_until(socket_,
-        asio::dynamic_buffer(input_buffer_), '\n',
+    asio_sockio::async_read_until(socket_,
+        asio_sockio::dynamic_buffer(input_buffer_), '\n',
         boost::bind(&client::handle_read, this, _1, _2));
   }
 
-  void handle_read(const asio::error_code& ec, std::size_t n)
+  void handle_read(const asio_sockio::error_code& ec, std::size_t n)
   {
     if (stopped_)
       return;
@@ -227,11 +227,11 @@ private:
       return;
 
     // Start an asynchronous operation to send a heartbeat message.
-    asio::async_write(socket_, asio::buffer("\n", 1),
+    asio_sockio::async_write(socket_, asio_sockio::buffer("\n", 1),
         boost::bind(&client::handle_write, this, _1));
   }
 
-  void handle_write(const asio::error_code& ec)
+  void handle_write(const asio_sockio::error_code& ec)
   {
     if (stopped_)
       return;
@@ -239,7 +239,7 @@ private:
     if (!ec)
     {
       // Wait 10 seconds before sending the next heartbeat.
-      heartbeat_timer_.expires_after(asio::chrono::seconds(10));
+      heartbeat_timer_.expires_after(asio_sockio::chrono::seconds(10));
       heartbeat_timer_.async_wait(boost::bind(&client::start_write, this));
     }
     else
@@ -293,7 +293,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     tcp::resolver r(io_context);
     client c(io_context);
 

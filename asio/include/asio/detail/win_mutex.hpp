@@ -25,14 +25,14 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class win_mutex
   : private noncopyable
 {
 public:
-  typedef asio::detail::scoped_lock<win_mutex> scoped_lock;
+  typedef asio_sockio::detail::scoped_lock<win_mutex> scoped_lock;
 
   // Constructor.
   ASIO_DECL win_mutex();
@@ -65,7 +65,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

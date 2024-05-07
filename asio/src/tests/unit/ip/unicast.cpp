@@ -31,8 +31,8 @@ namespace ip_unicast_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -66,11 +66,11 @@ namespace ip_unicast_runtime {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   io_context ioc;
-  asio::error_code ec;
+  asio_sockio::error_code ec;
 
   ip::udp::endpoint ep_v4(ip::address_v4::loopback(), 0);
   ip::udp::socket sock_v4(ioc);
@@ -95,7 +95,7 @@ void test()
     sock_v4.set_option(hops1, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
     // Option is not supported under Windows CE.
-    ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+    ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
         ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
     ASIO_CHECK(!ec);
@@ -105,7 +105,7 @@ void test()
     sock_v4.get_option(hops2, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
     // Option is not supported under Windows CE.
-    ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+    ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
         ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
     ASIO_CHECK(!ec);
@@ -117,7 +117,7 @@ void test()
     sock_v4.set_option(hops3, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
     // Option is not supported under Windows CE.
-    ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+    ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
         ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
     ASIO_CHECK(!ec);
@@ -127,7 +127,7 @@ void test()
     sock_v4.get_option(hops4, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
     // Option is not supported under Windows CE.
-    ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+    ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
         ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
     ASIO_CHECK(!ec);

@@ -15,7 +15,7 @@
 #include "asio.hpp"
 #include "asio/ssl.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -24,12 +24,12 @@ enum { max_length = 1024 };
 class client
 {
 public:
-  client(asio::io_context& io_context,
-      asio::ssl::context& context,
+  client(asio_sockio::io_context& io_context,
+      asio_sockio::ssl::context& context,
       const tcp::resolver::results_type& endpoints)
     : socket_(io_context, context)
   {
-    socket_.set_verify_mode(asio::ssl::verify_peer);
+    socket_.set_verify_mode(asio_sockio::ssl::verify_peer);
     socket_.set_verify_callback(
         std::bind(&client::verify_certificate, this, _1, _2));
 
@@ -38,7 +38,7 @@ public:
 
 private:
   bool verify_certificate(bool preverified,
-      asio::ssl::verify_context& ctx)
+      asio_sockio::ssl::verify_context& ctx)
   {
     // The verify callback can be used to check whether the certificate that is
     // being presented is valid for the peer. For example, RFC 2818 describes
@@ -58,7 +58,7 @@ private:
 
   void connect(const tcp::resolver::results_type& endpoints)
   {
-    asio::async_connect(socket_.lowest_layer(), endpoints,
+    asio_sockio::async_connect(socket_.lowest_layer(), endpoints,
         [this](const std::error_code& error,
           const tcp::endpoint& /*endpoint*/)
         {
@@ -75,7 +75,7 @@ private:
 
   void handshake()
   {
-    socket_.async_handshake(asio::ssl::stream_base::client,
+    socket_.async_handshake(asio_sockio::ssl::stream_base::client,
         [this](const std::error_code& error)
         {
           if (!error)
@@ -95,8 +95,8 @@ private:
     std::cin.getline(request_, max_length);
     size_t request_length = std::strlen(request_);
 
-    asio::async_write(socket_,
-        asio::buffer(request_, request_length),
+    asio_sockio::async_write(socket_,
+        asio_sockio::buffer(request_, request_length),
         [this](const std::error_code& error, std::size_t length)
         {
           if (!error)
@@ -112,8 +112,8 @@ private:
 
   void receive_response(std::size_t length)
   {
-    asio::async_read(socket_,
-        asio::buffer(reply_, length),
+    asio_sockio::async_read(socket_,
+        asio_sockio::buffer(reply_, length),
         [this](const std::error_code& error, std::size_t length)
         {
           if (!error)
@@ -129,7 +129,7 @@ private:
         });
   }
 
-  asio::ssl::stream<tcp::socket> socket_;
+  asio_sockio::ssl::stream<tcp::socket> socket_;
   char request_[max_length];
   char reply_[max_length];
 };
@@ -144,12 +144,12 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::resolver resolver(io_context);
     auto endpoints = resolver.resolve(argv[1], argv[2]);
 
-    asio::ssl::context ctx(asio::ssl::context::sslv23);
+    asio_sockio::ssl::context ctx(asio_sockio::ssl::context::sslv23);
     ctx.load_verify_file("ca.pem");
 
     client c(io_context, ctx, endpoints);

@@ -19,7 +19,7 @@
 #include <vector>
 #include "high_res_clock.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 using boost::posix_time::ptime;
 using boost::posix_time::microsec_clock;
 
@@ -28,9 +28,9 @@ const int num_samples = 100000;
 struct transfer_all
 {
   typedef std::size_t result_type;
-  std::size_t operator()(const asio::error_code& ec, std::size_t)
+  std::size_t operator()(const asio_sockio::error_code& ec, std::size_t)
   {
-    return (ec && ec != asio::error::would_block) ? 0 : ~0;
+    return (ec && ec != asio_sockio::error::would_block) ? 0 : ~0;
   }
 };
 
@@ -50,14 +50,14 @@ int main(int argc, char* argv[])
   std::size_t buf_size = static_cast<std::size_t>(std::atoi(argv[4]));
   bool spin = (std::strcmp(argv[5], "spin") == 0);
 
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
   std::vector<boost::shared_ptr<tcp::socket> > sockets;
 
   for (int i = 0; i < num_connections; ++i)
   {
     boost::shared_ptr<tcp::socket> s(new tcp::socket(io_context));
 
-    tcp::endpoint target(asio::ip::make_address(ip), port);
+    tcp::endpoint target(asio_sockio::ip::make_address(ip), port);
     s->connect(target);
 
     s->set_option(tcp::no_delay(true));
@@ -83,13 +83,13 @@ int main(int argc, char* argv[])
 
     boost::uint64_t t = high_res_clock();
 
-    asio::error_code ec;
-    asio::write(socket,
-        asio::buffer(write_buf),
+    asio_sockio::error_code ec;
+    asio_sockio::write(socket,
+        asio_sockio::buffer(write_buf),
         transfer_all(), ec);
 
-    asio::read(socket,
-        asio::buffer(read_buf),
+    asio_sockio::read(socket,
+        asio_sockio::buffer(read_buf),
         transfer_all(), ec);
 
     samples[i] = high_res_clock() - t;

@@ -26,20 +26,20 @@ io_context_pool::io_context_pool(std::size_t pool_size)
   // exit until they are explicitly stopped.
   for (std::size_t i = 0; i < pool_size; ++i)
   {
-    io_context_ptr io_context(new asio::io_context);
+    io_context_ptr io_context(new asio_sockio::io_context);
     io_contexts_.push_back(io_context);
-    work_.push_back(asio::make_work_guard(*io_context));
+    work_.push_back(asio_sockio::make_work_guard(*io_context));
   }
 }
 
 void io_context_pool::run()
 {
   // Create a pool of threads to run all of the io_contexts.
-  std::vector<boost::shared_ptr<asio::thread> > threads;
+  std::vector<boost::shared_ptr<asio_sockio::thread> > threads;
   for (std::size_t i = 0; i < io_contexts_.size(); ++i)
   {
-    boost::shared_ptr<asio::thread> thread(new asio::thread(
-          boost::bind(&asio::io_context::run, io_contexts_[i])));
+    boost::shared_ptr<asio_sockio::thread> thread(new asio_sockio::thread(
+          boost::bind(&asio_sockio::io_context::run, io_contexts_[i])));
     threads.push_back(thread);
   }
 
@@ -55,10 +55,10 @@ void io_context_pool::stop()
     io_contexts_[i]->stop();
 }
 
-asio::io_context& io_context_pool::get_io_context()
+asio_sockio::io_context& io_context_pool::get_io_context()
 {
   // Use a round-robin scheme to choose the next io_context to use.
-  asio::io_context& io_context = *io_contexts_[next_io_context_];
+  asio_sockio::io_context& io_context = *io_contexts_[next_io_context_];
   ++next_io_context_;
   if (next_io_context_ == io_contexts_.size())
     next_io_context_ = 0;

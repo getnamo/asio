@@ -43,9 +43,9 @@ using namespace std; // For memcmp, memcpy and memset.
 class test_stream
 {
 public:
-  typedef asio::io_context::executor_type executor_type;
+  typedef asio_sockio::io_context::executor_type executor_type;
 
-  test_stream(asio::io_context& io_context)
+  test_stream(asio_sockio::io_context& io_context)
     : io_context_(io_context),
       length_(0),
       position_(0),
@@ -83,7 +83,7 @@ public:
     size_t checked_length = 0;
     for (; iter != end && checked_length < length; ++iter)
     {
-      size_t buffer_length = asio::buffer_size(*iter);
+      size_t buffer_length = asio_sockio::buffer_size(*iter);
       if (buffer_length > length - checked_length)
         buffer_length = length - checked_length;
       if (memcmp(data_ + checked_length, iter->data(), buffer_length) != 0)
@@ -97,15 +97,15 @@ public:
   template <typename Const_Buffers>
   bool check_buffers(const Const_Buffers& buffers, size_t length)
   {
-    return check_buffers(asio::buffer_sequence_begin(buffers),
-        asio::buffer_sequence_end(buffers), length);
+    return check_buffers(asio_sockio::buffer_sequence_begin(buffers),
+        asio_sockio::buffer_sequence_end(buffers), length);
   }
 
   template <typename Mutable_Buffers>
   size_t read_some(const Mutable_Buffers& buffers)
   {
-    size_t n = asio::buffer_copy(buffers,
-        asio::buffer(data_, length_) + position_,
+    size_t n = asio_sockio::buffer_copy(buffers,
+        asio_sockio::buffer(data_, length_) + position_,
         next_read_length_);
     position_ += n;
     return n;
@@ -113,9 +113,9 @@ public:
 
   template <typename Mutable_Buffers>
   size_t read_some(const Mutable_Buffers& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return read_some(buffers);
   }
 
@@ -123,14 +123,14 @@ public:
   void async_read_some(const Mutable_Buffers& buffers, Handler handler)
   {
     size_t bytes_transferred = read_some(buffers);
-    asio::post(get_executor(),
-        asio::detail::bind_handler(
+    asio_sockio::post(get_executor(),
+        asio_sockio::detail::bind_handler(
           ASIO_MOVE_CAST(Handler)(handler),
-          asio::error_code(), bytes_transferred));
+          asio_sockio::error_code(), bytes_transferred));
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   enum { max_length = 8192 };
   char data_[max_length];
   size_t length_;
@@ -143,83 +143,83 @@ static const char read_data[]
 
 void test_2_arg_zero_buffers_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  std::vector<asio::mutable_buffer> buffers;
+  std::vector<asio_sockio::mutable_buffer> buffers;
 
-  size_t bytes_transferred = asio::read(s, buffers);
+  size_t bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == 0);
 }
 
 void test_2_arg_mutable_buffer_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  asio::mutable_buffer buffers
-    = asio::buffer(read_buf, sizeof(read_buf));
+  asio_sockio::mutable_buffer buffers
+    = asio_sockio::buffer(read_buf, sizeof(read_buf));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  size_t bytes_transferred = asio::read(s, buffers);
+  size_t bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers);
+  bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers);
+  bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 }
 
 void test_2_arg_vector_buffers_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::vector<asio::mutable_buffer> buffers;
-  buffers.push_back(asio::buffer(read_buf, 32));
-  buffers.push_back(asio::buffer(read_buf, 39) + 32);
-  buffers.push_back(asio::buffer(read_buf) + 39);
+  std::vector<asio_sockio::mutable_buffer> buffers;
+  buffers.push_back(asio_sockio::buffer(read_buf, 32));
+  buffers.push_back(asio_sockio::buffer(read_buf, 39) + 32);
+  buffers.push_back(asio_sockio::buffer(read_buf) + 39);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  size_t bytes_transferred = asio::read(s, buffers);
+  size_t bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers);
+  bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers);
+  bytes_transferred = asio_sockio::read(s, buffers);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 }
 
 void test_2_arg_streambuf_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  asio::streambuf sb(sizeof(read_data));
+  asio_sockio::streambuf sb(sizeof(read_data));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  size_t bytes_transferred = asio::read(s, sb);
+  size_t bytes_transferred = asio_sockio::read(s, sb);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -227,7 +227,7 @@ void test_2_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb);
+  bytes_transferred = asio_sockio::read(s, sb);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -235,7 +235,7 @@ void test_2_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb);
+  bytes_transferred = asio_sockio::read(s, sb);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -243,28 +243,28 @@ void test_2_arg_streambuf_read()
 
 void test_3_arg_nothrow_zero_buffers_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  std::vector<asio::mutable_buffer> buffers;
+  std::vector<asio_sockio::mutable_buffer> buffers;
 
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, buffers, error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == 0);
   ASIO_CHECK(!error);
 }
 
 void test_3_arg_nothrow_mutable_buffer_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  asio::mutable_buffer buffers
-    = asio::buffer(read_buf, sizeof(read_buf));
+  asio_sockio::mutable_buffer buffers
+    = asio_sockio::buffer(read_buf, sizeof(read_buf));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, buffers, error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -272,7 +272,7 @@ void test_3_arg_nothrow_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, error);
+  bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -280,7 +280,7 @@ void test_3_arg_nothrow_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, error);
+  bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -288,18 +288,18 @@ void test_3_arg_nothrow_mutable_buffer_read()
 
 void test_3_arg_nothrow_vector_buffers_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::vector<asio::mutable_buffer> buffers;
-  buffers.push_back(asio::buffer(read_buf, 32));
-  buffers.push_back(asio::buffer(read_buf, 39) + 32);
-  buffers.push_back(asio::buffer(read_buf) + 39);
+  std::vector<asio_sockio::mutable_buffer> buffers;
+  buffers.push_back(asio_sockio::buffer(read_buf, 32));
+  buffers.push_back(asio_sockio::buffer(read_buf, 39) + 32);
+  buffers.push_back(asio_sockio::buffer(read_buf) + 39);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, buffers, error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -307,7 +307,7 @@ void test_3_arg_nothrow_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, error);
+  bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -315,7 +315,7 @@ void test_3_arg_nothrow_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, error);
+  bytes_transferred = asio_sockio::read(s, buffers, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -323,14 +323,14 @@ void test_3_arg_nothrow_vector_buffers_read()
 
 void test_3_arg_nothrow_streambuf_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  asio::streambuf sb(sizeof(read_data));
+  asio_sockio::streambuf sb(sizeof(read_data));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, sb, error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, sb, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -339,7 +339,7 @@ void test_3_arg_nothrow_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, error);
+  bytes_transferred = asio_sockio::read(s, sb, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -348,20 +348,20 @@ void test_3_arg_nothrow_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, error);
+  bytes_transferred = asio_sockio::read(s, sb, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
   ASIO_CHECK(!error);
 }
 
-bool old_style_transfer_all(const asio::error_code& ec,
+bool old_style_transfer_all(const asio_sockio::error_code& ec,
     size_t /*bytes_transferred*/)
 {
   return !!ec;
 }
 
-size_t short_transfer(const asio::error_code& ec,
+size_t short_transfer(const asio_sockio::error_code& ec,
     size_t /*bytes_transferred*/)
 {
   return !!ec ? 0 : 3;
@@ -369,436 +369,436 @@ size_t short_transfer(const asio::error_code& ec,
 
 void test_3_arg_mutable_buffer_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  asio::mutable_buffer buffers
-    = asio::buffer(read_buf, sizeof(read_buf));
+  asio_sockio::mutable_buffer buffers
+    = asio_sockio::buffer(read_buf, sizeof(read_buf));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  size_t bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all());
+  size_t bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all());
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all());
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == 50);
   ASIO_CHECK(s.check_buffers(buffers, 50));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, buffers, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, buffers, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, buffers, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 }
 
 void test_3_arg_vector_buffers_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::vector<asio::mutable_buffer> buffers;
-  buffers.push_back(asio::buffer(read_buf, 32));
-  buffers.push_back(asio::buffer(read_buf, 39) + 32);
-  buffers.push_back(asio::buffer(read_buf) + 39);
+  std::vector<asio_sockio::mutable_buffer> buffers;
+  buffers.push_back(asio_sockio::buffer(read_buf, 32));
+  buffers.push_back(asio_sockio::buffer(read_buf, 39) + 32);
+  buffers.push_back(asio_sockio::buffer(read_buf) + 39);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  size_t bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all());
+  size_t bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all());
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all());
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == 50);
   ASIO_CHECK(s.check_buffers(buffers, 50));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, buffers, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, buffers, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, buffers, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
 }
 
 void test_3_arg_streambuf_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  asio::streambuf sb(sizeof(read_data));
+  asio_sockio::streambuf sb(sizeof(read_data));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  size_t bytes_transferred = asio::read(s, sb,
-      asio::transfer_all());
+  size_t bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -806,8 +806,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_all());
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -815,16 +815,16 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_all());
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_all());
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -832,8 +832,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -841,16 +841,16 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(1));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(1));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -858,8 +858,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -867,16 +867,16 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(10));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -884,8 +884,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -893,16 +893,16 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(42));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(42));
   ASIO_CHECK(bytes_transferred == 50);
   ASIO_CHECK(sb.size() == 50);
   ASIO_CHECK(s.check_buffers(sb.data(), 50));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -910,8 +910,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -919,16 +919,16 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(1));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(1));
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -936,8 +936,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -945,16 +945,16 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(10));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(10));
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -962,8 +962,8 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -971,15 +971,15 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(42));
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(42));
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, sb, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -987,7 +987,7 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, sb, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -995,14 +995,14 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, old_style_transfer_all);
+  bytes_transferred = asio_sockio::read(s, sb, old_style_transfer_all);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, short_transfer);
+  bytes_transferred = asio_sockio::read(s, sb, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1010,7 +1010,7 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, short_transfer);
+  bytes_transferred = asio_sockio::read(s, sb, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1018,7 +1018,7 @@ void test_3_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, short_transfer);
+  bytes_transferred = asio_sockio::read(s, sb, short_transfer);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1026,17 +1026,17 @@ void test_3_arg_streambuf_read()
 
 void test_4_arg_mutable_buffer_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  asio::mutable_buffer buffers
-    = asio::buffer(read_buf, sizeof(read_buf));
+  asio_sockio::mutable_buffer buffers
+    = asio_sockio::buffer(read_buf, sizeof(read_buf));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all(), error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1044,9 +1044,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all(), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1054,18 +1054,18 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all(), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1073,9 +1073,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
@@ -1083,18 +1083,18 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1102,9 +1102,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
@@ -1112,18 +1112,18 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1131,9 +1131,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
@@ -1141,18 +1141,18 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == 50);
   ASIO_CHECK(s.check_buffers(buffers, 50));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
@@ -1160,9 +1160,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
@@ -1170,18 +1170,18 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
@@ -1189,9 +1189,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
@@ -1199,18 +1199,18 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
@@ -1218,9 +1218,9 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
@@ -1228,16 +1228,16 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
+  bytes_transferred = asio_sockio::read(s, buffers,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
@@ -1246,8 +1246,8 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
@@ -1256,8 +1256,8 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
@@ -1265,7 +1265,7 @@ void test_4_arg_mutable_buffer_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer, error);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1273,8 +1273,8 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers, short_transfer, error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1282,8 +1282,8 @@ void test_4_arg_mutable_buffer_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers, short_transfer, error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1291,19 +1291,19 @@ void test_4_arg_mutable_buffer_read()
 
 void test_4_arg_vector_buffers_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::vector<asio::mutable_buffer> buffers;
-  buffers.push_back(asio::buffer(read_buf, 32));
-  buffers.push_back(asio::buffer(read_buf, 39) + 32);
-  buffers.push_back(asio::buffer(read_buf) + 39);
+  std::vector<asio_sockio::mutable_buffer> buffers;
+  buffers.push_back(asio_sockio::buffer(read_buf, 32));
+  buffers.push_back(asio_sockio::buffer(read_buf, 39) + 32);
+  buffers.push_back(asio_sockio::buffer(read_buf) + 39);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all(), error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1311,9 +1311,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all(), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1321,18 +1321,18 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_all(), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1340,9 +1340,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
@@ -1350,18 +1350,18 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1369,9 +1369,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
@@ -1379,18 +1379,18 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1398,9 +1398,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
@@ -1408,18 +1408,18 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == 50);
   ASIO_CHECK(s.check_buffers(buffers, 50));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
@@ -1427,9 +1427,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
@@ -1437,18 +1437,18 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(s.check_buffers(buffers, 1));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
@@ -1456,9 +1456,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
@@ -1466,18 +1466,18 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(s.check_buffers(buffers, 10));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
@@ -1485,9 +1485,9 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
@@ -1495,16 +1495,16 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(s.check_buffers(buffers, 42));
   ASIO_CHECK(!error);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers,
+  bytes_transferred = asio_sockio::read(s, buffers,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
@@ -1513,8 +1513,8 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
@@ -1523,8 +1523,8 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers,
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
@@ -1532,7 +1532,7 @@ void test_4_arg_vector_buffers_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  bytes_transferred = asio::read(s, buffers, short_transfer, error);
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1540,8 +1540,8 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers, short_transfer, error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1549,8 +1549,8 @@ void test_4_arg_vector_buffers_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, buffers, short_transfer, error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, buffers, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(buffers, sizeof(read_data)));
   ASIO_CHECK(!error);
@@ -1558,15 +1558,15 @@ void test_4_arg_vector_buffers_read()
 
 void test_4_arg_streambuf_read()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  asio::streambuf sb(sizeof(read_data));
+  asio_sockio::streambuf sb(sizeof(read_data));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  asio::error_code error;
-  size_t bytes_transferred = asio::read(s, sb,
-      asio::transfer_all(), error);
+  asio_sockio::error_code error;
+  size_t bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1575,9 +1575,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_all(), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1586,9 +1586,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_all(), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_all(), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1596,9 +1596,9 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1607,9 +1607,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -1618,9 +1618,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(1), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -1628,9 +1628,9 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1639,9 +1639,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -1650,9 +1650,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -1660,9 +1660,9 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1671,9 +1671,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -1682,9 +1682,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_at_least(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_at_least(42), error);
   ASIO_CHECK(bytes_transferred == 50);
   ASIO_CHECK(sb.size() == 50);
   ASIO_CHECK(s.check_buffers(sb.data(), 50));
@@ -1692,9 +1692,9 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -1703,9 +1703,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -1714,9 +1714,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(1), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(1), error);
   ASIO_CHECK(bytes_transferred == 1);
   ASIO_CHECK(sb.size() == 1);
   ASIO_CHECK(s.check_buffers(sb.data(), 1));
@@ -1724,9 +1724,9 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -1735,9 +1735,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -1746,9 +1746,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(10), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(10), error);
   ASIO_CHECK(bytes_transferred == 10);
   ASIO_CHECK(sb.size() == 10);
   ASIO_CHECK(s.check_buffers(sb.data(), 10));
@@ -1756,9 +1756,9 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -1767,9 +1767,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -1778,9 +1778,9 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
-      asio::transfer_exactly(42), error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
+      asio_sockio::transfer_exactly(42), error);
   ASIO_CHECK(bytes_transferred == 42);
   ASIO_CHECK(sb.size() == 42);
   ASIO_CHECK(s.check_buffers(sb.data(), 42));
@@ -1788,7 +1788,7 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb,
+  bytes_transferred = asio_sockio::read(s, sb,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
@@ -1798,8 +1798,8 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
@@ -1809,8 +1809,8 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb,
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb,
       old_style_transfer_all, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
@@ -1819,7 +1819,7 @@ void test_4_arg_streambuf_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  bytes_transferred = asio::read(s, sb, short_transfer, error);
+  bytes_transferred = asio_sockio::read(s, sb, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1828,8 +1828,8 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(1);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb, short_transfer, error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
@@ -1838,15 +1838,15 @@ void test_4_arg_streambuf_read()
   s.reset(read_data, sizeof(read_data));
   s.next_read_length(10);
   sb.consume(sb.size());
-  error = asio::error_code();
-  bytes_transferred = asio::read(s, sb, short_transfer, error);
+  error = asio_sockio::error_code();
+  bytes_transferred = asio_sockio::read(s, sb, short_transfer, error);
   ASIO_CHECK(bytes_transferred == sizeof(read_data));
   ASIO_CHECK(sb.size() == sizeof(read_data));
   ASIO_CHECK(s.check_buffers(sb.data(), sizeof(read_data)));
   ASIO_CHECK(!error);
 }
 
-void async_read_handler(const asio::error_code& e,
+void async_read_handler(const asio_sockio::error_code& e,
     size_t bytes_transferred, size_t expected_bytes_transferred, bool* called)
 {
   *called = true;
@@ -1864,16 +1864,16 @@ void test_3_arg_mutable_buffer_async_read()
   using std::placeholders::_2;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  asio::mutable_buffer buffers
-    = asio::buffer(read_buf, sizeof(read_buf));
+  asio_sockio::mutable_buffer buffers
+    = asio_sockio::buffer(read_buf, sizeof(read_buf));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -1885,7 +1885,7 @@ void test_3_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -1897,7 +1897,7 @@ void test_3_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -1907,7 +1907,7 @@ void test_3_arg_mutable_buffer_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers, archetypes::lazy_handler());
+  int i = asio_sockio::async_read(s, buffers, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
   ioc.run();
@@ -1925,17 +1925,17 @@ void test_3_arg_boost_array_buffers_async_read()
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
 #if defined(ASIO_HAS_BOOST_ARRAY)
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  boost::array<asio::mutable_buffer, 2> buffers = { {
-    asio::buffer(read_buf, 32),
-    asio::buffer(read_buf) + 32 } };
+  boost::array<asio_sockio::mutable_buffer, 2> buffers = { {
+    asio_sockio::buffer(read_buf, 32),
+    asio_sockio::buffer(read_buf) + 32 } };
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -1947,7 +1947,7 @@ void test_3_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -1959,7 +1959,7 @@ void test_3_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -1969,7 +1969,7 @@ void test_3_arg_boost_array_buffers_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers, archetypes::lazy_handler());
+  int i = asio_sockio::async_read(s, buffers, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
   ioc.run();
@@ -1988,17 +1988,17 @@ void test_3_arg_std_array_buffers_async_read()
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
 #if defined(ASIO_HAS_STD_ARRAY)
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::array<asio::mutable_buffer, 2> buffers = { {
-    asio::buffer(read_buf, 32),
-    asio::buffer(read_buf) + 32 } };
+  std::array<asio_sockio::mutable_buffer, 2> buffers = { {
+    asio_sockio::buffer(read_buf, 32),
+    asio_sockio::buffer(read_buf) + 32 } };
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2010,7 +2010,7 @@ void test_3_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2022,7 +2022,7 @@ void test_3_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2032,7 +2032,7 @@ void test_3_arg_std_array_buffers_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers, archetypes::lazy_handler());
+  int i = asio_sockio::async_read(s, buffers, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
   ioc.run();
@@ -2050,18 +2050,18 @@ void test_3_arg_vector_buffers_async_read()
   using std::placeholders::_2;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::vector<asio::mutable_buffer> buffers;
-  buffers.push_back(asio::buffer(read_buf, 32));
-  buffers.push_back(asio::buffer(read_buf, 39) + 32);
-  buffers.push_back(asio::buffer(read_buf) + 39);
+  std::vector<asio_sockio::mutable_buffer> buffers;
+  buffers.push_back(asio_sockio::buffer(read_buf, 32));
+  buffers.push_back(asio_sockio::buffer(read_buf, 39) + 32);
+  buffers.push_back(asio_sockio::buffer(read_buf) + 39);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2073,7 +2073,7 @@ void test_3_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2085,7 +2085,7 @@ void test_3_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers,
+  asio_sockio::async_read(s, buffers,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2095,7 +2095,7 @@ void test_3_arg_vector_buffers_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers, archetypes::lazy_handler());
+  int i = asio_sockio::async_read(s, buffers, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
   ioc.run();
@@ -2112,14 +2112,14 @@ void test_3_arg_streambuf_async_read()
   using std::placeholders::_2;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  asio::streambuf sb(sizeof(read_data));
+  asio_sockio::streambuf sb(sizeof(read_data));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   bool called = false;
-  asio::async_read(s, sb,
+  asio_sockio::async_read(s, sb,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2132,7 +2132,7 @@ void test_3_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb,
+  asio_sockio::async_read(s, sb,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2145,7 +2145,7 @@ void test_3_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb,
+  asio_sockio::async_read(s, sb,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2156,7 +2156,7 @@ void test_3_arg_streambuf_async_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  int i = asio::async_read(s, sb, archetypes::lazy_handler());
+  int i = asio_sockio::async_read(s, sb, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
   ioc.run();
@@ -2174,16 +2174,16 @@ void test_4_arg_mutable_buffer_async_read()
   using std::placeholders::_2;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  asio::mutable_buffer buffers
-    = asio::buffer(read_buf, sizeof(read_buf));
+  asio_sockio::mutable_buffer buffers
+    = asio_sockio::buffer(read_buf, sizeof(read_buf));
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2195,7 +2195,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2207,7 +2207,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2218,7 +2218,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2230,7 +2230,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2242,7 +2242,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2253,7 +2253,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2265,7 +2265,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2277,7 +2277,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2288,7 +2288,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2300,7 +2300,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2312,7 +2312,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 50, &called));
   ioc.restart();
@@ -2323,7 +2323,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2335,7 +2335,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2347,7 +2347,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2358,7 +2358,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2370,7 +2370,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2382,7 +2382,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2393,7 +2393,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2405,7 +2405,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2417,7 +2417,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2428,7 +2428,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2440,7 +2440,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2452,7 +2452,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2463,7 +2463,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2475,7 +2475,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2487,7 +2487,7 @@ void test_4_arg_mutable_buffer_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2497,7 +2497,7 @@ void test_4_arg_mutable_buffer_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers,
+  int i = asio_sockio::async_read(s, buffers,
       short_transfer, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
@@ -2516,17 +2516,17 @@ void test_4_arg_boost_array_buffers_async_read()
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
 #if defined(ASIO_HAS_BOOST_ARRAY)
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  boost::array<asio::mutable_buffer, 2> buffers = { {
-    asio::buffer(read_buf, 32),
-    asio::buffer(read_buf) + 32 } };
+  boost::array<asio_sockio::mutable_buffer, 2> buffers = { {
+    asio_sockio::buffer(read_buf, 32),
+    asio_sockio::buffer(read_buf) + 32 } };
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2538,7 +2538,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2550,7 +2550,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2561,7 +2561,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2573,7 +2573,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2585,7 +2585,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2596,7 +2596,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2608,7 +2608,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2620,7 +2620,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2631,7 +2631,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2643,7 +2643,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2655,7 +2655,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 50, &called));
   ioc.restart();
@@ -2666,7 +2666,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2678,7 +2678,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2690,7 +2690,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2701,7 +2701,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2713,7 +2713,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2725,7 +2725,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2736,7 +2736,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2748,7 +2748,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2760,7 +2760,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2771,7 +2771,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2783,7 +2783,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2795,7 +2795,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2806,7 +2806,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2818,7 +2818,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2830,7 +2830,7 @@ void test_4_arg_boost_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2840,7 +2840,7 @@ void test_4_arg_boost_array_buffers_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers,
+  int i = asio_sockio::async_read(s, buffers,
       short_transfer, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
@@ -2860,17 +2860,17 @@ void test_4_arg_std_array_buffers_async_read()
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
 #if defined(ASIO_HAS_STD_ARRAY)
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::array<asio::mutable_buffer, 2> buffers = { {
-    asio::buffer(read_buf, 32),
-    asio::buffer(read_buf) + 32 } };
+  std::array<asio_sockio::mutable_buffer, 2> buffers = { {
+    asio_sockio::buffer(read_buf, 32),
+    asio_sockio::buffer(read_buf) + 32 } };
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2882,7 +2882,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2894,7 +2894,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2905,7 +2905,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2917,7 +2917,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -2929,7 +2929,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2940,7 +2940,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2952,7 +2952,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2964,7 +2964,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -2975,7 +2975,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -2987,7 +2987,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -2999,7 +2999,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 50, &called));
   ioc.restart();
@@ -3010,7 +3010,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3022,7 +3022,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3034,7 +3034,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3045,7 +3045,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3057,7 +3057,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3069,7 +3069,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3080,7 +3080,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3092,7 +3092,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3104,7 +3104,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3115,7 +3115,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3127,7 +3127,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3139,7 +3139,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3150,7 +3150,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3162,7 +3162,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3174,7 +3174,7 @@ void test_4_arg_std_array_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3184,7 +3184,7 @@ void test_4_arg_std_array_buffers_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers,
+  int i = asio_sockio::async_read(s, buffers,
       short_transfer, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
@@ -3203,18 +3203,18 @@ void test_4_arg_vector_buffers_async_read()
   using std::placeholders::_2;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
   char read_buf[sizeof(read_data)];
-  std::vector<asio::mutable_buffer> buffers;
-  buffers.push_back(asio::buffer(read_buf, 32));
-  buffers.push_back(asio::buffer(read_buf, 39) + 32);
-  buffers.push_back(asio::buffer(read_buf) + 39);
+  std::vector<asio_sockio::mutable_buffer> buffers;
+  buffers.push_back(asio_sockio::buffer(read_buf, 32));
+  buffers.push_back(asio_sockio::buffer(read_buf, 39) + 32);
+  buffers.push_back(asio_sockio::buffer(read_buf) + 39);
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   bool called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3226,7 +3226,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3238,7 +3238,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_all(),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3249,7 +3249,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3261,7 +3261,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3273,7 +3273,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3284,7 +3284,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3296,7 +3296,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3308,7 +3308,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3319,7 +3319,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3331,7 +3331,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3343,7 +3343,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 50, &called));
   ioc.restart();
@@ -3354,7 +3354,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3366,7 +3366,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3378,7 +3378,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3389,7 +3389,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3401,7 +3401,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3413,7 +3413,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3424,7 +3424,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3436,7 +3436,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3448,7 +3448,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, buffers, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3459,7 +3459,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3471,7 +3471,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3483,7 +3483,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, old_style_transfer_all,
+  asio_sockio::async_read(s, buffers, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3494,7 +3494,7 @@ void test_4_arg_vector_buffers_async_read()
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3506,7 +3506,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(1);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3518,7 +3518,7 @@ void test_4_arg_vector_buffers_async_read()
   s.next_read_length(10);
   memset(read_buf, 0, sizeof(read_buf));
   called = false;
-  asio::async_read(s, buffers, short_transfer,
+  asio_sockio::async_read(s, buffers, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3528,7 +3528,7 @@ void test_4_arg_vector_buffers_async_read()
 
   s.reset(read_data, sizeof(read_data));
   memset(read_buf, 0, sizeof(read_buf));
-  int i = asio::async_read(s, buffers,
+  int i = asio_sockio::async_read(s, buffers,
       short_transfer, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();
@@ -3546,14 +3546,14 @@ void test_4_arg_streambuf_async_read()
   using std::placeholders::_2;
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   test_stream s(ioc);
-  asio::streambuf sb(sizeof(read_data));
+  asio_sockio::streambuf sb(sizeof(read_data));
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   bool called = false;
-  asio::async_read(s, sb, asio::transfer_all(),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3566,7 +3566,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_all(),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3579,7 +3579,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_all(),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_all(),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3591,7 +3591,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3604,7 +3604,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3617,7 +3617,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(1),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(1),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3629,7 +3629,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3642,7 +3642,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3655,7 +3655,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(10),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3667,7 +3667,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3680,7 +3680,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3693,7 +3693,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_at_least(42),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_at_least(42),
       bindns::bind(async_read_handler,
         _1, _2, 50, &called));
   ioc.restart();
@@ -3705,7 +3705,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3718,7 +3718,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3731,7 +3731,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(1),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(1),
       bindns::bind(async_read_handler,
         _1, _2, 1, &called));
   ioc.restart();
@@ -3743,7 +3743,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3756,7 +3756,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3769,7 +3769,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(10),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(10),
       bindns::bind(async_read_handler,
         _1, _2, 10, &called));
   ioc.restart();
@@ -3781,7 +3781,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3794,7 +3794,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3807,7 +3807,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, asio::transfer_exactly(42),
+  asio_sockio::async_read(s, sb, asio_sockio::transfer_exactly(42),
       bindns::bind(async_read_handler,
         _1, _2, 42, &called));
   ioc.restart();
@@ -3819,7 +3819,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, old_style_transfer_all,
+  asio_sockio::async_read(s, sb, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3832,7 +3832,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, old_style_transfer_all,
+  asio_sockio::async_read(s, sb, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3845,7 +3845,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, old_style_transfer_all,
+  asio_sockio::async_read(s, sb, old_style_transfer_all,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3857,7 +3857,7 @@ void test_4_arg_streambuf_async_read()
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, short_transfer,
+  asio_sockio::async_read(s, sb, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3870,7 +3870,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(1);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, short_transfer,
+  asio_sockio::async_read(s, sb, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3883,7 +3883,7 @@ void test_4_arg_streambuf_async_read()
   s.next_read_length(10);
   sb.consume(sb.size());
   called = false;
-  asio::async_read(s, sb, short_transfer,
+  asio_sockio::async_read(s, sb, short_transfer,
       bindns::bind(async_read_handler,
         _1, _2, sizeof(read_data), &called));
   ioc.restart();
@@ -3894,7 +3894,7 @@ void test_4_arg_streambuf_async_read()
 
   s.reset(read_data, sizeof(read_data));
   sb.consume(sb.size());
-  int i = asio::async_read(s, sb,
+  int i = asio_sockio::async_read(s, sb,
       short_transfer, archetypes::lazy_handler());
   ASIO_CHECK(i == 42);
   ioc.restart();

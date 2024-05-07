@@ -17,7 +17,7 @@ of type `const error_code`.
 A free function as an accept handler:
 
   void accept_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
@@ -28,7 +28,7 @@ An accept handler function object:
   {
     ...
     void operator()(
-        const asio::error_code& ec)
+        const asio_sockio::error_code& ec)
     {
       ...
     }
@@ -38,7 +38,7 @@ An accept handler function object:
 A lambda as an accept handler:
 
   acceptor.async_accept(...,
-      [](const asio::error_code& ec)
+      [](const asio_sockio::error_code& ec)
       {
         ...
       });
@@ -47,7 +47,7 @@ A non-static class member function adapted to an accept handler using
 `std::bind()`:
 
   void my_class::accept_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
@@ -60,13 +60,13 @@ A non-static class member function adapted to an accept handler using
 `boost::bind()`:
 
   void my_class::accept_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
   ...
   acceptor.async_accept(...,
       boost::bind(&my_class::accept_handler,
-        this, asio::placeholders::error));
+        this, asio_sockio::placeholders::error));
 
 [endsect]

@@ -17,8 +17,8 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <asio.hpp>
 
-using asio::ip::tcp;
-using asio::ip::udp;
+using asio_sockio::ip::tcp;
+using asio_sockio::ip::udp;
 
 std::string make_daytime_string()
 {
@@ -33,7 +33,7 @@ class tcp_connection
 public:
   typedef boost::shared_ptr<tcp_connection> pointer;
 
-  static pointer create(asio::io_context& io_context)
+  static pointer create(asio_sockio::io_context& io_context)
   {
     return pointer(new tcp_connection(io_context));
   }
@@ -47,12 +47,12 @@ public:
   {
     message_ = make_daytime_string();
 
-    asio::async_write(socket_, asio::buffer(message_),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(message_),
         boost::bind(&tcp_connection::handle_write, shared_from_this()));
   }
 
 private:
-  tcp_connection(asio::io_context& io_context)
+  tcp_connection(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
@@ -68,7 +68,7 @@ private:
 class tcp_server
 {
 public:
-  tcp_server(asio::io_context& io_context)
+  tcp_server(asio_sockio::io_context& io_context)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), 13))
   {
     start_accept();
@@ -82,11 +82,11 @@ private:
 
     acceptor_.async_accept(new_connection->socket(),
         boost::bind(&tcp_server::handle_accept, this, new_connection,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(tcp_connection::pointer new_connection,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -102,7 +102,7 @@ private:
 class udp_server
 {
 public:
-  udp_server(asio::io_context& io_context)
+  udp_server(asio_sockio::io_context& io_context)
     : socket_(io_context, udp::endpoint(udp::v4(), 13))
   {
     start_receive();
@@ -112,19 +112,19 @@ private:
   void start_receive()
   {
     socket_.async_receive_from(
-        asio::buffer(recv_buffer_), remote_endpoint_,
+        asio_sockio::buffer(recv_buffer_), remote_endpoint_,
         boost::bind(&udp_server::handle_receive, this,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
-  void handle_receive(const asio::error_code& error)
+  void handle_receive(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       boost::shared_ptr<std::string> message(
           new std::string(make_daytime_string()));
 
-      socket_.async_send_to(asio::buffer(*message), remote_endpoint_,
+      socket_.async_send_to(asio_sockio::buffer(*message), remote_endpoint_,
           boost::bind(&udp_server::handle_send, this, message));
 
       start_receive();
@@ -144,7 +144,7 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     tcp_server server1(io_context);
     udp_server server2(io_context);
     io_context.run();

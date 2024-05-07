@@ -17,7 +17,7 @@
 #include <vector>
 #include "high_res_clock.hpp"
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 using boost::posix_time::ptime;
 using boost::posix_time::microsec_clock;
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   std::size_t buf_size = static_cast<std::size_t>(std::atoi(argv[4]));
   bool spin = (std::strcmp(argv[5], "spin") == 0);
 
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
   udp::socket socket(io_context, udp::endpoint(udp::v4(), 0));
 
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     socket.non_blocking(true);
   }
 
-  udp::endpoint target(asio::ip::make_address(ip), first_port);
+  udp::endpoint target(asio_sockio::ip::make_address(ip), first_port);
   unsigned short last_port = first_port + num_ports - 1;
   std::vector<unsigned char> write_buf(buf_size);
   std::vector<unsigned char> read_buf(buf_size);
@@ -61,11 +61,11 @@ int main(int argc, char* argv[])
   {
     boost::uint64_t t = high_res_clock();
 
-    asio::error_code ec;
-    socket.send_to(asio::buffer(write_buf), target, 0, ec);
+    asio_sockio::error_code ec;
+    socket.send_to(asio_sockio::buffer(write_buf), target, 0, ec);
     
-    do socket.receive(asio::buffer(read_buf), 0, ec);
-    while (ec == asio::error::would_block);
+    do socket.receive(asio_sockio::buffer(read_buf), 0, ec);
+    while (ec == asio_sockio::error::would_block);
 
     samples[i] = high_res_clock() - t;
 

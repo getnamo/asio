@@ -18,8 +18,8 @@
 #include <iostream>
 #include <string>
 
-using asio::steady_timer;
-using asio::ip::tcp;
+using asio_sockio::steady_timer;
+using asio_sockio::ip::tcp;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -86,7 +86,7 @@ using std::placeholders::_2;
 class client
 {
 public:
-  client(asio::io_context& io_context)
+  client(asio_sockio::io_context& io_context)
     : socket_(io_context),
       deadline_(io_context),
       heartbeat_timer_(io_context)
@@ -190,8 +190,8 @@ private:
     deadline_.expires_after(std::chrono::seconds(30));
 
     // Start an asynchronous operation to read a newline-delimited message.
-    asio::async_read_until(socket_,
-        asio::dynamic_buffer(input_buffer_), '\n',
+    asio_sockio::async_read_until(socket_,
+        asio_sockio::dynamic_buffer(input_buffer_), '\n',
         std::bind(&client::handle_read, this, _1, _2));
   }
 
@@ -228,7 +228,7 @@ private:
       return;
 
     // Start an asynchronous operation to send a heartbeat message.
-    asio::async_write(socket_, asio::buffer("\n", 1),
+    asio_sockio::async_write(socket_, asio_sockio::buffer("\n", 1),
         std::bind(&client::handle_write, this, _1));
   }
 
@@ -294,7 +294,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     tcp::resolver r(io_context);
     client c(io_context);
 

@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Socket, typename Protocol>
@@ -103,12 +103,12 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
+      const asio_sockio::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     reactive_socket_accept_op* o(static_cast<reactive_socket_accept_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     // On success, assign new connection to peer socket object.
@@ -123,9 +123,9 @@ public:
     // with the handler. Consequently, a local copy of the handler is required
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
-    detail::binder1<Handler, asio::error_code>
+    detail::binder1<Handler, asio_sockio::error_code>
       handler(o->handler_, o->ec_);
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = asio_sockio::detail::addressof(handler.handler_);
     p.reset();
 
     // Make the upcall if required.
@@ -165,13 +165,13 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
+      const asio_sockio::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     reactive_socket_move_accept_op* o(
         static_cast<reactive_socket_move_accept_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     // On success, assign new connection to peer socket object.
@@ -187,10 +187,10 @@ public:
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
     detail::move_binder2<Handler,
-      asio::error_code, typename Protocol::socket>
+      asio_sockio::error_code, typename Protocol::socket>
         handler(0, ASIO_MOVE_CAST(Handler)(o->handler_), o->ec_,
           ASIO_MOVE_CAST(typename Protocol::socket)(*o));
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = asio_sockio::detail::addressof(handler.handler_);
     p.reset();
 
     // Make the upcall if required.
@@ -210,7 +210,7 @@ private:
 #endif // defined(ASIO_HAS_MOVE)
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

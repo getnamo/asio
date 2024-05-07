@@ -16,9 +16,9 @@
 #include <asio/ip/udp.hpp>
 #include <asio/use_future.hpp>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
-void get_daytime(asio::io_context& io_context, const char* hostname)
+void get_daytime(asio_sockio::io_context& io_context, const char* hostname)
 {
   try
   {
@@ -27,7 +27,7 @@ void get_daytime(asio::io_context& io_context, const char* hostname)
     std::future<udp::resolver::results_type> endpoints =
       resolver.async_resolve(
           udp::v4(), hostname, "daytime",
-          asio::use_future);
+          asio_sockio::use_future);
 
     // The async_resolve operation above returns the endpoints as a future
     // value that is not retrieved ...
@@ -36,9 +36,9 @@ void get_daytime(asio::io_context& io_context, const char* hostname)
 
     std::array<char, 1> send_buf  = {{ 0 }};
     std::future<std::size_t> send_length =
-      socket.async_send_to(asio::buffer(send_buf),
+      socket.async_send_to(asio_sockio::buffer(send_buf),
           *endpoints.get().begin(), // ... until here. This call may block.
-          asio::use_future);
+          asio_sockio::use_future);
 
     // Do other things here while the send completes.
 
@@ -48,9 +48,9 @@ void get_daytime(asio::io_context& io_context, const char* hostname)
     udp::endpoint sender_endpoint;
     std::future<std::size_t> recv_length =
       socket.async_receive_from(
-          asio::buffer(recv_buf),
+          asio_sockio::buffer(recv_buf),
           sender_endpoint,
-          asio::use_future);
+          asio_sockio::use_future);
 
     // Do other things here while the receive completes.
 
@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
 
     // We run the io_context off in its own thread so that it operates
     // completely asynchronously with respect to the rest of the program.
-    asio::io_context io_context;
-    auto work = asio::make_work_guard(io_context);
+    asio_sockio::io_context io_context;
+    auto work = asio_sockio::make_work_guard(io_context);
     std::thread thread([&io_context](){ io_context.run(); });
 
     get_daytime(io_context, argv[1]);

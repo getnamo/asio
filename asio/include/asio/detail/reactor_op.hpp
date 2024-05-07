@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class reactor_op
@@ -28,7 +28,7 @@ class reactor_op
 {
 public:
   // The error code to be passed to the completion handler.
-  asio::error_code ec_;
+  asio_sockio::error_code ec_;
 
   // The number of bytes transferred, to be passed to the completion handler.
   std::size_t bytes_transferred_;
@@ -58,7 +58,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

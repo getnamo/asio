@@ -38,7 +38,7 @@ namespace ip_icmp_socket_compile {
 struct connect_handler
 {
   connect_handler() {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
 #if defined(ASIO_HAS_MOVE)
   connect_handler(connect_handler&&) {}
 private:
@@ -49,7 +49,7 @@ private:
 struct send_handler
 {
   send_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   send_handler(send_handler&&) {}
 private:
@@ -60,7 +60,7 @@ private:
 struct receive_handler
 {
   receive_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   receive_handler(receive_handler&&) {}
 private:
@@ -70,8 +70,8 @@ private:
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -90,7 +90,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_datagram_socket constructors.
 
@@ -516,8 +516,8 @@ namespace ip_icmp_resolver_compile {
 struct resolve_handler
 {
   resolve_handler() {}
-  void operator()(const asio::error_code&,
-      asio::ip::icmp::resolver::results_type) {}
+  void operator()(const asio_sockio::error_code&,
+      asio_sockio::ip::icmp::resolver::results_type) {}
 #if defined(ASIO_HAS_MOVE)
   resolve_handler(resolve_handler&&) {}
 private:
@@ -527,8 +527,8 @@ private:
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -537,7 +537,7 @@ void test()
 #if !defined(ASIO_NO_DEPRECATED)
     archetypes::deprecated_lazy_handler dlazy;
 #endif // !defined(ASIO_NO_DEPRECATED)
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 #if !defined(ASIO_NO_DEPRECATED)
     ip::icmp::resolver::query q(ip::icmp::v4(), "localhost", "0");
 #endif // !defined(ASIO_NO_DEPRECATED)

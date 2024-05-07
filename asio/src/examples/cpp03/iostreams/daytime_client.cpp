@@ -12,7 +12,7 @@
 #include <string>
 #include <asio.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 int main(int argc, char* argv[])
 {

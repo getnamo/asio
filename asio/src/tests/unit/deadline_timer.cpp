@@ -34,7 +34,7 @@ void increment(int* count)
   ++(*count);
 }
 
-void decrement_to_zero(asio::deadline_timer* t, int* count)
+void decrement_to_zero(asio_sockio::deadline_timer* t, int* count)
 {
   if (*count > 0)
   {
@@ -51,19 +51,19 @@ void decrement_to_zero(asio::deadline_timer* t, int* count)
 }
 
 void increment_if_not_cancelled(int* count,
-    const asio::error_code& ec)
+    const asio_sockio::error_code& ec)
 {
   if (!ec)
     ++(*count);
 }
 
-void cancel_timer(asio::deadline_timer* t)
+void cancel_timer(asio_sockio::deadline_timer* t)
 {
   std::size_t num_cancelled = t->cancel();
   ASIO_CHECK(num_cancelled == 1);
 }
 
-void cancel_one_timer(asio::deadline_timer* t)
+void cancel_one_timer(asio_sockio::deadline_timer* t)
 {
   std::size_t num_cancelled = t->cancel_one();
   ASIO_CHECK(num_cancelled == 1);
@@ -80,12 +80,12 @@ ptime now()
 
 void deadline_timer_test()
 {
-  asio::io_context ioc;
+  asio_sockio::io_context ioc;
   int count = 0;
 
   ptime start = now();
 
-  asio::deadline_timer t1(ioc, seconds(1));
+  asio_sockio::deadline_timer t1(ioc, seconds(1));
   t1.wait();
 
   // The timer must block until after its expiry time.
@@ -95,7 +95,7 @@ void deadline_timer_test()
 
   start = now();
 
-  asio::deadline_timer t2(ioc, seconds(1) + microseconds(500000));
+  asio_sockio::deadline_timer t2(ioc, seconds(1) + microseconds(500000));
   t2.wait();
 
   // The timer must block until after its expiry time.
@@ -123,7 +123,7 @@ void deadline_timer_test()
 
   start = now();
 
-  asio::deadline_timer t3(ioc, seconds(5));
+  asio_sockio::deadline_timer t3(ioc, seconds(5));
   t3.async_wait(boost::bind(increment, &count));
 
   // No completions can be delivered until run() is called.
@@ -141,7 +141,7 @@ void deadline_timer_test()
   count = 3;
   start = now();
 
-  asio::deadline_timer t4(ioc, seconds(1));
+  asio_sockio::deadline_timer t4(ioc, seconds(1));
   t4.async_wait(boost::bind(decrement_to_zero, &t4, &count));
 
   // No completions can be delivered until run() is called.
@@ -160,10 +160,10 @@ void deadline_timer_test()
   count = 0;
   start = now();
 
-  asio::deadline_timer t5(ioc, seconds(10));
+  asio_sockio::deadline_timer t5(ioc, seconds(10));
   t5.async_wait(boost::bind(increment_if_not_cancelled, &count,
-        asio::placeholders::error));
-  asio::deadline_timer t6(ioc, seconds(1));
+        asio_sockio::placeholders::error));
+  asio_sockio::deadline_timer t6(ioc, seconds(1));
   t6.async_wait(boost::bind(cancel_timer, &t5));
 
   // No completions can be delivered until run() is called.
@@ -183,7 +183,7 @@ void deadline_timer_test()
   // Wait on the timer again without cancelling it. This time the asynchronous
   // wait should run to completion and increment the counter.
   t5.async_wait(boost::bind(increment_if_not_cancelled, &count,
-        asio::placeholders::error));
+        asio_sockio::placeholders::error));
 
   ioc.restart();
   ioc.run();
@@ -201,12 +201,12 @@ void deadline_timer_test()
   // Start two waits on a timer, one of which will be cancelled. The one
   // which is not cancelled should still run to completion and increment the
   // counter.
-  asio::deadline_timer t7(ioc, seconds(3));
+  asio_sockio::deadline_timer t7(ioc, seconds(3));
   t7.async_wait(boost::bind(increment_if_not_cancelled, &count,
-        asio::placeholders::error));
+        asio_sockio::placeholders::error));
   t7.async_wait(boost::bind(increment_if_not_cancelled, &count,
-        asio::placeholders::error));
-  asio::deadline_timer t8(ioc, seconds(1));
+        asio_sockio::placeholders::error));
+  asio_sockio::deadline_timer t8(ioc, seconds(1));
   t8.async_wait(boost::bind(cancel_one_timer, &t7));
 
   ioc.restart();
@@ -221,16 +221,16 @@ void deadline_timer_test()
   ASIO_CHECK(expected_end < end || expected_end == end);
 }
 
-void timer_handler(const asio::error_code&)
+void timer_handler(const asio_sockio::error_code&)
 {
 }
 
 void deadline_timer_cancel_test()
 {
-  static asio::io_context io_context;
+  static asio_sockio::io_context io_context;
   struct timer
   {
-    asio::deadline_timer t;
+    asio_sockio::deadline_timer t;
     timer() : t(io_context) { t.expires_at(boost::posix_time::pos_infin); }
   } timers[50];
 
@@ -248,7 +248,7 @@ void deadline_timer_cancel_test()
 struct custom_allocation_timer_handler
 {
   custom_allocation_timer_handler(int* count) : count_(count) {}
-  void operator()(const asio::error_code&) {}
+  void operator()(const asio_sockio::error_code&) {}
   int* count_;
 };
 
@@ -268,10 +268,10 @@ void asio_handler_deallocate(void* pointer, std::size_t,
 
 void deadline_timer_custom_allocation_test()
 {
-  static asio::io_context io_context;
+  static asio_sockio::io_context io_context;
   struct timer
   {
-    asio::deadline_timer t;
+    asio_sockio::deadline_timer t;
     timer() : t(io_context) {}
   } timers[100];
 
@@ -297,21 +297,21 @@ void deadline_timer_custom_allocation_test()
   ASIO_CHECK(allocation_count == 0);
 }
 
-void io_context_run(asio::io_context* ioc)
+void io_context_run(asio_sockio::io_context* ioc)
 {
   ioc->run();
 }
 
 void deadline_timer_thread_test()
 {
-  asio::io_context ioc;
-  asio::executor_work_guard<asio::io_context::executor_type> work
-    = asio::make_work_guard(ioc);
-  asio::deadline_timer t1(ioc);
-  asio::deadline_timer t2(ioc);
+  asio_sockio::io_context ioc;
+  asio_sockio::executor_work_guard<asio_sockio::io_context::executor_type> work
+    = asio_sockio::make_work_guard(ioc);
+  asio_sockio::deadline_timer t1(ioc);
+  asio_sockio::deadline_timer t2(ioc);
   int count = 0;
 
-  asio::thread th(boost::bind(io_context_run, &ioc));
+  asio_sockio::thread th(boost::bind(io_context_run, &ioc));
 
   t2.expires_from_now(boost::posix_time::seconds(2));
   t2.wait();
@@ -330,8 +330,8 @@ void deadline_timer_thread_test()
 
 void deadline_timer_async_result_test()
 {
-  asio::io_context ioc;
-  asio::deadline_timer t1(ioc);
+  asio_sockio::io_context ioc;
+  asio_sockio::deadline_timer t1(ioc);
 
   t1.expires_from_now(boost::posix_time::seconds(1));
   int i = t1.async_wait(archetypes::lazy_handler());
@@ -341,9 +341,9 @@ void deadline_timer_async_result_test()
 }
 
 #if defined(ASIO_HAS_MOVE)
-asio::deadline_timer make_timer(asio::io_context& ioc, int* count)
+asio_sockio::deadline_timer make_timer(asio_sockio::io_context& ioc, int* count)
 {
-  asio::deadline_timer t(ioc);
+  asio_sockio::deadline_timer t(ioc);
   t.expires_from_now(boost::posix_time::seconds(1));
   t.async_wait(boost::bind(increment, count));
   return t;
@@ -353,13 +353,13 @@ asio::deadline_timer make_timer(asio::io_context& ioc, int* count)
 void deadline_timer_move_test()
 {
 #if defined(ASIO_HAS_MOVE)
-  asio::io_context io_context1;
-  asio::io_context io_context2;
+  asio_sockio::io_context io_context1;
+  asio_sockio::io_context io_context2;
   int count = 0;
 
-  asio::deadline_timer t1 = make_timer(io_context1, &count);
-  asio::deadline_timer t2 = make_timer(io_context2, &count);
-  asio::deadline_timer t3 = std::move(t1);
+  asio_sockio::deadline_timer t1 = make_timer(io_context1, &count);
+  asio_sockio::deadline_timer t2 = make_timer(io_context2, &count);
+  asio_sockio::deadline_timer t3 = std::move(t1);
 
   t2 = std::move(t1);
 

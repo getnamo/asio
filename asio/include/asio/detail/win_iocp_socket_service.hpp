@@ -46,7 +46,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Protocol>
@@ -129,7 +129,7 @@ public:
   };
 
   // Constructor.
-  win_iocp_socket_service(asio::io_context& io_context)
+  win_iocp_socket_service(asio_sockio::io_context& io_context)
     : service_base<win_iocp_socket_service<Protocol> >(io_context),
       win_iocp_socket_service_base(io_context)
   {
@@ -194,8 +194,8 @@ public:
   }
 
   // Open a new socket implementation.
-  asio::error_code open(implementation_type& impl,
-      const protocol_type& protocol, asio::error_code& ec)
+  asio_sockio::error_code open(implementation_type& impl,
+      const protocol_type& protocol, asio_sockio::error_code& ec)
   {
     if (!do_open(impl, protocol.family(),
           protocol.type(), protocol.protocol(), ec))
@@ -208,9 +208,9 @@ public:
   }
 
   // Assign a native socket to a socket implementation.
-  asio::error_code assign(implementation_type& impl,
+  asio_sockio::error_code assign(implementation_type& impl,
       const protocol_type& protocol, const native_handle_type& native_socket,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     if (!do_assign(impl, protocol.type(), native_socket, ec))
     {
@@ -230,8 +230,8 @@ public:
   }
 
   // Bind the socket to the specified local endpoint.
-  asio::error_code bind(implementation_type& impl,
-      const endpoint_type& endpoint, asio::error_code& ec)
+  asio_sockio::error_code bind(implementation_type& impl,
+      const endpoint_type& endpoint, asio_sockio::error_code& ec)
   {
     socket_ops::bind(impl.socket_, endpoint.data(), endpoint.size(), ec);
     return ec;
@@ -239,8 +239,8 @@ public:
 
   // Set a socket option.
   template <typename Option>
-  asio::error_code set_option(implementation_type& impl,
-      const Option& option, asio::error_code& ec)
+  asio_sockio::error_code set_option(implementation_type& impl,
+      const Option& option, asio_sockio::error_code& ec)
   {
     socket_ops::setsockopt(impl.socket_, impl.state_,
         option.level(impl.protocol_), option.name(impl.protocol_),
@@ -250,8 +250,8 @@ public:
 
   // Set a socket option.
   template <typename Option>
-  asio::error_code get_option(const implementation_type& impl,
-      Option& option, asio::error_code& ec) const
+  asio_sockio::error_code get_option(const implementation_type& impl,
+      Option& option, asio_sockio::error_code& ec) const
   {
     std::size_t size = option.size(impl.protocol_);
     socket_ops::getsockopt(impl.socket_, impl.state_,
@@ -264,7 +264,7 @@ public:
 
   // Get the local endpoint.
   endpoint_type local_endpoint(const implementation_type& impl,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
     endpoint_type endpoint;
     std::size_t addr_len = endpoint.capacity();
@@ -276,7 +276,7 @@ public:
 
   // Get the remote endpoint.
   endpoint_type remote_endpoint(const implementation_type& impl,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
     endpoint_type endpoint = impl.remote_endpoint_;
     std::size_t addr_len = endpoint.capacity();
@@ -288,8 +288,8 @@ public:
   }
 
   // Disable sends or receives on the socket.
-  asio::error_code shutdown(base_implementation_type& impl,
-      socket_base::shutdown_type what, asio::error_code& ec)
+  asio_sockio::error_code shutdown(base_implementation_type& impl,
+      socket_base::shutdown_type what, asio_sockio::error_code& ec)
   {
     socket_ops::shutdown(impl.socket_, what, ec);
     return ec;
@@ -300,9 +300,9 @@ public:
   template <typename ConstBufferSequence>
   size_t send_to(implementation_type& impl, const ConstBufferSequence& buffers,
       const endpoint_type& destination, socket_base::message_flags flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    buffer_sequence_adapter<asio::const_buffer,
+    buffer_sequence_adapter<asio_sockio::const_buffer,
         ConstBufferSequence> bufs(buffers);
 
     return socket_ops::sync_sendto(impl.socket_, impl.state_,
@@ -313,7 +313,7 @@ public:
   // Wait until data can be sent without blocking.
   size_t send_to(implementation_type& impl, const null_buffers&,
       const endpoint_type&, socket_base::message_flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     // Wait for socket to become ready.
     socket_ops::poll_write(impl.socket_, impl.state_, -1, ec);
@@ -330,14 +330,14 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_socket_send_op<ConstBufferSequence, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, buffers, handler);
 
     ASIO_HANDLER_CREATION((io_context_, *p.p, "socket",
           &impl, impl.socket_, "async_send_to"));
 
-    buffer_sequence_adapter<asio::const_buffer,
+    buffer_sequence_adapter<asio_sockio::const_buffer,
         ConstBufferSequence> bufs(buffers);
 
     start_send_to_op(impl, bufs.buffers(), bufs.count(),
@@ -353,7 +353,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_null_buffers_op<Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, handler);
 
@@ -370,9 +370,9 @@ public:
   size_t receive_from(implementation_type& impl,
       const MutableBufferSequence& buffers,
       endpoint_type& sender_endpoint, socket_base::message_flags flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    buffer_sequence_adapter<asio::mutable_buffer,
+    buffer_sequence_adapter<asio_sockio::mutable_buffer,
         MutableBufferSequence> bufs(buffers);
 
     std::size_t addr_len = sender_endpoint.capacity();
@@ -389,7 +389,7 @@ public:
   // Wait until data can be received without blocking.
   size_t receive_from(implementation_type& impl,
       const null_buffers&, endpoint_type& sender_endpoint,
-      socket_base::message_flags, asio::error_code& ec)
+      socket_base::message_flags, asio_sockio::error_code& ec)
   {
     // Wait for socket to become ready.
     socket_ops::poll_read(impl.socket_, impl.state_, -1, ec);
@@ -411,14 +411,14 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_socket_recvfrom_op<
       MutableBufferSequence, endpoint_type, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(sender_endp, impl.cancel_token_, buffers, handler);
 
     ASIO_HANDLER_CREATION((io_context_, *p.p, "socket",
           &impl, impl.socket_, "async_receive_from"));
 
-    buffer_sequence_adapter<asio::mutable_buffer,
+    buffer_sequence_adapter<asio_sockio::mutable_buffer,
         MutableBufferSequence> bufs(buffers);
 
     start_receive_from_op(impl, bufs.buffers(), bufs.count(),
@@ -434,7 +434,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_null_buffers_op<Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.cancel_token_, handler);
 
@@ -450,13 +450,13 @@ public:
 
   // Accept a new connection.
   template <typename Socket>
-  asio::error_code accept(implementation_type& impl, Socket& peer,
-      endpoint_type* peer_endpoint, asio::error_code& ec)
+  asio_sockio::error_code accept(implementation_type& impl, Socket& peer,
+      endpoint_type* peer_endpoint, asio_sockio::error_code& ec)
   {
     // We cannot accept a socket that is already open.
     if (peer.is_open())
     {
-      ec = asio::error::already_open;
+      ec = asio_sockio::error::already_open;
       return ec;
     }
 
@@ -482,7 +482,7 @@ public:
   // Accept a new connection.
   typename Protocol::socket accept(implementation_type& impl,
       io_context* peer_io_context, endpoint_type* peer_endpoint,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     typename Protocol::socket peer(
         peer_io_context ? *peer_io_context : io_context_);
@@ -514,7 +514,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_socket_accept_op<Socket, protocol_type, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     bool enable_connection_aborted =
       (impl.state_ & socket_ops::enable_connection_aborted) != 0;
@@ -536,12 +536,12 @@ public:
   // must be valid until the accept's handler is invoked.
   template <typename Handler>
   void async_accept(implementation_type& impl,
-      asio::io_context* peer_io_context,
+      asio_sockio::io_context* peer_io_context,
       endpoint_type* peer_endpoint, Handler& handler)
   {
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_socket_move_accept_op<protocol_type, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     bool enable_connection_aborted =
       (impl.state_ & socket_ops::enable_connection_aborted) != 0;
@@ -561,8 +561,8 @@ public:
 #endif // defined(ASIO_HAS_MOVE)
 
   // Connect the socket to the specified endpoint.
-  asio::error_code connect(implementation_type& impl,
-      const endpoint_type& peer_endpoint, asio::error_code& ec)
+  asio_sockio::error_code connect(implementation_type& impl,
+      const endpoint_type& peer_endpoint, asio_sockio::error_code& ec)
   {
     socket_ops::sync_connect(impl.socket_,
         peer_endpoint.data(), peer_endpoint.size(), ec);
@@ -576,7 +576,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef win_iocp_socket_connect_op<Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(impl.socket_, handler);
 
@@ -590,7 +590,7 @@ public:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

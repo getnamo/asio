@@ -31,7 +31,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
   template <typename Handler, typename T>
@@ -50,13 +50,13 @@ namespace detail {
 
     void operator()(T value)
     {
-      *ec_ = asio::error_code();
+      *ec_ = asio_sockio::error_code();
       *value_ = ASIO_MOVE_CAST(T)(value);
       if (--*ready_ == 0)
         (*coro_)();
     }
 
-    void operator()(asio::error_code ec, T value)
+    void operator()(asio_sockio::error_code ec, T value)
     {
       *ec_ = ec;
       *value_ = ASIO_MOVE_CAST(T)(value);
@@ -69,7 +69,7 @@ namespace detail {
     typename basic_yield_context<Handler>::caller_type& ca_;
     Handler handler_;
     atomic_count* ready_;
-    asio::error_code* ec_;
+    asio_sockio::error_code* ec_;
     T* value_;
   };
 
@@ -88,12 +88,12 @@ namespace detail {
 
     void operator()()
     {
-      *ec_ = asio::error_code();
+      *ec_ = asio_sockio::error_code();
       if (--*ready_ == 0)
         (*coro_)();
     }
 
-    void operator()(asio::error_code ec)
+    void operator()(asio_sockio::error_code ec)
     {
       *ec_ = ec;
       if (--*ready_ == 0)
@@ -105,7 +105,7 @@ namespace detail {
     typename basic_yield_context<Handler>::caller_type& ca_;
     Handler handler_;
     atomic_count* ready_;
-    asio::error_code* ec_;
+    asio_sockio::error_code* ec_;
   };
 
   template <typename Handler, typename T>
@@ -171,7 +171,7 @@ namespace detail {
 
       if (--ready_ != 0)
         ca_();
-      if (!out_ec_ && ec_) throw asio::system_error(ec_);
+      if (!out_ec_ && ec_) throw asio_sockio::system_error(ec_);
       return ASIO_MOVE_CAST(return_type)(value_);
     }
 
@@ -179,8 +179,8 @@ namespace detail {
     completion_handler_type& handler_;
     typename basic_yield_context<Handler>::caller_type& ca_;
     atomic_count ready_;
-    asio::error_code* out_ec_;
-    asio::error_code ec_;
+    asio_sockio::error_code* out_ec_;
+    asio_sockio::error_code ec_;
     return_type value_;
   };
 
@@ -208,15 +208,15 @@ namespace detail {
 
       if (--ready_ != 0)
         ca_();
-      if (!out_ec_ && ec_) throw asio::system_error(ec_);
+      if (!out_ec_ && ec_) throw asio_sockio::system_error(ec_);
     }
 
   private:
     completion_handler_type& handler_;
     typename basic_yield_context<Handler>::caller_type& ca_;
     atomic_count ready_;
-    asio::error_code* out_ec_;
-    asio::error_code ec_;
+    asio_sockio::error_code* out_ec_;
+    asio_sockio::error_code ec_;
   };
 
 } // namespace detail
@@ -251,7 +251,7 @@ public:
 
 template <typename Handler, typename ReturnType>
 class async_result<basic_yield_context<Handler>,
-    ReturnType(asio::error_code)>
+    ReturnType(asio_sockio::error_code)>
   : public detail::coro_async_result<Handler, void>
 {
 public:
@@ -265,7 +265,7 @@ public:
 
 template <typename Handler, typename ReturnType, typename Arg2>
 class async_result<basic_yield_context<Handler>,
-    ReturnType(asio::error_code, Arg2)>
+    ReturnType(asio_sockio::error_code, Arg2)>
   : public detail::coro_async_result<Handler, typename decay<Arg2>::type>
 {
 public:
@@ -293,14 +293,14 @@ struct handler_type<basic_yield_context<Handler>, ReturnType(Arg1)>
 
 template <typename Handler, typename ReturnType>
 struct handler_type<basic_yield_context<Handler>,
-    ReturnType(asio::error_code)>
+    ReturnType(asio_sockio::error_code)>
 {
   typedef detail::coro_handler<Handler, void> type;
 };
 
 template <typename Handler, typename ReturnType, typename Arg2>
 struct handler_type<basic_yield_context<Handler>,
-    ReturnType(asio::error_code, Arg2)>
+    ReturnType(asio_sockio::error_code, Arg2)>
 {
   typedef detail::coro_handler<Handler, typename decay<Arg2>::type> type;
 };
@@ -431,7 +431,7 @@ inline void spawn(ASIO_MOVE_ARG(Function) function,
   typename associated_executor<function_type>::type ex(
       (get_associated_executor)(function));
 
-  asio::spawn(ex, ASIO_MOVE_CAST(Function)(function), attributes);
+  asio_sockio::spawn(ex, ASIO_MOVE_CAST(Function)(function), attributes);
 }
 
 template <typename Handler, typename Function>
@@ -491,7 +491,7 @@ inline void spawn(const Executor& ex,
     const boost::coroutines::attributes& attributes,
     typename enable_if<is_executor<Executor>::value>::type*)
 {
-  asio::spawn(asio::strand<Executor>(ex),
+  asio_sockio::spawn(asio_sockio::strand<Executor>(ex),
       ASIO_MOVE_CAST(Function)(function), attributes);
 }
 
@@ -500,17 +500,17 @@ inline void spawn(const strand<Executor>& ex,
     ASIO_MOVE_ARG(Function) function,
     const boost::coroutines::attributes& attributes)
 {
-  asio::spawn(asio::bind_executor(
+  asio_sockio::spawn(asio_sockio::bind_executor(
         ex, &detail::default_spawn_handler),
       ASIO_MOVE_CAST(Function)(function), attributes);
 }
 
 template <typename Function>
-inline void spawn(const asio::io_context::strand& s,
+inline void spawn(const asio_sockio::io_context::strand& s,
     ASIO_MOVE_ARG(Function) function,
     const boost::coroutines::attributes& attributes)
 {
-  asio::spawn(asio::bind_executor(
+  asio_sockio::spawn(asio_sockio::bind_executor(
         s, &detail::default_spawn_handler),
       ASIO_MOVE_CAST(Function)(function), attributes);
 }
@@ -522,13 +522,13 @@ inline void spawn(ExecutionContext& ctx,
     typename enable_if<is_convertible<
       ExecutionContext&, execution_context&>::value>::type*)
 {
-  asio::spawn(ctx.get_executor(),
+  asio_sockio::spawn(ctx.get_executor(),
       ASIO_MOVE_CAST(Function)(function), attributes);
 }
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

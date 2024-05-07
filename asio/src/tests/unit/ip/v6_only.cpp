@@ -32,8 +32,8 @@ namespace ip_v6_only_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -69,11 +69,11 @@ namespace ip_v6_only_runtime {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   io_context ioc;
-  asio::error_code ec;
+  asio_sockio::error_code ec;
 
   ip::tcp::endpoint ep_v6(ip::address_v6::loopback(), 0);
   ip::tcp::acceptor acceptor_v6(ioc);

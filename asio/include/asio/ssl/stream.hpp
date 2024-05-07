@@ -34,7 +34,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ssl {
 
 /// Provides stream-oriented functionality using SSL.
@@ -51,9 +51,9 @@ namespace ssl {
  * @par Example
  * To use the SSL stream template with an ip::tcp::socket, you would write:
  * @code
- * asio::io_context io_context;
- * asio::ssl::context ctx(asio::ssl::context::sslv23);
- * asio::ssl::stream<asio:ip::tcp::socket> sock(io_context, ctx);
+ * asio_sockio::io_context io_context;
+ * asio_sockio::ssl::context ctx(asio_sockio::ssl::context::sslv23);
+ * asio_sockio::ssl::stream<asio:ip::tcp::socket> sock(io_context, ctx);
  * @endcode
  *
  * @par Concepts:
@@ -134,14 +134,14 @@ public:
 #if !defined(ASIO_NO_DEPRECATED)
   /// (Deprecated: Use get_executor().) Get the io_context associated with the
   /// object.
-  asio::io_context& get_io_context()
+  asio_sockio::io_context& get_io_context()
   {
     return next_layer_.lowest_layer().get_io_context();
   }
 
   /// (Deprecated: Use get_executor().) Get the io_context associated with the
   /// object.
-  asio::io_context& get_io_service()
+  asio_sockio::io_context& get_io_service()
   {
     return next_layer_.lowest_layer().get_io_service();
   }
@@ -158,7 +158,7 @@ public:
    * suitable for passing to functions such as @c SSL_get_verify_result and
    * @c SSL_get_peer_certificate:
    * @code
-   * asio::ssl::stream<asio:ip::tcp::socket> sock(io_context, ctx);
+   * asio_sockio::ssl::stream<asio:ip::tcp::socket> sock(io_context, ctx);
    *
    * // ... establish connection and perform handshake ...
    *
@@ -236,15 +236,15 @@ public:
    * @param v A bitmask of peer verification modes. See @ref verify_mode for
    * available values.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note Calls @c SSL_set_verify.
    */
   void set_verify_mode(verify_mode v)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     set_verify_mode(v, ec);
-    asio::detail::throw_error(ec, "set_verify_mode");
+    asio_sockio::detail::throw_error(ec, "set_verify_mode");
   }
 
   /// Set the peer verification mode.
@@ -260,7 +260,7 @@ public:
    * @note Calls @c SSL_set_verify.
    */
   ASIO_SYNC_OP_VOID set_verify_mode(
-      verify_mode v, asio::error_code& ec)
+      verify_mode v, asio_sockio::error_code& ec)
   {
     core_.engine_.set_verify_mode(v, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -274,15 +274,15 @@ public:
    * @param depth Maximum depth for the certificate chain verification that
    * shall be allowed.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note Calls @c SSL_set_verify_depth.
    */
   void set_verify_depth(int depth)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     set_verify_depth(depth, ec);
-    asio::detail::throw_error(ec, "set_verify_depth");
+    asio_sockio::detail::throw_error(ec, "set_verify_depth");
   }
 
   /// Set the peer verification depth.
@@ -298,7 +298,7 @@ public:
    * @note Calls @c SSL_set_verify_depth.
    */
   ASIO_SYNC_OP_VOID set_verify_depth(
-      int depth, asio::error_code& ec)
+      int depth, asio_sockio::error_code& ec)
   {
     core_.engine_.set_verify_depth(depth, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -318,16 +318,16 @@ public:
    * The return value of the callback is true if the certificate has passed
    * verification, false otherwise.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note Calls @c SSL_set_verify.
    */
   template <typename VerifyCallback>
   void set_verify_callback(VerifyCallback callback)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->set_verify_callback(callback, ec);
-    asio::detail::throw_error(ec, "set_verify_callback");
+    asio_sockio::detail::throw_error(ec, "set_verify_callback");
   }
 
   /// Set the callback used to verify peer certificates.
@@ -350,7 +350,7 @@ public:
    */
   template <typename VerifyCallback>
   ASIO_SYNC_OP_VOID set_verify_callback(VerifyCallback callback,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     core_.engine_.set_verify_callback(
         new detail::verify_callback<VerifyCallback>(callback), ec);
@@ -365,13 +365,13 @@ public:
    * @param type The type of handshaking to be performed, i.e. as a client or as
    * a server.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void handshake(handshake_type type)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     handshake(type, ec);
-    asio::detail::throw_error(ec, "handshake");
+    asio_sockio::detail::throw_error(ec, "handshake");
   }
 
   /// Perform SSL handshaking.
@@ -385,7 +385,7 @@ public:
    * @param ec Set to indicate what error occurred, if any.
    */
   ASIO_SYNC_OP_VOID handshake(handshake_type type,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     detail::io(next_layer_, core_, detail::handshake_op(type), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -401,14 +401,14 @@ public:
    *
    * @param buffers The buffered data to be reused for the handshake.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   template <typename ConstBufferSequence>
   void handshake(handshake_type type, const ConstBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     handshake(type, buffers, ec);
-    asio::detail::throw_error(ec, "handshake");
+    asio_sockio::detail::throw_error(ec, "handshake");
   }
 
   /// Perform SSL handshaking.
@@ -425,7 +425,7 @@ public:
    */
   template <typename ConstBufferSequence>
   ASIO_SYNC_OP_VOID handshake(handshake_type type,
-      const ConstBufferSequence& buffers, asio::error_code& ec)
+      const ConstBufferSequence& buffers, asio_sockio::error_code& ec)
   {
     detail::io(next_layer_, core_,
         detail::buffered_handshake_op<ConstBufferSequence>(type, buffers), ec);
@@ -444,12 +444,12 @@ public:
    * completes. Copies will be made of the handler as required. The equivalent
    * function signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error // Result of operation.
+   *   const asio_sockio::error_code& error // Result of operation.
    * ); @endcode
    */
   template <typename HandshakeHandler>
   ASIO_INITFN_RESULT_TYPE(HandshakeHandler,
-      void (asio::error_code))
+      void (asio_sockio::error_code))
   async_handshake(handshake_type type,
       ASIO_MOVE_ARG(HandshakeHandler) handler)
   {
@@ -457,8 +457,8 @@ public:
     // not meet the documented type requirements for a HandshakeHandler.
     ASIO_HANDSHAKE_HANDLER_CHECK(HandshakeHandler, handler) type_check;
 
-    asio::async_completion<HandshakeHandler,
-      void (asio::error_code)> init(handler);
+    asio_sockio::async_completion<HandshakeHandler,
+      void (asio_sockio::error_code)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::handshake_op(type), init.completion_handler);
@@ -483,13 +483,13 @@ public:
    * completes. Copies will be made of the handler as required. The equivalent
    * function signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred // Amount of buffers used in handshake.
    * ); @endcode
    */
   template <typename ConstBufferSequence, typename BufferedHandshakeHandler>
   ASIO_INITFN_RESULT_TYPE(BufferedHandshakeHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_handshake(handshake_type type, const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(BufferedHandshakeHandler) handler)
   {
@@ -498,8 +498,8 @@ public:
     ASIO_BUFFERED_HANDSHAKE_HANDLER_CHECK(
         BufferedHandshakeHandler, handler) type_check;
 
-    asio::async_completion<BufferedHandshakeHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+    asio_sockio::async_completion<BufferedHandshakeHandler,
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::buffered_handshake_op<ConstBufferSequence>(type, buffers),
@@ -513,13 +513,13 @@ public:
    * This function is used to shut down SSL on the stream. The function call
    * will block until SSL has been shut down or an error occurs.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void shutdown()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     shutdown(ec);
-    asio::detail::throw_error(ec, "shutdown");
+    asio_sockio::detail::throw_error(ec, "shutdown");
   }
 
   /// Shut down SSL on the stream.
@@ -529,7 +529,7 @@ public:
    *
    * @param ec Set to indicate what error occurred, if any.
    */
-  ASIO_SYNC_OP_VOID shutdown(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID shutdown(asio_sockio::error_code& ec)
   {
     detail::io(next_layer_, core_, detail::shutdown_op(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -544,20 +544,20 @@ public:
    * completes. Copies will be made of the handler as required. The equivalent
    * function signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error // Result of operation.
+   *   const asio_sockio::error_code& error // Result of operation.
    * ); @endcode
    */
   template <typename ShutdownHandler>
   ASIO_INITFN_RESULT_TYPE(ShutdownHandler,
-      void (asio::error_code))
+      void (asio_sockio::error_code))
   async_shutdown(ASIO_MOVE_ARG(ShutdownHandler) handler)
   {
     // If you get an error on the following line it means that your handler does
     // not meet the documented type requirements for a ShutdownHandler.
     ASIO_SHUTDOWN_HANDLER_CHECK(ShutdownHandler, handler) type_check;
 
-    asio::async_completion<ShutdownHandler,
-      void (asio::error_code)> init(handler);
+    asio_sockio::async_completion<ShutdownHandler,
+      void (asio_sockio::error_code)> init(handler);
 
     detail::async_io(next_layer_, core_, detail::shutdown_op(),
         init.completion_handler);
@@ -575,7 +575,7 @@ public:
    *
    * @returns The number of bytes written.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note The write_some operation may not transmit all of the data to the
    * peer. Consider using the @ref write function if you need to ensure that all
@@ -584,9 +584,9 @@ public:
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t n = write_some(buffers, ec);
-    asio::detail::throw_error(ec, "write_some");
+    asio_sockio::detail::throw_error(ec, "write_some");
     return n;
   }
 
@@ -608,7 +608,7 @@ public:
    */
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return detail::io(next_layer_, core_,
         detail::write_op<ConstBufferSequence>(buffers), ec);
@@ -628,7 +628,7 @@ public:
    * Copies will be made of the handler as required. The equivalent function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred           // Number of bytes written.
    * ); @endcode
    *
@@ -639,7 +639,7 @@ public:
    */
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
@@ -647,8 +647,8 @@ public:
     // not meet the documented type requirements for a WriteHandler.
     ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
-    asio::async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+    asio_sockio::async_completion<WriteHandler,
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::write_op<ConstBufferSequence>(buffers),
@@ -667,7 +667,7 @@ public:
    *
    * @returns The number of bytes read.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    *
    * @note The read_some operation may not read all of the requested number of
    * bytes. Consider using the @ref read function if you need to ensure that the
@@ -676,9 +676,9 @@ public:
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t n = read_some(buffers, ec);
-    asio::detail::throw_error(ec, "read_some");
+    asio_sockio::detail::throw_error(ec, "read_some");
     return n;
   }
 
@@ -700,7 +700,7 @@ public:
    */
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return detail::io(next_layer_, core_,
         detail::read_op<MutableBufferSequence>(buffers), ec);
@@ -720,7 +720,7 @@ public:
    * Copies will be made of the handler as required. The equivalent function
    * signature of the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred           // Number of bytes read.
    * ); @endcode
    *
@@ -731,7 +731,7 @@ public:
    */
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
@@ -739,8 +739,8 @@ public:
     // not meet the documented type requirements for a ReadHandler.
     ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-    asio::async_completion<ReadHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+    asio_sockio::async_completion<ReadHandler,
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     detail::async_io(next_layer_, core_,
         detail::read_op<MutableBufferSequence>(buffers),
@@ -755,7 +755,7 @@ private:
 };
 
 } // namespace ssl
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

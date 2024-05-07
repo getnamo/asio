@@ -16,14 +16,14 @@
 #include <asio/write.hpp>
 #include <cstdio>
 
-using asio::ip::tcp;
-using asio::experimental::co_spawn;
-using asio::experimental::detached;
-namespace this_coro = asio::experimental::this_coro;
+using asio_sockio::ip::tcp;
+using asio_sockio::experimental::co_spawn;
+using asio_sockio::experimental::detached;
+namespace this_coro = asio_sockio::experimental::this_coro;
 
 template <typename T>
-  using awaitable = asio::experimental::awaitable<
-    T, asio::io_context::executor_type>;
+  using awaitable = asio_sockio::experimental::awaitable<
+    T, asio_sockio::io_context::executor_type>;
 
 awaitable<void> echo(tcp::socket s)
 {
@@ -38,16 +38,16 @@ awaitable<void> echo(tcp::socket s)
    char* p2 = data2;
 
    // Perform initial read into first buffer.
-   size_t n = co_await s.async_read_some(asio::buffer(p1, 1024), token);
+   size_t n = co_await s.async_read_some(asio_sockio::buffer(p1, 1024), token);
 
    for (;;)
    {
      // Swap received data to other buffer and initiate write operation.
      std::swap(p1, p2);
-     auto write_result = asio::async_write(s, asio::buffer(p2, n), token);
+     auto write_result = asio_sockio::async_write(s, asio_sockio::buffer(p2, n), token);
 
      // Perform next read while write operation is in progress.
-     n = co_await s.async_read_some(asio::buffer(p1, 1024), token);
+     n = co_await s.async_read_some(asio_sockio::buffer(p1, 1024), token);
 
      // Wait for write operation to complete before proceeding.
      co_await write_result;
@@ -81,9 +81,9 @@ int main()
 {
   try
   {
-    asio::io_context io_context(1);
+    asio_sockio::io_context io_context(1);
 
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
+    asio_sockio::signal_set signals(io_context, SIGINT, SIGTERM);
     signals.async_wait([&](auto, auto){ io_context.stop(); });
 
     co_spawn(io_context, listener, detached);

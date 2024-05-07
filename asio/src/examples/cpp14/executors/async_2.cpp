@@ -3,12 +3,12 @@
 #include <iostream>
 #include <string>
 
-using asio::bind_executor;
-using asio::dispatch;
-using asio::get_associated_executor;
-using asio::make_work_guard;
-using asio::post;
-using asio::thread_pool;
+using asio_sockio::bind_executor;
+using asio_sockio::dispatch;
+using asio_sockio::get_associated_executor;
+using asio_sockio::make_work_guard;
+using asio_sockio::post;
+using asio_sockio::thread_pool;
 
 // A function to asynchronously read a single line from an input stream.
 template <class Handler>

@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace experimental {
 
 /// Class used to specify that an asynchronous operation is detached.
@@ -30,9 +30,9 @@ namespace experimental {
  * detached. That is, there is no completion handler waiting for the
  * operation's result. A detached_t object may be passed as a handler to an
  * asynchronous operation, typically using the special value
- * @c asio::experimental::detached. For example:
+ * @c asio_sockio::experimental::detached. For example:
 
- * @code my_socket.async_send(my_buffer, asio::experimental::detached);
+ * @code my_socket.async_send(my_buffer, asio_sockio::experimental::detached);
  * @endcode
  */
 class detached_t
@@ -46,7 +46,7 @@ public:
 
 /// A special value, similar to std::nothrow.
 /**
- * See the documentation for asio::experimental::detached_t for a usage
+ * See the documentation for asio_sockio::experimental::detached_t for a usage
  * example.
  */
 #if defined(ASIO_HAS_CONSTEXPR) || defined(GENERATING_DOCUMENTATION)
@@ -56,7 +56,7 @@ __declspec(selectany) detached_t detached;
 #endif
 
 } // namespace experimental
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -10,11 +10,11 @@
 #include <typeinfo>
 #include <vector>
 
-using asio::defer;
-using asio::executor;
-using asio::post;
-using asio::strand;
-using asio::system_executor;
+using asio_sockio::defer;
+using asio_sockio::executor;
+using asio_sockio::post;
+using asio_sockio::strand;
+using asio_sockio::system_executor;
 
 //------------------------------------------------------------------------------
 // A tiny actor framework
@@ -216,7 +216,7 @@ private:
 #include <asio/thread_pool.hpp>
 #include <iostream>
 
-using asio::thread_pool;
+using asio_sockio::thread_pool;
 
 class member : public actor
 {

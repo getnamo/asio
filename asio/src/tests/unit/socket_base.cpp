@@ -32,8 +32,8 @@ namespace socket_base_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
@@ -202,14 +202,14 @@ namespace socket_base_runtime {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   io_context ioc;
   ip::udp::socket udp_sock(ioc, ip::udp::v4());
   ip::tcp::socket tcp_sock(ioc, ip::tcp::v4());
   ip::tcp::acceptor tcp_acceptor(ioc, ip::tcp::v4());
-  asio::error_code ec;
+  asio_sockio::error_code ec;
 
   // broadcast class.
 
@@ -250,13 +250,13 @@ void test()
   udp_sock.set_option(debug1, ec);
 #if defined(__linux__)
   // On Linux, only root can set SO_DEBUG.
-  bool not_root = (ec == asio::error::access_denied);
+  bool not_root = (ec == asio_sockio::error::access_denied);
   ASIO_CHECK(!ec || not_root);
   ASIO_WARN_MESSAGE(!ec, "Must be root to set debug socket option");
 #else // defined(__linux__)
 # if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 # else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -267,7 +267,7 @@ void test()
   udp_sock.get_option(debug2, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -292,7 +292,7 @@ void test()
 #else // defined(__linux__)
 # if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 # else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -303,7 +303,7 @@ void test()
   udp_sock.get_option(debug4, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -327,7 +327,7 @@ void test()
   udp_sock.set_option(do_not_route1, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -337,7 +337,7 @@ void test()
   udp_sock.get_option(do_not_route2, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -353,7 +353,7 @@ void test()
   udp_sock.set_option(do_not_route3, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -363,7 +363,7 @@ void test()
   udp_sock.get_option(do_not_route4, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -473,7 +473,7 @@ void test()
   tcp_sock.set_option(receive_buffer_size1, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());
@@ -493,7 +493,7 @@ void test()
   tcp_sock.set_option(receive_buffer_size3, ec);
 #if defined(ASIO_WINDOWS) && defined(UNDER_CE)
   // Option is not supported under Windows CE.
-  ASIO_CHECK_MESSAGE(ec == asio::error::no_protocol_option,
+  ASIO_CHECK_MESSAGE(ec == asio_sockio::error::no_protocol_option,
       ec.value() << ", " << ec.message());
 #else // defined(ASIO_WINDOWS) && defined(UNDER_CE)
   ASIO_CHECK_MESSAGE(!ec, ec.value() << ", " << ec.message());

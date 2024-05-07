@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class signal_op
@@ -28,7 +28,7 @@ class signal_op
 {
 public:
   // The error code to be passed to the completion handler.
-  asio::error_code ec_;
+  asio_sockio::error_code ec_;
 
   // The signal number to be passed to the completion handler.
   int signal_number_;
@@ -42,7 +42,7 @@ protected:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

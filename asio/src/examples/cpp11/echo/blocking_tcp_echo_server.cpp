@@ -14,7 +14,7 @@
 #include <utility>
 #include "asio.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 const int max_length = 1024;
 
@@ -26,14 +26,14 @@ void session(tcp::socket sock)
     {
       char data[max_length];
 
-      asio::error_code error;
-      size_t length = sock.read_some(asio::buffer(data), error);
-      if (error == asio::error::eof)
+      asio_sockio::error_code error;
+      size_t length = sock.read_some(asio_sockio::buffer(data), error);
+      if (error == asio_sockio::error::eof)
         break; // Connection closed cleanly by peer.
       else if (error)
-        throw asio::system_error(error); // Some other error.
+        throw asio_sockio::system_error(error); // Some other error.
 
-      asio::write(sock, asio::buffer(data, length));
+      asio_sockio::write(sock, asio_sockio::buffer(data, length));
     }
   }
   catch (std::exception& e)
@@ -42,7 +42,7 @@ void session(tcp::socket sock)
   }
 }
 
-void server(asio::io_context& io_context, unsigned short port)
+void server(asio_sockio::io_context& io_context, unsigned short port)
 {
   tcp::acceptor a(io_context, tcp::endpoint(tcp::v4(), port));
   for (;;)
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     server(io_context, std::atoi(argv[1]));
   }

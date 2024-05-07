@@ -41,7 +41,7 @@
 # define ASIO_TEST_IOSTREAM std::cerr
 #endif // !defined(ASIO_TEST_IOSTREAM)
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 inline const char*& test_name()
@@ -58,8 +58,8 @@ inline atomic_count& test_errors()
 
 inline void begin_test_suite(const char* name)
 {
-  asio::detail::test_name();
-  asio::detail::test_errors();
+  asio_sockio::detail::test_name();
+  asio_sockio::detail::test_errors();
   ASIO_TEST_IOSTREAM << name << " test suite begins" << std::endl;
 }
 
@@ -67,7 +67,7 @@ inline int end_test_suite(const char* name)
 {
   ASIO_TEST_IOSTREAM << name << " test suite ends" << std::endl;
   ASIO_TEST_IOSTREAM << "\n*** ";
-  long errors = asio::detail::test_errors();
+  long errors = asio_sockio::detail::test_errors();
   if (errors == 0)
     ASIO_TEST_IOSTREAM << "No errors detected.";
   else if (errors == 1)
@@ -82,7 +82,7 @@ template <void (*Test)()>
 inline void run_test(const char* name)
 {
   test_name() = name;
-  long errors_before = asio::detail::test_errors();
+  long errors_before = asio_sockio::detail::test_errors();
   Test();
   if (test_errors() == errors_before)
     ASIO_TEST_IOSTREAM << name << " passed" << std::endl;
@@ -108,52 +108,52 @@ void throw_exception(const T& t)
 #endif // defined(ASIO_NO_EXCEPTIONS)
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #define ASIO_CHECK(expr) \
   do { if (!(expr)) { \
     ASIO_TEST_IOSTREAM << __FILE__ << "(" << __LINE__ << "): " \
-      << asio::detail::test_name() << ": " \
+      << asio_sockio::detail::test_name() << ": " \
       << "check '" << #expr << "' failed" << std::endl; \
-    ++asio::detail::test_errors(); \
+    ++asio_sockio::detail::test_errors(); \
   } } while (0)
 
 #define ASIO_CHECK_MESSAGE(expr, msg) \
   do { if (!(expr)) { \
     ASIO_TEST_IOSTREAM << __FILE__ << "(" << __LINE__ << "): " \
-      << asio::detail::test_name() << ": " \
+      << asio_sockio::detail::test_name() << ": " \
       << msg << std::endl; \
-    ++asio::detail::test_errors(); \
+    ++asio_sockio::detail::test_errors(); \
   } } while (0)
 
 #define ASIO_WARN_MESSAGE(expr, msg) \
   do { if (!(expr)) { \
     ASIO_TEST_IOSTREAM << __FILE__ << "(" << __LINE__ << "): " \
-      << asio::detail::test_name() << ": " \
+      << asio_sockio::detail::test_name() << ": " \
       << msg << std::endl; \
   } } while (0)
 
 #define ASIO_ERROR(msg) \
   do { \
     ASIO_TEST_IOSTREAM << __FILE__ << "(" << __LINE__ << "): " \
-      << asio::detail::test_name() << ": " \
+      << asio_sockio::detail::test_name() << ": " \
       << msg << std::endl; \
-    ++asio::detail::test_errors(); \
+    ++asio_sockio::detail::test_errors(); \
   } while (0)
 
 #define ASIO_TEST_SUITE(name, tests) \
   int main() \
   { \
-    asio::detail::begin_test_suite(name); \
+    asio_sockio::detail::begin_test_suite(name); \
     tests \
-    return asio::detail::end_test_suite(name); \
+    return asio_sockio::detail::end_test_suite(name); \
   }
 
 #define ASIO_TEST_CASE(test) \
-  asio::detail::run_test<&test>(#test);
+  asio_sockio::detail::run_test<&test>(#test);
 
 #define ASIO_COMPILE_TEST_CASE(test) \
-  asio::detail::compile_test<&test>(#test);
+  asio_sockio::detail::compile_test<&test>(#test);
 
 inline void null_test()
 {

@@ -25,7 +25,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Handler, typename Arg1>
@@ -809,7 +809,7 @@ struct associated_executor<detail::move_binder2<Handler, Arg1, Arg2>, Executor>
 
 #endif // defined(ASIO_HAS_MOVE)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

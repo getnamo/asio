@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Submits a completion token or function object for execution.
 /**
@@ -99,7 +99,7 @@ ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
     typename enable_if<is_convertible<
       ExecutionContext&, execution_context&>::value>::type* = 0);
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

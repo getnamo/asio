@@ -23,24 +23,24 @@ class client
 {
 public:
   /// Constructor starts the asynchronous connect operation.
-  client(asio::io_context& io_context,
+  client(asio_sockio::io_context& io_context,
       const std::string& host, const std::string& service)
     : connection_(io_context)
   {
     // Resolve the host name into an IP address.
-    asio::ip::tcp::resolver resolver(io_context);
-    asio::ip::tcp::resolver::query query(host, service);
-    asio::ip::tcp::resolver::iterator endpoint_iterator =
+    asio_sockio::ip::tcp::resolver resolver(io_context);
+    asio_sockio::ip::tcp::resolver::query query(host, service);
+    asio_sockio::ip::tcp::resolver::iterator endpoint_iterator =
       resolver.resolve(query);
 
     // Start an asynchronous connect operation.
-    asio::async_connect(connection_.socket(), endpoint_iterator,
+    asio_sockio::async_connect(connection_.socket(), endpoint_iterator,
         boost::bind(&client::handle_connect, this,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   /// Handle completion of a connect operation.
-  void handle_connect(const asio::error_code& e)
+  void handle_connect(const asio_sockio::error_code& e)
   {
     if (!e)
     {
@@ -49,7 +49,7 @@ public:
       // decode the data that is read from the underlying socket.
       connection_.async_read(stocks_,
           boost::bind(&client::handle_read, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -61,7 +61,7 @@ public:
   }
 
   /// Handle completion of a read operation.
-  void handle_read(const asio::error_code& e)
+  void handle_read(const asio_sockio::error_code& e)
   {
     if (!e)
     {
@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     s11n_example::client client(io_context, argv[1], argv[2]);
     io_context.run();
   }

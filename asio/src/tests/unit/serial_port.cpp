@@ -33,7 +33,7 @@ namespace serial_port_compile {
 struct write_some_handler
 {
   write_some_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   write_some_handler(write_some_handler&&) {}
 private:
@@ -44,7 +44,7 @@ private:
 struct read_some_handler
 {
   read_some_handler() {}
-  void operator()(const asio::error_code&, std::size_t) {}
+  void operator()(const asio_sockio::error_code&, std::size_t) {}
 #if defined(ASIO_HAS_MOVE)
   read_some_handler(read_some_handler&&) {}
 private:
@@ -55,7 +55,7 @@ private:
 void test()
 {
 #if defined(ASIO_HAS_SERIAL_PORT)
-  using namespace asio;
+  using namespace asio_sockio;
 
   try
   {
@@ -64,7 +64,7 @@ void test()
     const char const_char_buffer[128] = "";
     serial_port::baud_rate serial_port_option;
     archetypes::lazy_handler lazy;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_serial_port constructors.
 

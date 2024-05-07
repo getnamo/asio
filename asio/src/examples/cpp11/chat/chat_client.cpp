@@ -15,14 +15,14 @@
 #include "asio.hpp"
 #include "chat_message.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
 
 class chat_client
 {
 public:
-  chat_client(asio::io_context& io_context,
+  chat_client(asio_sockio::io_context& io_context,
       const tcp::resolver::results_type& endpoints)
     : io_context_(io_context),
       socket_(io_context)
@@ -32,7 +32,7 @@ public:
 
   void write(const chat_message& msg)
   {
-    asio::post(io_context_,
+    asio_sockio::post(io_context_,
         [this, msg]()
         {
           bool write_in_progress = !write_msgs_.empty();
@@ -46,13 +46,13 @@ public:
 
   void close()
   {
-    asio::post(io_context_, [this]() { socket_.close(); });
+    asio_sockio::post(io_context_, [this]() { socket_.close(); });
   }
 
 private:
   void do_connect(const tcp::resolver::results_type& endpoints)
   {
-    asio::async_connect(socket_, endpoints,
+    asio_sockio::async_connect(socket_, endpoints,
         [this](std::error_code ec, tcp::endpoint)
         {
           if (!ec)
@@ -64,8 +64,8 @@ private:
 
   void do_read_header()
   {
-    asio::async_read(socket_,
-        asio::buffer(read_msg_.data(), chat_message::header_length),
+    asio_sockio::async_read(socket_,
+        asio_sockio::buffer(read_msg_.data(), chat_message::header_length),
         [this](std::error_code ec, std::size_t /*length*/)
         {
           if (!ec && read_msg_.decode_header())
@@ -81,8 +81,8 @@ private:
 
   void do_read_body()
   {
-    asio::async_read(socket_,
-        asio::buffer(read_msg_.body(), read_msg_.body_length()),
+    asio_sockio::async_read(socket_,
+        asio_sockio::buffer(read_msg_.body(), read_msg_.body_length()),
         [this](std::error_code ec, std::size_t /*length*/)
         {
           if (!ec)
@@ -100,8 +100,8 @@ private:
 
   void do_write()
   {
-    asio::async_write(socket_,
-        asio::buffer(write_msgs_.front().data(),
+    asio_sockio::async_write(socket_,
+        asio_sockio::buffer(write_msgs_.front().data(),
           write_msgs_.front().length()),
         [this](std::error_code ec, std::size_t /*length*/)
         {
@@ -121,7 +121,7 @@ private:
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   tcp::socket socket_;
   chat_message read_msg_;
   chat_message_queue write_msgs_;
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::resolver resolver(io_context);
     auto endpoints = resolver.resolve(argv[1], argv[2]);

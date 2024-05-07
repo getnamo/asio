@@ -30,21 +30,21 @@
 
 namespace windows_object_handle_compile {
 
-void wait_handler(const asio::error_code&)
+void wait_handler(const asio_sockio::error_code&)
 {
 }
 
 void test()
 {
 #if defined(ASIO_HAS_WINDOWS_OBJECT_HANDLE)
-  using namespace asio;
-  namespace win = asio::windows;
+  using namespace asio_sockio;
+  namespace win = asio_sockio::windows;
 
   try
   {
     io_context ioc;
     archetypes::lazy_handler lazy;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_object_handle constructors.
 

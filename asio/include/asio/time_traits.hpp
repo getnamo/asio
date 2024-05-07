@@ -24,7 +24,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Time traits suitable for use with the deadline timer.
 template <typename Time>
@@ -76,7 +76,7 @@ struct time_traits<boost::posix_time::ptime>
   }
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

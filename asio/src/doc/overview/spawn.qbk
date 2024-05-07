@@ -12,11 +12,11 @@ running stackful coroutines. It is based on the Boost.Coroutine library. The
 `spawn()` function enables programs to implement asynchronous logic in a
 synchronous manner, as shown in the following example:
 
-  asio::spawn(my_strand, do_echo);
+  asio_sockio::spawn(my_strand, do_echo);
 
   // ...
 
-  void do_echo(asio::yield_context yield)
+  void do_echo(asio_sockio::yield_context yield)
   {
     try
     {
@@ -25,10 +25,10 @@ synchronous manner, as shown in the following example:
       {
         std::size_t length =
           my_socket.async_read_some(
-            asio::buffer(data), yield);
+            asio_sockio::buffer(data), yield);
 
-        asio::async_write(my_socket,
-            asio::buffer(data, length), yield);
+        asio_sockio::async_write(my_socket,
+            asio_sockio::buffer(data, length), yield);
       }
     }
     catch (std::exception& e)
@@ -48,7 +48,7 @@ synchronisation is required.
 
 The second argument is a function object with signature:
 
-  void coroutine(asio::yield_context yield);
+  void coroutine(asio_sockio::yield_context yield);
 
 that specifies the code to be run as part of the coroutine. The parameter
 `yield` may be passed to an asynchronous operation in place of the completion
@@ -56,7 +56,7 @@ handler, as in:
 
   std::size_t length =
     my_socket.async_read_some(
-      asio::buffer(data), yield);
+      asio_sockio::buffer(data), yield);
 
 This starts the asynchronous operation and suspends the coroutine. The
 coroutine will be resumed automatically when the asynchronous operation
@@ -64,7 +64,7 @@ completes.
 
 Where an asynchronous operation's handler signature has the form:
 
-  void handler(asio::error_code ec, result_type result);
+  void handler(asio_sockio::error_code ec, result_type result);
 
 the initiating function returns the result_type. In the `async_read_some`
 example above, this is `size_t`. If the asynchronous operation fails, the
@@ -72,7 +72,7 @@ example above, this is `size_t`. If the asynchronous operation fails, the
 
 Where a handler signature has the form:
 
-  void handler(asio::error_code ec);
+  void handler(asio_sockio::error_code ec);
 
 the initiating function returns `void`. As above, an error is passed back to
 the coroutine as a `system_error` exception.
@@ -80,15 +80,15 @@ the coroutine as a `system_error` exception.
 To collect the `error_code` from an operation, rather than have it throw an
 exception, associate the output variable with the `yield_context` as follows:
 
-  asio::error_code ec;
+  asio_sockio::error_code ec;
   std::size_t length =
     my_socket.async_read_some(
-      asio::buffer(data), yield[ec]);
+      asio_sockio::buffer(data), yield[ec]);
   
 [*Note:] if `spawn()` is used with a custom completion handler of type
 `Handler`, the function object signature is actually:
   
-  void coroutine(asio::basic_yield_context<Handler> yield);
+  void coroutine(asio_sockio::basic_yield_context<Handler> yield);
 
 [heading See Also]
 

@@ -38,9 +38,9 @@ public:
    *
    * @param identifier An identifier for this logger.
    */
-  explicit basic_logger(asio::io_context& io_context,
+  explicit basic_logger(asio_sockio::io_context& io_context,
       const std::string& identifier)
-    : service_(asio::use_service<Service>(io_context)),
+    : service_(asio_sockio::use_service<Service>(io_context)),
       impl_(service_.null())
   {
     service_.create(impl_, identifier);
@@ -53,7 +53,7 @@ public:
   }
 
   /// Get the io_context associated with the object.
-  asio::io_context& get_io_context()
+  asio_sockio::io_context& get_io_context()
   {
     return service_.get_io_context();
   }

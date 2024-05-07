@@ -18,8 +18,8 @@ used in the corresponding `connect()` or async_connect()` function.
 A free function as an iterator connect handler:
 
   void connect_handler(
-      const asio::error_code& ec,
-      asio::ip::tcp::resolver::iterator iterator)
+      const asio_sockio::error_code& ec,
+      asio_sockio::ip::tcp::resolver::iterator iterator)
   {
     ...
   }
@@ -31,7 +31,7 @@ An iterator connect handler function object:
     ...
     template <typename Iterator>
     void operator()(
-        const asio::error_code& ec,
+        const asio_sockio::error_code& ec,
         Iterator iterator)
     {
       ...
@@ -41,9 +41,9 @@ An iterator connect handler function object:
 
 A lambda as an iterator connect handler:
 
-  asio::async_connect(...,
-      [](const asio::error_code& ec,
-        asio::ip::tcp::resolver::iterator iterator)
+  asio_sockio::async_connect(...,
+      [](const asio_sockio::error_code& ec,
+        asio_sockio::ip::tcp::resolver::iterator iterator)
       {
         ...
       });
@@ -52,13 +52,13 @@ A non-static class member function adapted to an iterator connect handler using
 `std::bind()`:
 
   void my_class::connect_handler(
-      const asio::error_code& ec,
-      asio::ip::tcp::resolver::iterator iterator)
+      const asio_sockio::error_code& ec,
+      asio_sockio::ip::tcp::resolver::iterator iterator)
   {
     ...
   }
   ...
-  asio::async_connect(...,
+  asio_sockio::async_connect(...,
       std::bind(&my_class::connect_handler,
         this, std::placeholders::_1,
         std::placeholders::_2));
@@ -67,15 +67,15 @@ A non-static class member function adapted to an iterator connect handler using
 `boost::bind()`:
 
   void my_class::connect_handler(
-      const asio::error_code& ec,
-      asio::ip::tcp::resolver::iterator iterator)
+      const asio_sockio::error_code& ec,
+      asio_sockio::ip::tcp::resolver::iterator iterator)
   {
     ...
   }
   ...
-  asio::async_connect(...,
+  asio_sockio::async_connect(...,
       boost::bind(&my_class::connect_handler,
-        this, asio::placeholders::error,
-        asio::placeholders::iterator));
+        this, asio_sockio::placeholders::error,
+        asio_sockio::placeholders::iterator));
 
 [endsect]

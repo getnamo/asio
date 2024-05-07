@@ -19,8 +19,8 @@ constexpr int max_message_count = 10;
 class sender
 {
 public:
-  sender(asio::io_context& io_context,
-      const asio::ip::address& multicast_address)
+  sender(asio_sockio::io_context& io_context,
+      const asio_sockio::ip::address& multicast_address)
     : endpoint_(multicast_address, multicast_port),
       socket_(io_context, endpoint_.protocol()),
       timer_(io_context),
@@ -37,7 +37,7 @@ private:
     message_ = os.str();
 
     socket_.async_send_to(
-        asio::buffer(message_), endpoint_,
+        asio_sockio::buffer(message_), endpoint_,
         [this](std::error_code ec, std::size_t /*length*/)
         {
           if (!ec && message_count_ < max_message_count)
@@ -57,9 +57,9 @@ private:
   }
 
 private:
-  asio::ip::udp::endpoint endpoint_;
-  asio::ip::udp::socket socket_;
-  asio::steady_timer timer_;
+  asio_sockio::ip::udp::endpoint endpoint_;
+  asio_sockio::ip::udp::socket socket_;
+  asio_sockio::steady_timer timer_;
   int message_count_;
   std::string message_;
 };
@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
-    sender s(io_context, asio::ip::make_address(argv[1]));
+    asio_sockio::io_context io_context;
+    sender s(io_context, asio_sockio::ip::make_address(argv[1]));
     io_context.run();
   }
   catch (std::exception& e)

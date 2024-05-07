@@ -17,7 +17,7 @@ type `const error_code`.
 A free function as a wait handler:
 
   void wait_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
@@ -28,7 +28,7 @@ A wait handler function object:
   {
     ...
     void operator()(
-        const asio::error_code& ec)
+        const asio_sockio::error_code& ec)
     {
       ...
     }
@@ -38,7 +38,7 @@ A wait handler function object:
 A lambda as a wait handler:
 
   socket.async_wait(...,
-      [](const asio::error_code& ec)
+      [](const asio_sockio::error_code& ec)
       {
         ...
       });
@@ -47,7 +47,7 @@ A non-static class member function adapted to a wait handler using
 `std::bind()`:
 
   void my_class::wait_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
@@ -60,13 +60,13 @@ A non-static class member function adapted to a wait handler using
 `boost::bind()`:
 
   void my_class::wait_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
   ...
   socket.async_wait(...,
       boost::bind(&my_class::wait_handler,
-        this, asio::placeholders::error));
+        this, asio_sockio::placeholders::error));
 
 [endsect]

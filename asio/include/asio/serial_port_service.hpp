@@ -33,20 +33,20 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Default service implementation for a serial port.
 class serial_port_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 #else
-  : public asio::detail::service_base<serial_port_service>
+  : public asio_sockio::detail::service_base<serial_port_service>
 #endif
 {
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 #endif
 
 private:
@@ -73,8 +73,8 @@ public:
 #endif
 
   /// Construct a new serial port service for the specified io_context.
-  explicit serial_port_service(asio::io_context& io_context)
-    : asio::detail::service_base<serial_port_service>(io_context),
+  explicit serial_port_service(asio_sockio::io_context& io_context)
+    : asio_sockio::detail::service_base<serial_port_service>(io_context),
       service_impl_(io_context)
   {
   }
@@ -110,7 +110,7 @@ public:
 
   /// Open a serial port.
   ASIO_SYNC_OP_VOID open(implementation_type& impl,
-      const std::string& device, asio::error_code& ec)
+      const std::string& device, asio_sockio::error_code& ec)
   {
     service_impl_.open(impl, device, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -118,7 +118,7 @@ public:
 
   /// Assign an existing native handle to a serial port.
   ASIO_SYNC_OP_VOID assign(implementation_type& impl,
-      const native_handle_type& handle, asio::error_code& ec)
+      const native_handle_type& handle, asio_sockio::error_code& ec)
   {
     service_impl_.assign(impl, handle, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -132,7 +132,7 @@ public:
 
   /// Close a serial port implementation.
   ASIO_SYNC_OP_VOID close(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.close(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -146,7 +146,7 @@ public:
 
   /// Cancel all asynchronous operations associated with the handle.
   ASIO_SYNC_OP_VOID cancel(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.cancel(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -155,7 +155,7 @@ public:
   /// Set a serial port option.
   template <typename SettableSerialPortOption>
   ASIO_SYNC_OP_VOID set_option(implementation_type& impl,
-      const SettableSerialPortOption& option, asio::error_code& ec)
+      const SettableSerialPortOption& option, asio_sockio::error_code& ec)
   {
     service_impl_.set_option(impl, option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -164,7 +164,7 @@ public:
   /// Get a serial port option.
   template <typename GettableSerialPortOption>
   ASIO_SYNC_OP_VOID get_option(const implementation_type& impl,
-      GettableSerialPortOption& option, asio::error_code& ec) const
+      GettableSerialPortOption& option, asio_sockio::error_code& ec) const
   {
     service_impl_.get_option(impl, option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -172,7 +172,7 @@ public:
 
   /// Send a break sequence to the serial port.
   ASIO_SYNC_OP_VOID send_break(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.send_break(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -181,7 +181,7 @@ public:
   /// Write the given data to the stream.
   template <typename ConstBufferSequence>
   std::size_t write_some(implementation_type& impl,
-      const ConstBufferSequence& buffers, asio::error_code& ec)
+      const ConstBufferSequence& buffers, asio_sockio::error_code& ec)
   {
     return service_impl_.write_some(impl, buffers, ec);
   }
@@ -189,13 +189,13 @@ public:
   /// Start an asynchronous write.
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_write_some(implementation_type& impl,
       const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
     async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_write_some(impl, buffers, init.completion_handler);
 
@@ -205,7 +205,7 @@ public:
   /// Read some data from the stream.
   template <typename MutableBufferSequence>
   std::size_t read_some(implementation_type& impl,
-      const MutableBufferSequence& buffers, asio::error_code& ec)
+      const MutableBufferSequence& buffers, asio_sockio::error_code& ec)
   {
     return service_impl_.read_some(impl, buffers, ec);
   }
@@ -213,13 +213,13 @@ public:
   /// Start an asynchronous read.
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_read_some(implementation_type& impl,
       const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
     async_completion<ReadHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_read_some(impl, buffers, init.completion_handler);
 
@@ -237,7 +237,7 @@ private:
   service_impl_type service_impl_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

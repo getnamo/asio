@@ -27,13 +27,13 @@ using namespace std; // For memcmp, memcpy and memset.
 class test_stream
 {
 public:
-  typedef asio::io_context io_context_type;
+  typedef asio_sockio::io_context io_context_type;
 
   typedef test_stream lowest_layer_type;
 
   typedef io_context_type::executor_type executor_type;
 
-  test_stream(asio::io_context& io_context)
+  test_stream(asio_sockio::io_context& io_context)
     : io_context_(io_context)
   {
   }
@@ -55,18 +55,18 @@ public:
   }
 
   template <typename Const_Buffers>
-  size_t write(const Const_Buffers&, asio::error_code& ec)
+  size_t write(const Const_Buffers&, asio_sockio::error_code& ec)
   {
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
   template <typename Const_Buffers, typename Handler>
   void async_write(const Const_Buffers&, Handler handler)
   {
-    asio::error_code error;
-    asio::post(io_context_,
-        asio::detail::bind_handler(handler, error, 0));
+    asio_sockio::error_code error;
+    asio_sockio::post(io_context_,
+        asio_sockio::detail::bind_handler(handler, error, 0));
   }
 
   template <typename Mutable_Buffers>
@@ -76,18 +76,18 @@ public:
   }
 
   template <typename Mutable_Buffers>
-  size_t read(const Mutable_Buffers&, asio::error_code& ec)
+  size_t read(const Mutable_Buffers&, asio_sockio::error_code& ec)
   {
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     return 0;
   }
 
   template <typename Mutable_Buffers, typename Handler>
   void async_read(const Mutable_Buffers&, Handler handler)
   {
-    asio::error_code error;
-    asio::post(io_context_,
-        asio::detail::bind_handler(handler, error, 0));
+    asio_sockio::error_code error;
+    asio_sockio::post(io_context_,
+        asio_sockio::detail::bind_handler(handler, error, 0));
   }
 
 private:
@@ -96,30 +96,30 @@ private:
 
 void is_read_buffered_test()
 {
-  ASIO_CHECK(!asio::is_read_buffered<
-      asio::ip::tcp::socket>::value);
+  ASIO_CHECK(!asio_sockio::is_read_buffered<
+      asio_sockio::ip::tcp::socket>::value);
 
-  ASIO_CHECK(!!asio::is_read_buffered<
-      asio::buffered_read_stream<
-        asio::ip::tcp::socket> >::value);
+  ASIO_CHECK(!!asio_sockio::is_read_buffered<
+      asio_sockio::buffered_read_stream<
+        asio_sockio::ip::tcp::socket> >::value);
 
-  ASIO_CHECK(!asio::is_read_buffered<
-      asio::buffered_write_stream<
-        asio::ip::tcp::socket> >::value);
+  ASIO_CHECK(!asio_sockio::is_read_buffered<
+      asio_sockio::buffered_write_stream<
+        asio_sockio::ip::tcp::socket> >::value);
 
-  ASIO_CHECK(!!asio::is_read_buffered<
-      asio::buffered_stream<asio::ip::tcp::socket> >::value);
+  ASIO_CHECK(!!asio_sockio::is_read_buffered<
+      asio_sockio::buffered_stream<asio_sockio::ip::tcp::socket> >::value);
 
-  ASIO_CHECK(!asio::is_read_buffered<test_stream>::value);
+  ASIO_CHECK(!asio_sockio::is_read_buffered<test_stream>::value);
 
-  ASIO_CHECK(!!asio::is_read_buffered<
-      asio::buffered_read_stream<test_stream> >::value);
+  ASIO_CHECK(!!asio_sockio::is_read_buffered<
+      asio_sockio::buffered_read_stream<test_stream> >::value);
 
-  ASIO_CHECK(!asio::is_read_buffered<
-      asio::buffered_write_stream<test_stream> >::value);
+  ASIO_CHECK(!asio_sockio::is_read_buffered<
+      asio_sockio::buffered_write_stream<test_stream> >::value);
 
-  ASIO_CHECK(!!asio::is_read_buffered<
-      asio::buffered_stream<test_stream> >::value);
+  ASIO_CHECK(!!asio_sockio::is_read_buffered<
+      asio_sockio::buffered_stream<test_stream> >::value);
 }
 
 ASIO_TEST_SUITE

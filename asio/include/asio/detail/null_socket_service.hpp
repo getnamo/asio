@@ -27,7 +27,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Protocol>
@@ -50,7 +50,7 @@ public:
   };
 
   // Constructor.
-  null_socket_service(asio::io_context& io_context)
+  null_socket_service(asio_sockio::io_context& io_context)
     : service_base<null_socket_service<Protocol> >(io_context),
       io_context_(io_context)
   {
@@ -91,18 +91,18 @@ public:
   }
 
   // Open a new socket implementation.
-  asio::error_code open(implementation_type&,
-      const protocol_type&, asio::error_code& ec)
+  asio_sockio::error_code open(implementation_type&,
+      const protocol_type&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Assign a native socket to a socket implementation.
-  asio::error_code assign(implementation_type&, const protocol_type&,
-      const native_handle_type&, asio::error_code& ec)
+  asio_sockio::error_code assign(implementation_type&, const protocol_type&,
+      const native_handle_type&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
@@ -113,18 +113,18 @@ public:
   }
 
   // Destroy a socket implementation.
-  asio::error_code close(implementation_type&,
-      asio::error_code& ec)
+  asio_sockio::error_code close(implementation_type&,
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Release ownership of the socket.
   native_handle_type release(implementation_type&,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
@@ -135,43 +135,43 @@ public:
   }
 
   // Cancel all operations associated with the socket.
-  asio::error_code cancel(implementation_type&,
-      asio::error_code& ec)
+  asio_sockio::error_code cancel(implementation_type&,
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Determine whether the socket is at the out-of-band data mark.
   bool at_mark(const implementation_type&,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return false;
   }
 
   // Determine the number of bytes available for reading.
   std::size_t available(const implementation_type&,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
   // Place the socket into the state where it will listen for new connections.
-  asio::error_code listen(implementation_type&,
-      int, asio::error_code& ec)
+  asio_sockio::error_code listen(implementation_type&,
+      int, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Perform an IO control command on the socket.
   template <typename IO_Control_Command>
-  asio::error_code io_control(implementation_type&,
-      IO_Control_Command&, asio::error_code& ec)
+  asio_sockio::error_code io_control(implementation_type&,
+      IO_Control_Command&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
@@ -182,10 +182,10 @@ public:
   }
 
   // Sets the non-blocking mode of the socket.
-  asio::error_code non_blocking(implementation_type&,
-      bool, asio::error_code& ec)
+  asio_sockio::error_code non_blocking(implementation_type&,
+      bool, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
@@ -196,77 +196,77 @@ public:
   }
 
   // Sets the non-blocking mode of the native socket implementation.
-  asio::error_code native_non_blocking(implementation_type&,
-      bool, asio::error_code& ec)
+  asio_sockio::error_code native_non_blocking(implementation_type&,
+      bool, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Disable sends or receives on the socket.
-  asio::error_code shutdown(implementation_type&,
-      socket_base::shutdown_type, asio::error_code& ec)
+  asio_sockio::error_code shutdown(implementation_type&,
+      socket_base::shutdown_type, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Bind the socket to the specified local endpoint.
-  asio::error_code bind(implementation_type&,
-      const endpoint_type&, asio::error_code& ec)
+  asio_sockio::error_code bind(implementation_type&,
+      const endpoint_type&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Set a socket option.
   template <typename Option>
-  asio::error_code set_option(implementation_type&,
-      const Option&, asio::error_code& ec)
+  asio_sockio::error_code set_option(implementation_type&,
+      const Option&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Set a socket option.
   template <typename Option>
-  asio::error_code get_option(const implementation_type&,
-      Option&, asio::error_code& ec) const
+  asio_sockio::error_code get_option(const implementation_type&,
+      Option&, asio_sockio::error_code& ec) const
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
   // Get the local endpoint.
   endpoint_type local_endpoint(const implementation_type&,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return endpoint_type();
   }
 
   // Get the remote endpoint.
   endpoint_type remote_endpoint(const implementation_type&,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return endpoint_type();
   }
 
   // Send the given data to the peer.
   template <typename ConstBufferSequence>
   std::size_t send(implementation_type&, const ConstBufferSequence&,
-      socket_base::message_flags, asio::error_code& ec)
+      socket_base::message_flags, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
   // Wait until data can be sent without blocking.
   std::size_t send(implementation_type&, const null_buffers&,
-      socket_base::message_flags, asio::error_code& ec)
+      socket_base::message_flags, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
@@ -276,7 +276,7 @@ public:
   void async_send(implementation_type&, const ConstBufferSequence&,
       socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -286,7 +286,7 @@ public:
   void async_send(implementation_type&, const null_buffers&,
       socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -294,17 +294,17 @@ public:
   // Receive some data from the peer. Returns the number of bytes received.
   template <typename MutableBufferSequence>
   std::size_t receive(implementation_type&, const MutableBufferSequence&,
-      socket_base::message_flags, asio::error_code& ec)
+      socket_base::message_flags, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
   // Wait until data can be received without blocking.
   std::size_t receive(implementation_type&, const null_buffers&,
-      socket_base::message_flags, asio::error_code& ec)
+      socket_base::message_flags, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
@@ -314,7 +314,7 @@ public:
   void async_receive(implementation_type&, const MutableBufferSequence&,
       socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -324,7 +324,7 @@ public:
   void async_receive(implementation_type&, const null_buffers&,
       socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -334,18 +334,18 @@ public:
   template <typename MutableBufferSequence>
   std::size_t receive_with_flags(implementation_type&,
       const MutableBufferSequence&, socket_base::message_flags,
-      socket_base::message_flags&, asio::error_code& ec)
+      socket_base::message_flags&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
   // Wait until data can be received without blocking.
   std::size_t receive_with_flags(implementation_type&,
       const null_buffers&, socket_base::message_flags,
-      socket_base::message_flags&, asio::error_code& ec)
+      socket_base::message_flags&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
@@ -356,7 +356,7 @@ public:
       const MutableBufferSequence&, socket_base::message_flags,
       socket_base::message_flags&, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -367,7 +367,7 @@ public:
       const null_buffers&, socket_base::message_flags,
       socket_base::message_flags&, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -377,18 +377,18 @@ public:
   template <typename ConstBufferSequence>
   std::size_t send_to(implementation_type&, const ConstBufferSequence&,
       const endpoint_type&, socket_base::message_flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
   // Wait until data can be sent without blocking.
   std::size_t send_to(implementation_type&, const null_buffers&,
       const endpoint_type&, socket_base::message_flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
@@ -399,7 +399,7 @@ public:
       const endpoint_type&, socket_base::message_flags,
       Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -409,7 +409,7 @@ public:
   void async_send_to(implementation_type&, const null_buffers&,
       const endpoint_type&, socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -419,18 +419,18 @@ public:
   template <typename MutableBufferSequence>
   std::size_t receive_from(implementation_type&, const MutableBufferSequence&,
       endpoint_type&, socket_base::message_flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
   // Wait until data can be received without blocking.
   std::size_t receive_from(implementation_type&, const null_buffers&,
       endpoint_type&, socket_base::message_flags,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return 0;
   }
 
@@ -442,7 +442,7 @@ public:
       const MutableBufferSequence&, endpoint_type&,
       socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
@@ -453,17 +453,17 @@ public:
       const null_buffers&, endpoint_type&,
       socket_base::message_flags, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
     io_context_.post(detail::bind_handler(handler, ec, bytes_transferred));
   }
 
   // Accept a new connection.
   template <typename Socket>
-  asio::error_code accept(implementation_type&,
-      Socket&, endpoint_type*, asio::error_code& ec)
+  asio_sockio::error_code accept(implementation_type&,
+      Socket&, endpoint_type*, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
@@ -473,15 +473,15 @@ public:
   void async_accept(implementation_type&, Socket&,
       endpoint_type*, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     io_context_.post(detail::bind_handler(handler, ec));
   }
 
   // Connect the socket to the specified endpoint.
-  asio::error_code connect(implementation_type&,
-      const endpoint_type&, asio::error_code& ec)
+  asio_sockio::error_code connect(implementation_type&,
+      const endpoint_type&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return ec;
   }
 
@@ -490,16 +490,16 @@ public:
   void async_connect(implementation_type&,
       const endpoint_type&, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     io_context_.post(detail::bind_handler(handler, ec));
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

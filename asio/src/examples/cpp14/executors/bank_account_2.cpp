@@ -2,9 +2,9 @@
 #include <asio/thread_pool.hpp>
 #include <iostream>
 
-using asio::post;
-using asio::thread_pool;
-using asio::use_future;
+using asio_sockio::post;
+using asio_sockio::thread_pool;
+using asio_sockio::use_future;
 
 // Traditional active object pattern.
 // Member functions block until operation is finished.

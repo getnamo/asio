@@ -29,7 +29,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class resolver_service_base
@@ -40,7 +40,7 @@ public:
   typedef socket_ops::shared_cancel_token_type implementation_type;
 
   // Constructor.
-  ASIO_DECL resolver_service_base(asio::io_context& io_context);
+  ASIO_DECL resolver_service_base(asio_sockio::io_context& io_context);
 
   // Destructor.
   ASIO_DECL ~resolver_service_base();
@@ -50,7 +50,7 @@ public:
 
   // Perform any fork-related housekeeping.
   ASIO_DECL void base_notify_fork(
-      asio::io_context::fork_event fork_ev);
+      asio_sockio::io_context::fork_event fork_ev);
 
   // Construct a new resolver implementation.
   ASIO_DECL void construct(implementation_type& impl);
@@ -77,10 +77,10 @@ protected:
 #if !defined(ASIO_WINDOWS_RUNTIME)
   // Helper class to perform exception-safe cleanup of addrinfo objects.
   class auto_addrinfo
-    : private asio::detail::noncopyable
+    : private asio_sockio::detail::noncopyable
   {
   public:
-    explicit auto_addrinfo(asio::detail::addrinfo_type* ai)
+    explicit auto_addrinfo(asio_sockio::detail::addrinfo_type* ai)
       : ai_(ai)
     {
     }
@@ -91,13 +91,13 @@ protected:
         socket_ops::freeaddrinfo(ai_);
     }
 
-    operator asio::detail::addrinfo_type*()
+    operator asio_sockio::detail::addrinfo_type*()
     {
       return ai_;
     }
 
   private:
-    asio::detail::addrinfo_type* ai_;
+    asio_sockio::detail::addrinfo_type* ai_;
   };
 #endif // !defined(ASIO_WINDOWS_RUNTIME)
 
@@ -112,24 +112,24 @@ protected:
 
 private:
   // Mutex to protect access to internal data.
-  asio::detail::mutex mutex_;
+  asio_sockio::detail::mutex mutex_;
 
   // Private io_context used for performing asynchronous host resolution.
-  asio::detail::scoped_ptr<asio::io_context> work_io_context_;
+  asio_sockio::detail::scoped_ptr<asio_sockio::io_context> work_io_context_;
 
   // The work io_context implementation used to post completions.
   io_context_impl& work_io_context_impl_;
 
   // Work for the private io_context to perform.
-  asio::executor_work_guard<
-      asio::io_context::executor_type> work_;
+  asio_sockio::executor_work_guard<
+      asio_sockio::io_context::executor_type> work_;
 
   // Thread used for running the work io_context's run loop.
-  asio::detail::scoped_ptr<asio::detail::thread> work_thread_;
+  asio_sockio::detail::scoped_ptr<asio_sockio::detail::thread> work_thread_;
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

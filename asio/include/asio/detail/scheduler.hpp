@@ -29,7 +29,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 struct scheduler_thread_info;
@@ -43,7 +43,7 @@ public:
 
   // Constructor. Specifies the number of concurrent threads that are likely to
   // run the scheduler. If set to 1 certain optimisation are performed.
-  ASIO_DECL scheduler(asio::execution_context& ctx,
+  ASIO_DECL scheduler(asio_sockio::execution_context& ctx,
       int concurrency_hint = 0);
 
   // Destroy all user-defined handler objects owned by the service.
@@ -53,20 +53,20 @@ public:
   ASIO_DECL void init_task();
 
   // Run the event loop until interrupted or no more work.
-  ASIO_DECL std::size_t run(asio::error_code& ec);
+  ASIO_DECL std::size_t run(asio_sockio::error_code& ec);
 
   // Run until interrupted or one operation is performed.
-  ASIO_DECL std::size_t run_one(asio::error_code& ec);
+  ASIO_DECL std::size_t run_one(asio_sockio::error_code& ec);
 
   // Run until timeout, interrupted, or one operation is performed.
   ASIO_DECL std::size_t wait_one(
-      long usec, asio::error_code& ec);
+      long usec, asio_sockio::error_code& ec);
 
   // Poll for operations without blocking.
-  ASIO_DECL std::size_t poll(asio::error_code& ec);
+  ASIO_DECL std::size_t poll(asio_sockio::error_code& ec);
 
   // Poll for one operation without blocking.
-  ASIO_DECL std::size_t poll_one(asio::error_code& ec);
+  ASIO_DECL std::size_t poll_one(asio_sockio::error_code& ec);
 
   // Interrupt the event processing loop.
   ASIO_DECL void stop();
@@ -139,15 +139,15 @@ private:
 
   // Run at most one operation. May block.
   ASIO_DECL std::size_t do_run_one(mutex::scoped_lock& lock,
-      thread_info& this_thread, const asio::error_code& ec);
+      thread_info& this_thread, const asio_sockio::error_code& ec);
 
   // Run at most one operation with a timeout. May block.
   ASIO_DECL std::size_t do_wait_one(mutex::scoped_lock& lock,
-      thread_info& this_thread, long usec, const asio::error_code& ec);
+      thread_info& this_thread, long usec, const asio_sockio::error_code& ec);
 
   // Poll for at most one operation.
   ASIO_DECL std::size_t do_poll_one(mutex::scoped_lock& lock,
-      thread_info& this_thread, const asio::error_code& ec);
+      thread_info& this_thread, const asio_sockio::error_code& ec);
 
   // Stop the task and all idle threads.
   ASIO_DECL void stop_all_threads(mutex::scoped_lock& lock);
@@ -202,7 +202,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -25,7 +25,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace experimental {
 namespace detail {
 
@@ -215,7 +215,7 @@ inline auto co_spawn(const await_token<Executor>& parent,
 }
 
 } // namespace experimental
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

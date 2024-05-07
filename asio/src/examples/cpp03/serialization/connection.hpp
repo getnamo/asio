@@ -35,14 +35,14 @@ class connection
 {
 public:
   /// Constructor.
-  connection(asio::io_context& io_context)
+  connection(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
 
   /// Get the underlying socket. Used for making a connection or for accepting
   /// an incoming connection.
-  asio::ip::tcp::socket& socket()
+  asio_sockio::ip::tcp::socket& socket()
   {
     return socket_;
   }
@@ -64,18 +64,18 @@ public:
     if (!header_stream || header_stream.str().size() != header_length)
     {
       // Something went wrong, inform the caller.
-      asio::error_code error(asio::error::invalid_argument);
-      asio::post(socket_.get_executor(), boost::bind(handler, error));
+      asio_sockio::error_code error(asio_sockio::error::invalid_argument);
+      asio_sockio::post(socket_.get_executor(), boost::bind(handler, error));
       return;
     }
     outbound_header_ = header_stream.str();
 
     // Write the serialized data to the socket. We use "gather-write" to send
     // both the header and the data in a single write operation.
-    std::vector<asio::const_buffer> buffers;
-    buffers.push_back(asio::buffer(outbound_header_));
-    buffers.push_back(asio::buffer(outbound_data_));
-    asio::async_write(socket_, buffers, handler);
+    std::vector<asio_sockio::const_buffer> buffers;
+    buffers.push_back(asio_sockio::buffer(outbound_header_));
+    buffers.push_back(asio_sockio::buffer(outbound_data_));
+    asio_sockio::async_write(socket_, buffers, handler);
   }
 
   /// Asynchronously read a data structure from the socket.
@@ -84,12 +84,12 @@ public:
   {
     // Issue a read operation to read exactly the number of bytes in a header.
     void (connection::*f)(
-        const asio::error_code&,
+        const asio_sockio::error_code&,
         T&, boost::tuple<Handler>)
       = &connection::handle_read_header<T, Handler>;
-    asio::async_read(socket_, asio::buffer(inbound_header_),
+    asio_sockio::async_read(socket_, asio_sockio::buffer(inbound_header_),
         boost::bind(f,
-          this, asio::placeholders::error, boost::ref(t),
+          this, asio_sockio::placeholders::error, boost::ref(t),
           boost::make_tuple(handler)));
   }
 
@@ -97,7 +97,7 @@ public:
   /// a tuple since boost::bind seems to have trouble binding a function object
   /// created using boost::bind as a parameter.
   template <typename T, typename Handler>
-  void handle_read_header(const asio::error_code& e,
+  void handle_read_header(const asio_sockio::error_code& e,
       T& t, boost::tuple<Handler> handler)
   {
     if (e)
@@ -112,7 +112,7 @@ public:
       if (!(is >> std::hex >> inbound_data_size))
       {
         // Header doesn't seem to be valid. Inform the caller.
-        asio::error_code error(asio::error::invalid_argument);
+        asio_sockio::error_code error(asio_sockio::error::invalid_argument);
         boost::get<0>(handler)(error);
         return;
       }
@@ -120,18 +120,18 @@ public:
       // Start an asynchronous call to receive the data.
       inbound_data_.resize(inbound_data_size);
       void (connection::*f)(
-          const asio::error_code&,
+          const asio_sockio::error_code&,
           T&, boost::tuple<Handler>)
         = &connection::handle_read_data<T, Handler>;
-      asio::async_read(socket_, asio::buffer(inbound_data_),
+      asio_sockio::async_read(socket_, asio_sockio::buffer(inbound_data_),
         boost::bind(f, this,
-          asio::placeholders::error, boost::ref(t), handler));
+          asio_sockio::placeholders::error, boost::ref(t), handler));
     }
   }
 
   /// Handle a completed read of message data.
   template <typename T, typename Handler>
-  void handle_read_data(const asio::error_code& e,
+  void handle_read_data(const asio_sockio::error_code& e,
       T& t, boost::tuple<Handler> handler)
   {
     if (e)
@@ -151,7 +151,7 @@ public:
       catch (std::exception& e)
       {
         // Unable to decode data.
-        asio::error_code error(asio::error::invalid_argument);
+        asio_sockio::error_code error(asio_sockio::error::invalid_argument);
         boost::get<0>(handler)(error);
         return;
       }
@@ -163,7 +163,7 @@ public:
 
 private:
   /// The underlying socket.
-  asio::ip::tcp::socket socket_;
+  asio_sockio::ip::tcp::socket socket_;
 
   /// The size of a fixed length header.
   enum { header_length = 8 };

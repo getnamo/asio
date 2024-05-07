@@ -36,14 +36,14 @@ operations try each endpoint in a list until the socket is successfully
 connected. For example, a single call:
 
   ip::tcp::socket socket(my_io_context);
-  asio::connect(socket, resolver.resolve(query));
+  asio_sockio::connect(socket, resolver.resolve(query));
 
 will synchronously try all endpoints until one is successfully connected.
 Similarly, an asynchronous connect may be performed by writing:
 
-  asio::async_connect(socket_, iter,
+  asio_sockio::async_connect(socket_, iter,
       boost::bind(&client::handle_connect, this,
-        asio::placeholders::error));
+        asio_sockio::placeholders::error));
 
   // ...
 

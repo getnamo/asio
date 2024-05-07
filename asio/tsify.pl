@@ -30,11 +30,11 @@ sub source_contains_asio_thread_usage
   # Open the input file.
   open(my $input, "<$from") or die("Can't open $from for reading");
 
-  # Check file for use of asio::thread.
+  # Check file for use of asio_sockio::thread.
   while (my $line = <$input>)
   {
     chomp($line);
-    if ($line =~ /asio::thread/)
+    if ($line =~ /asio_sockio::thread/)
     {
       close($input);
       return 1;
@@ -81,7 +81,7 @@ sub copy_source_file
   $dir =~ s/[^\/]*$//;
   mkpath($dir);
 
-  # First determine whether the file makes any use of asio::thread.
+  # First determine whether the file makes any use of asio_sockio::thread.
   my $uses_asio_thread = source_contains_asio_thread_usage($from);
 
   my $includes_asio = source_contains_asio_include($from);
@@ -260,9 +260,9 @@ sub copy_source_file
     {
       $line =~ s/asio_detail_posix_thread_function/networking_ts_detail_posix_thread_function/g;
     }
-    if ($line =~ /asio_signal_handler/)
+    if ($line =~ /asio_sockio_signal_handler/)
     {
-      $line =~ s/asio_signal_handler/networking_ts_signal_handler/g;
+      $line =~ s/asio_sockio_signal_handler/networking_ts_signal_handler/g;
     }
     if ($line =~ /ASIO_/ && !($line =~ /NET_TS_/))
     {
@@ -368,15 +368,15 @@ sub copy_source_file
     {
       # Line is removed.
     }
-    elsif ($line =~ /asio::thread\b/)
+    elsif ($line =~ /asio_sockio::thread\b/)
     {
       if ($is_test)
       {
-        $line =~ s/asio::thread/std::experimental::net::v1::detail::thread/g;
+        $line =~ s/asio_sockio::thread/std::experimental::net::v1::detail::thread/g;
       }
       else
       {
-        $line =~ s/asio::thread/std::thread/g;
+        $line =~ s/asio_sockio::thread/std::thread/g;
       }
       print_line($output, $line, $from, $lineno);
     }
@@ -391,19 +391,19 @@ sub copy_source_file
         print_line($output, $1 . "std::thread" . $2, $from, $lineno);
       }
     }
-    elsif ($line =~ /asio::/ && !($line =~ /boost::asio::/))
+    elsif ($line =~ /asio_sockio::/ && !($line =~ /boost::asio_sockio::/))
     {
-      $line =~ s/asio::error_code/std::error_code/g;
-      $line =~ s/asio::error_category/std::error_category/g;
-      $line =~ s/asio::system_category/std::system_category/g;
-      $line =~ s/asio::system_error/std::system_error/g;
-      $line =~ s/asio::/std::experimental::net::v1::/g if $code_snippet_state == 0;
-      $line =~ s/asio::/std::experimental::net::/g if $code_snippet_state == 1;
+      $line =~ s/asio_sockio::error_code/std::error_code/g;
+      $line =~ s/asio_sockio::error_category/std::error_category/g;
+      $line =~ s/asio_sockio::system_category/std::system_category/g;
+      $line =~ s/asio_sockio::system_error/std::system_error/g;
+      $line =~ s/asio_sockio::/std::experimental::net::v1::/g if $code_snippet_state == 0;
+      $line =~ s/asio_sockio::/std::experimental::net::/g if $code_snippet_state == 1;
       print_line($output, $line, $from, $lineno);
     }
-    elsif ($line =~ /using namespace asio/)
+    elsif ($line =~ /using namespace asio_sockio/)
     {
-      $line =~ s/using namespace asio/using namespace std::experimental::net::v1/g;
+      $line =~ s/using namespace asio_sockio/using namespace std::experimental::net::v1/g;
       print_line($output, $line, $from, $lineno);
     }
     elsif ($line =~ /[\\@]ref boost_bind/)

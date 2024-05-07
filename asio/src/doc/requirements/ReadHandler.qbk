@@ -17,7 +17,7 @@ type `const error_code` and `s` is an lvalue of type `const size_t`.
 A free function as a read handler:
 
   void read_handler(
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       std::size_t bytes_transferred)
   {
     ...
@@ -29,7 +29,7 @@ A read handler function object:
   {
     ...
     void operator()(
-        const asio::error_code& ec,
+        const asio_sockio::error_code& ec,
         std::size_t bytes_transferred)
     {
       ...
@@ -40,7 +40,7 @@ A read handler function object:
 A lambda as a read handler:
 
   socket.async_read(...
-      [](const asio::error_code& ec,
+      [](const asio_sockio::error_code& ec,
         std::size_t bytes_transferred)
       {
         ...
@@ -50,7 +50,7 @@ A non-static class member function adapted to a read handler using
 `std::bind()`:
 
   void my_class::read_handler(
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       std::size_t bytes_transferred)
   {
     ...
@@ -65,7 +65,7 @@ A non-static class member function adapted to a read handler using
 `boost::bind()`:
 
   void my_class::read_handler(
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       std::size_t bytes_transferred)
   {
     ...
@@ -73,7 +73,7 @@ A non-static class member function adapted to a read handler using
   ...
   socket.async_read(...,
       boost::bind(&my_class::read_handler,
-        this, asio::placeholders::error,
-        asio::placeholders::bytes_transferred));
+        this, asio_sockio::placeholders::error,
+        asio_sockio::placeholders::bytes_transferred));
 
 [endsect]

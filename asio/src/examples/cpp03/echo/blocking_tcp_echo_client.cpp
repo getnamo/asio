@@ -13,7 +13,7 @@
 #include <iostream>
 #include "asio.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 enum { max_length = 1024 };
 
@@ -27,25 +27,25 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::resolver resolver(io_context);
     tcp::resolver::results_type endpoints =
       resolver.resolve(tcp::v4(), argv[1], argv[2]);
 
     tcp::socket s(io_context);
-    asio::connect(s, endpoints);
+    asio_sockio::connect(s, endpoints);
 
     using namespace std; // For strlen.
     std::cout << "Enter message: ";
     char request[max_length];
     std::cin.getline(request, max_length);
     size_t request_length = strlen(request);
-    asio::write(s, asio::buffer(request, request_length));
+    asio_sockio::write(s, asio_sockio::buffer(request, request_length));
 
     char reply[max_length];
-    size_t reply_length = asio::read(s,
-        asio::buffer(reply, request_length));
+    size_t reply_length = asio_sockio::read(s,
+        asio_sockio::buffer(reply, request_length));
     std::cout << "Reply is: ";
     std::cout.write(reply, reply_length);
     std::cout << "\n";

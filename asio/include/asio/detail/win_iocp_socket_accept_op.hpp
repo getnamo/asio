@@ -32,7 +32,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Socket, typename Protocol, typename Handler>
@@ -73,14 +73,14 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& result_ec,
+      const asio_sockio::error_code& result_ec,
       std::size_t /*bytes_transferred*/)
   {
-    asio::error_code ec(result_ec);
+    asio_sockio::error_code ec(result_ec);
 
     // Take ownership of the operation object.
     win_iocp_socket_accept_op* o(static_cast<win_iocp_socket_accept_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     if (owner)
@@ -94,7 +94,7 @@ public:
 
       // Restart the accept operation if we got the connection_aborted error
       // and the enable_connection_aborted socket option is not set.
-      if (ec == asio::error::connection_aborted
+      if (ec == asio_sockio::error::connection_aborted
           && !o->enable_connection_aborted_)
       {
         o->reset();
@@ -130,9 +130,9 @@ public:
     // with the handler. Consequently, a local copy of the handler is required
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
-    detail::binder1<Handler, asio::error_code>
+    detail::binder1<Handler, asio_sockio::error_code>
       handler(o->handler_, ec);
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = asio_sockio::detail::addressof(handler.handler_);
     p.reset();
 
     // Make the upcall if required.
@@ -167,7 +167,7 @@ public:
 
   win_iocp_socket_move_accept_op(
       win_iocp_socket_service_base& socket_service, socket_type socket,
-      const Protocol& protocol, asio::io_context& peer_io_context,
+      const Protocol& protocol, asio_sockio::io_context& peer_io_context,
       typename Protocol::endpoint* peer_endpoint,
       bool enable_connection_aborted, Handler& handler)
     : operation(&win_iocp_socket_move_accept_op::do_complete),
@@ -198,15 +198,15 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& result_ec,
+      const asio_sockio::error_code& result_ec,
       std::size_t /*bytes_transferred*/)
   {
-    asio::error_code ec(result_ec);
+    asio_sockio::error_code ec(result_ec);
 
     // Take ownership of the operation object.
     win_iocp_socket_move_accept_op* o(
         static_cast<win_iocp_socket_move_accept_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     if (owner)
@@ -220,7 +220,7 @@ public:
 
       // Restart the accept operation if we got the connection_aborted error
       // and the enable_connection_aborted socket option is not set.
-      if (ec == asio::error::connection_aborted
+      if (ec == asio_sockio::error::connection_aborted
           && !o->enable_connection_aborted_)
       {
         o->reset();
@@ -257,10 +257,10 @@ public:
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
     detail::move_binder2<Handler,
-      asio::error_code, typename Protocol::socket>
+      asio_sockio::error_code, typename Protocol::socket>
         handler(0, ASIO_MOVE_CAST(Handler)(o->handler_), ec,
           ASIO_MOVE_CAST(typename Protocol::socket)(o->peer_));
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = asio_sockio::detail::addressof(handler.handler_);
     p.reset();
 
     // Make the upcall if required.
@@ -288,7 +288,7 @@ private:
 #endif // defined(ASIO_HAS_MOVE)
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

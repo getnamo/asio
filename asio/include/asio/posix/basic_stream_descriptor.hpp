@@ -31,7 +31,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace posix {
 
 /// Provides stream-oriented descriptor functionality.
@@ -65,7 +65,7 @@ public:
    * use to dispatch handlers for any asynchronous operations performed on the
    * descriptor.
    */
-  explicit basic_stream_descriptor(asio::io_context& io_context)
+  explicit basic_stream_descriptor(asio_sockio::io_context& io_context)
     : basic_descriptor<StreamDescriptorService>(io_context)
   {
   }
@@ -81,9 +81,9 @@ public:
    *
    * @param native_descriptor The new underlying descriptor implementation.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
-  basic_stream_descriptor(asio::io_context& io_context,
+  basic_stream_descriptor(asio_sockio::io_context& io_context,
       const native_handle_type& native_descriptor)
     : basic_descriptor<StreamDescriptorService>(io_context, native_descriptor)
   {
@@ -135,8 +135,8 @@ public:
    *
    * @returns The number of bytes written.
    *
-   * @throws asio::system_error Thrown on failure. An error code of
-   * asio::error::eof indicates that the connection was closed by the
+   * @throws asio_sockio::system_error Thrown on failure. An error code of
+   * asio_sockio::error::eof indicates that the connection was closed by the
    * peer.
    *
    * @note The write_some operation may not transmit all of the data to the
@@ -146,7 +146,7 @@ public:
    * @par Example
    * To write a single data buffer use the @ref buffer function as follows:
    * @code
-   * descriptor.write_some(asio::buffer(data, size));
+   * descriptor.write_some(asio_sockio::buffer(data, size));
    * @endcode
    * See the @ref buffer documentation for information on writing multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -155,10 +155,10 @@ public:
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t s = this->get_service().write_some(
         this->get_implementation(), buffers, ec);
-    asio::detail::throw_error(ec, "write_some");
+    asio_sockio::detail::throw_error(ec, "write_some");
     return s;
   }
 
@@ -180,7 +180,7 @@ public:
    */
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return this->get_service().write_some(
         this->get_implementation(), buffers, ec);
@@ -200,13 +200,13 @@ public:
    * Copies will be made of the handler as required. The function signature of
    * the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred           // Number of bytes written.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * @note The write operation may not transmit all of the data to the peer.
    * Consider using the @ref async_write function if you need to ensure that all
@@ -215,7 +215,7 @@ public:
    * @par Example
    * To write a single data buffer use the @ref buffer function as follows:
    * @code
-   * descriptor.async_write_some(asio::buffer(data, size), handler);
+   * descriptor.async_write_some(asio_sockio::buffer(data, size), handler);
    * @endcode
    * See the @ref buffer documentation for information on writing multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -223,7 +223,7 @@ public:
    */
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
@@ -245,8 +245,8 @@ public:
    *
    * @returns The number of bytes read.
    *
-   * @throws asio::system_error Thrown on failure. An error code of
-   * asio::error::eof indicates that the connection was closed by the
+   * @throws asio_sockio::system_error Thrown on failure. An error code of
+   * asio_sockio::error::eof indicates that the connection was closed by the
    * peer.
    *
    * @note The read_some operation may not read all of the requested number of
@@ -257,7 +257,7 @@ public:
    * @par Example
    * To read into a single data buffer use the @ref buffer function as follows:
    * @code
-   * descriptor.read_some(asio::buffer(data, size));
+   * descriptor.read_some(asio_sockio::buffer(data, size));
    * @endcode
    * See the @ref buffer documentation for information on reading into multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -266,10 +266,10 @@ public:
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t s = this->get_service().read_some(
         this->get_implementation(), buffers, ec);
-    asio::detail::throw_error(ec, "read_some");
+    asio_sockio::detail::throw_error(ec, "read_some");
     return s;
   }
 
@@ -292,7 +292,7 @@ public:
    */
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return this->get_service().read_some(
         this->get_implementation(), buffers, ec);
@@ -312,13 +312,13 @@ public:
    * Copies will be made of the handler as required. The function signature of
    * the handler must be:
    * @code void handler(
-   *   const asio::error_code& error, // Result of operation.
+   *   const asio_sockio::error_code& error, // Result of operation.
    *   std::size_t bytes_transferred           // Number of bytes read.
    * ); @endcode
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * asio::io_context::post().
+   * asio_sockio::io_context::post().
    *
    * @note The read operation may not read all of the requested number of bytes.
    * Consider using the @ref async_read function if you need to ensure that the
@@ -328,7 +328,7 @@ public:
    * @par Example
    * To read into a single data buffer use the @ref buffer function as follows:
    * @code
-   * descriptor.async_read_some(asio::buffer(data, size), handler);
+   * descriptor.async_read_some(asio_sockio::buffer(data, size), handler);
    * @endcode
    * See the @ref buffer documentation for information on reading into multiple
    * buffers in one go, and how to use it with arrays, boost::array or
@@ -336,7 +336,7 @@ public:
    */
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
@@ -350,7 +350,7 @@ public:
 };
 
 } // namespace posix
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

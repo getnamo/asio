@@ -29,12 +29,12 @@ namespace ip_host_name_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     std::string host_name = ip::host_name();
     std::string host_name2 = ip::host_name(ec);

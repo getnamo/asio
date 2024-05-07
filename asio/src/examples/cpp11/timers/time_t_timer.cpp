@@ -38,7 +38,7 @@ struct time_t_clock
   }
 };
 
-// The asio::basic_waitable_timer template accepts an optional WaitTraits
+// The asio_sockio::basic_waitable_timer template accepts an optional WaitTraits
 // template parameter. The underlying time_t clock has one-second granularity,
 // so these traits may be customised to reduce the latency between the clock
 // ticking over and a wait operation's completion. When the timeout is near
@@ -71,14 +71,14 @@ struct time_t_wait_traits
   }
 };
 
-typedef asio::basic_waitable_timer<
+typedef asio_sockio::basic_waitable_timer<
   time_t_clock, time_t_wait_traits> time_t_timer;
 
 int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     time_t_timer timer(io_context);
 

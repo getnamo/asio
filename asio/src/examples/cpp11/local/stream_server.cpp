@@ -16,7 +16,7 @@
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 
-using asio::local::stream_protocol;
+using asio_sockio::local::stream_protocol;
 
 class session
   : public std::enable_shared_from_this<session>
@@ -36,7 +36,7 @@ private:
   void do_read()
   {
     auto self(shared_from_this());
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         [this, self](std::error_code ec, std::size_t length)
         {
           if (!ec)
@@ -47,8 +47,8 @@ private:
   void do_write(std::size_t length)
   {
     auto self(shared_from_this());
-    asio::async_write(socket_,
-        asio::buffer(data_, length),
+    asio_sockio::async_write(socket_,
+        asio_sockio::buffer(data_, length),
         [this, self](std::error_code ec, std::size_t /*length*/)
         {
           if (!ec)
@@ -66,7 +66,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, const std::string& file)
+  server(asio_sockio::io_context& io_context, const std::string& file)
     : acceptor_(io_context, stream_protocol::endpoint(file))
   {
     do_accept();
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     std::remove(argv[1]);
     server s(io_context, argv[1]);

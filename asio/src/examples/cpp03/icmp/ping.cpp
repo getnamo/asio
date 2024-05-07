@@ -17,14 +17,14 @@
 #include "icmp_header.hpp"
 #include "ipv4_header.hpp"
 
-using asio::ip::icmp;
-using asio::steady_timer;
-namespace chrono = asio::chrono;
+using asio_sockio::ip::icmp;
+using asio_sockio::steady_timer;
+namespace chrono = asio_sockio::chrono;
 
 class pinger
 {
 public:
-  pinger(asio::io_context& io_context, const char* destination)
+  pinger(asio_sockio::io_context& io_context, const char* destination)
     : resolver_(io_context), socket_(io_context, icmp::v4()),
       timer_(io_context), sequence_number_(0), num_replies_(0)
   {
@@ -48,7 +48,7 @@ private:
     compute_checksum(echo_request, body.begin(), body.end());
 
     // Encode the request packet.
-    asio::streambuf request_buffer;
+    asio_sockio::streambuf request_buffer;
     std::ostream os(&request_buffer);
     os << echo_request << body;
 
@@ -135,7 +135,7 @@ private:
   steady_timer timer_;
   unsigned short sequence_number_;
   chrono::steady_clock::time_point time_sent_;
-  asio::streambuf reply_buffer_;
+  asio_sockio::streambuf reply_buffer_;
   std::size_t num_replies_;
 };
 
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     pinger p(io_context, argv[1]);
     io_context.run();
   }

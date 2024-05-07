@@ -28,7 +28,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace local {
 
 /// Create a pair of connected sockets.
@@ -42,53 +42,53 @@ template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
 ASIO_SYNC_OP_VOID connect_pair(
     basic_socket<Protocol ASIO_SVC_TARG>& socket1,
     basic_socket<Protocol ASIO_SVC_TARG1>& socket2,
-    asio::error_code& ec);
+    asio_sockio::error_code& ec);
 
 template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
 inline void connect_pair(
     basic_socket<Protocol ASIO_SVC_TARG>& socket1,
     basic_socket<Protocol ASIO_SVC_TARG1>& socket2)
 {
-  asio::error_code ec;
+  asio_sockio::error_code ec;
   connect_pair(socket1, socket2, ec);
-  asio::detail::throw_error(ec, "connect_pair");
+  asio_sockio::detail::throw_error(ec, "connect_pair");
 }
 
 template <typename Protocol ASIO_SVC_TPARAM ASIO_SVC_TPARAM1>
 inline ASIO_SYNC_OP_VOID connect_pair(
     basic_socket<Protocol ASIO_SVC_TARG>& socket1,
     basic_socket<Protocol ASIO_SVC_TARG1>& socket2,
-    asio::error_code& ec)
+    asio_sockio::error_code& ec)
 {
   // Check that this function is only being used with a UNIX domain socket.
-  asio::local::basic_endpoint<Protocol>* tmp
+  asio_sockio::local::basic_endpoint<Protocol>* tmp
     = static_cast<typename Protocol::endpoint*>(0);
   (void)tmp;
 
   Protocol protocol;
-  asio::detail::socket_type sv[2];
-  if (asio::detail::socket_ops::socketpair(protocol.family(),
+  asio_sockio::detail::socket_type sv[2];
+  if (asio_sockio::detail::socket_ops::socketpair(protocol.family(),
         protocol.type(), protocol.protocol(), sv, ec)
-      == asio::detail::socket_error_retval)
+      == asio_sockio::detail::socket_error_retval)
     ASIO_SYNC_OP_VOID_RETURN(ec);
 
   socket1.assign(protocol, sv[0], ec);
   if (ec)
   {
-    asio::error_code temp_ec;
-    asio::detail::socket_ops::state_type state[2] = { 0, 0 };
-    asio::detail::socket_ops::close(sv[0], state[0], true, temp_ec);
-    asio::detail::socket_ops::close(sv[1], state[1], true, temp_ec);
+    asio_sockio::error_code temp_ec;
+    asio_sockio::detail::socket_ops::state_type state[2] = { 0, 0 };
+    asio_sockio::detail::socket_ops::close(sv[0], state[0], true, temp_ec);
+    asio_sockio::detail::socket_ops::close(sv[1], state[1], true, temp_ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   socket2.assign(protocol, sv[1], ec);
   if (ec)
   {
-    asio::error_code temp_ec;
+    asio_sockio::error_code temp_ec;
     socket1.close(temp_ec);
-    asio::detail::socket_ops::state_type state = 0;
-    asio::detail::socket_ops::close(sv[1], state, true, temp_ec);
+    asio_sockio::detail::socket_ops::state_type state = 0;
+    asio_sockio::detail::socket_ops::close(sv[1], state, true, temp_ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
@@ -96,7 +96,7 @@ inline ASIO_SYNC_OP_VOID connect_pair(
 }
 
 } // namespace local
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

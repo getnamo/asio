@@ -22,7 +22,7 @@ namespace server4 {
 struct request;
 
 /// Parser for incoming requests.
-class request_parser : asio::coroutine
+class request_parser : asio_sockio::coroutine
 {
 public:
   /// Parse some data. The tribool return value is true when a complete request

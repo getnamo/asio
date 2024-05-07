@@ -14,12 +14,12 @@
 #include "asio.hpp"
 #include "asio/ssl.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 class session : public std::enable_shared_from_this<session>
 {
 public:
-  session(tcp::socket socket, asio::ssl::context& context)
+  session(tcp::socket socket, asio_sockio::ssl::context& context)
     : socket_(std::move(socket), context)
   {
   }
@@ -33,7 +33,7 @@ private:
   void do_handshake()
   {
     auto self(shared_from_this());
-    socket_.async_handshake(asio::ssl::stream_base::server, 
+    socket_.async_handshake(asio_sockio::ssl::stream_base::server, 
         [this, self](const std::error_code& error)
         {
           if (!error)
@@ -46,7 +46,7 @@ private:
   void do_read()
   {
     auto self(shared_from_this());
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         [this, self](const std::error_code& ec, std::size_t length)
         {
           if (!ec)
@@ -59,7 +59,7 @@ private:
   void do_write(std::size_t length)
   {
     auto self(shared_from_this());
-    asio::async_write(socket_, asio::buffer(data_, length),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(data_, length),
         [this, self](const std::error_code& ec,
           std::size_t /*length*/)
         {
@@ -70,24 +70,24 @@ private:
         });
   }
 
-  asio::ssl::stream<tcp::socket> socket_;
+  asio_sockio::ssl::stream<tcp::socket> socket_;
   char data_[1024];
 };
 
 class server
 {
 public:
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)),
-      context_(asio::ssl::context::sslv23)
+      context_(asio_sockio::ssl::context::sslv23)
   {
     context_.set_options(
-        asio::ssl::context::default_workarounds
-        | asio::ssl::context::no_sslv2
-        | asio::ssl::context::single_dh_use);
+        asio_sockio::ssl::context::default_workarounds
+        | asio_sockio::ssl::context::no_sslv2
+        | asio_sockio::ssl::context::single_dh_use);
     context_.set_password_callback(std::bind(&server::get_password, this));
     context_.use_certificate_chain_file("server.pem");
-    context_.use_private_key_file("server.pem", asio::ssl::context::pem);
+    context_.use_private_key_file("server.pem", asio_sockio::ssl::context::pem);
     context_.use_tmp_dh_file("dh2048.pem");
 
     do_accept();
@@ -114,7 +114,7 @@ private:
   }
 
   tcp::acceptor acceptor_;
-  asio::ssl::context context_;
+  asio_sockio::ssl::context context_;
 };
 
 int main(int argc, char* argv[])
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

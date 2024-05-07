@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// (Deprecated: Use two-parameter version of async_result.) Default handler
 /// type traits provided for all completion token types.
@@ -43,7 +43,7 @@ struct handler_type
   >::type::type type;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -36,7 +36,7 @@
 # include <boost/utility/result_of.hpp>
 #endif // defined(ASIO_HAS_TYPE_TRAITS)
 
-namespace asio {
+namespace asio_sockio {
 
 #if defined(ASIO_HAS_STD_TYPE_TRAITS)
 using std::add_const;
@@ -81,6 +81,6 @@ using boost::result_of;
 using boost::true_type;
 #endif // defined(ASIO_HAS_STD_TYPE_TRAITS)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #endif // ASIO_DETAIL_TYPE_TRAITS_HPP

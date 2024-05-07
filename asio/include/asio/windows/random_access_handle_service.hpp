@@ -31,21 +31,21 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace windows {
 
 /// Default service implementation for a random-access handle.
 class random_access_handle_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 #else
-  : public asio::detail::service_base<random_access_handle_service>
+  : public asio_sockio::detail::service_base<random_access_handle_service>
 #endif
 {
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 #endif
 
 private:
@@ -68,8 +68,8 @@ public:
 #endif
 
   /// Construct a new random-access handle service for the specified io_context.
-  explicit random_access_handle_service(asio::io_context& io_context)
-    : asio::detail::service_base<
+  explicit random_access_handle_service(asio_sockio::io_context& io_context)
+    : asio_sockio::detail::service_base<
         random_access_handle_service>(io_context),
       service_impl_(io_context)
   {
@@ -106,7 +106,7 @@ public:
 
   /// Assign an existing native handle to a random-access handle.
   ASIO_SYNC_OP_VOID assign(implementation_type& impl,
-      const native_handle_type& handle, asio::error_code& ec)
+      const native_handle_type& handle, asio_sockio::error_code& ec)
   {
     service_impl_.assign(impl, handle, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -120,7 +120,7 @@ public:
 
   /// Close a random-access handle implementation.
   ASIO_SYNC_OP_VOID close(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.close(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -134,7 +134,7 @@ public:
 
   /// Cancel all asynchronous operations associated with the handle.
   ASIO_SYNC_OP_VOID cancel(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.cancel(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -143,7 +143,7 @@ public:
   /// Write the given data at the specified offset.
   template <typename ConstBufferSequence>
   std::size_t write_some_at(implementation_type& impl, uint64_t offset,
-      const ConstBufferSequence& buffers, asio::error_code& ec)
+      const ConstBufferSequence& buffers, asio_sockio::error_code& ec)
   {
     return service_impl_.write_some_at(impl, offset, buffers, ec);
   }
@@ -151,13 +151,13 @@ public:
   /// Start an asynchronous write at the specified offset.
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_write_some_at(implementation_type& impl,
       uint64_t offset, const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
-    asio::async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+    asio_sockio::async_completion<WriteHandler,
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_write_some_at(impl,
         offset, buffers, init.completion_handler);
@@ -168,7 +168,7 @@ public:
   /// Read some data from the specified offset.
   template <typename MutableBufferSequence>
   std::size_t read_some_at(implementation_type& impl, uint64_t offset,
-      const MutableBufferSequence& buffers, asio::error_code& ec)
+      const MutableBufferSequence& buffers, asio_sockio::error_code& ec)
   {
     return service_impl_.read_some_at(impl, offset, buffers, ec);
   }
@@ -176,13 +176,13 @@ public:
   /// Start an asynchronous read at the specified offset.
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_read_some_at(implementation_type& impl,
       uint64_t offset, const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
-    asio::async_completion<ReadHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+    asio_sockio::async_completion<ReadHandler,
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_read_some_at(impl,
         offset, buffers, init.completion_handler);
@@ -202,7 +202,7 @@ private:
 };
 
 } // namespace windows
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

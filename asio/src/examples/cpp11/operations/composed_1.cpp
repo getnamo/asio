@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <utility>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 //------------------------------------------------------------------------------
 
@@ -32,10 +32,10 @@ auto async_write_message(tcp::socket& socket,
   // The return type of the initiating function is deduced from the combination
   // of CompletionToken type and the completion handler's signature. When the
   // completion token is a simple callback, the return type is void. However,
-  // when the completion token is asio::yield_context (used for stackful
+  // when the completion token is asio_sockio::yield_context (used for stackful
   // coroutines) the return type would be std::size_t, and when the completion
-  // token is asio::use_future it would be std::future<std::size_t>.
-  -> typename asio::async_result<
+  // token is asio_sockio::use_future it would be std::future<std::size_t>.
+  -> typename asio_sockio::async_result<
     typename std::decay<CompletionToken>::type,
     void(std::error_code, std::size_t)>::return_type
 {
@@ -43,8 +43,8 @@ auto async_write_message(tcp::socket& socket,
   // forward the completion token. This ensures that our operation works
   // correctly with move-only function objects as callbacks, as well as other
   // completion token types.
-  return asio::async_write(socket,
-      asio::buffer(message, std::strlen(message)),
+  return asio_sockio::async_write(socket,
+      asio_sockio::buffer(message, std::strlen(message)),
       std::forward<CompletionToken>(token));
 }
 
@@ -52,7 +52,7 @@ auto async_write_message(tcp::socket& socket,
 
 void test_callback()
 {
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
   tcp::acceptor acceptor(io_context, {tcp::v4(), 55555});
   tcp::socket socket = acceptor.accept();
@@ -78,7 +78,7 @@ void test_callback()
 
 void test_future()
 {
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
   tcp::acceptor acceptor(io_context, {tcp::v4(), 55555});
   tcp::socket socket = acceptor.accept();
@@ -87,7 +87,7 @@ void test_future()
   // This token causes the operation's initiating function to return a future,
   // which may be used to synchronously wait for the result of the operation.
   std::future<std::size_t> f = async_write_message(
-      socket, "Testing future\r\n", asio::use_future);
+      socket, "Testing future\r\n", asio_sockio::use_future);
 
   io_context.run();
 

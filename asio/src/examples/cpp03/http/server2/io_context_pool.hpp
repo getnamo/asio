@@ -35,12 +35,12 @@ public:
   void stop();
 
   /// Get an io_context to use.
-  asio::io_context& get_io_context();
+  asio_sockio::io_context& get_io_context();
 
 private:
-  typedef boost::shared_ptr<asio::io_context> io_context_ptr;
-  typedef asio::executor_work_guard<
-    asio::io_context::executor_type> io_context_work;
+  typedef boost::shared_ptr<asio_sockio::io_context> io_context_ptr;
+  typedef asio_sockio::executor_work_guard<
+    asio_sockio::io_context::executor_type> io_context_work;
 
   /// The pool of io_contexts.
   std::vector<io_context_ptr> io_contexts_;

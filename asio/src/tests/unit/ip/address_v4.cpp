@@ -30,12 +30,12 @@ namespace ip_address_v4_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // address_v4 constructors.
 
@@ -170,7 +170,7 @@ namespace ip_address_v4_runtime {
 
 void test()
 {
-  using asio::ip::address_v4;
+  using asio_sockio::ip::address_v4;
 
   address_v4 a1;
   ASIO_CHECK(a1.to_bytes()[0] == 0);

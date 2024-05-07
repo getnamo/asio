@@ -16,7 +16,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <asio.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 std::string make_daytime_string()
 {
@@ -31,7 +31,7 @@ class tcp_connection
 public:
   typedef boost::shared_ptr<tcp_connection> pointer;
 
-  static pointer create(asio::io_context& io_context)
+  static pointer create(asio_sockio::io_context& io_context)
   {
     return pointer(new tcp_connection(io_context));
   }
@@ -45,19 +45,19 @@ public:
   {
     message_ = make_daytime_string();
 
-    asio::async_write(socket_, asio::buffer(message_),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(message_),
         boost::bind(&tcp_connection::handle_write, shared_from_this(),
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred));
   }
 
 private:
-  tcp_connection(asio::io_context& io_context)
+  tcp_connection(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
 
-  void handle_write(const asio::error_code& /*error*/,
+  void handle_write(const asio_sockio::error_code& /*error*/,
       size_t /*bytes_transferred*/)
   {
   }
@@ -69,7 +69,7 @@ private:
 class tcp_server
 {
 public:
-  tcp_server(asio::io_context& io_context)
+  tcp_server(asio_sockio::io_context& io_context)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), 13))
   {
     start_accept();
@@ -83,11 +83,11 @@ private:
 
     acceptor_.async_accept(new_connection->socket(),
         boost::bind(&tcp_server::handle_accept, this, new_connection,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(tcp_connection::pointer new_connection,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -104,7 +104,7 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     tcp_server server(io_context);
     io_context.run();
   }

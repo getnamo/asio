@@ -14,7 +14,7 @@
 #include <string>
 #include <asio.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 int main(int argc, char* argv[])
 {
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Get a list of endpoints corresponding to the server name.
     tcp::resolver resolver(io_context);
@@ -36,12 +36,12 @@ int main(int argc, char* argv[])
 
     // Try each endpoint until we successfully establish a connection.
     tcp::socket socket(io_context);
-    asio::connect(socket, endpoints);
+    asio_sockio::connect(socket, endpoints);
 
     // Form the request. We specify the "Connection: close" header so that the
     // server will close the socket after transmitting the response. This will
     // allow us to treat all data up until the EOF as the content.
-    asio::streambuf request;
+    asio_sockio::streambuf request;
     std::ostream request_stream(&request);
     request_stream << "GET " << argv[2] << " HTTP/1.0\r\n";
     request_stream << "Host: " << argv[1] << "\r\n";
@@ -49,13 +49,13 @@ int main(int argc, char* argv[])
     request_stream << "Connection: close\r\n\r\n";
 
     // Send the request.
-    asio::write(socket, request);
+    asio_sockio::write(socket, request);
 
     // Read the response status line. The response streambuf will automatically
     // grow to accommodate the entire line. The growth may be limited by passing
     // a maximum size to the streambuf constructor.
-    asio::streambuf response;
-    asio::read_until(socket, response, "\r\n");
+    asio_sockio::streambuf response;
+    asio_sockio::read_until(socket, response, "\r\n");
 
     // Check that response is OK.
     std::istream response_stream(&response);
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
     }
 
     // Read the response headers, which are terminated by a blank line.
-    asio::read_until(socket, response, "\r\n\r\n");
+    asio_sockio::read_until(socket, response, "\r\n\r\n");
 
     // Process the response headers.
     std::string header;
@@ -90,12 +90,12 @@ int main(int argc, char* argv[])
       std::cout << &response;
 
     // Read until EOF, writing data to output as we go.
-    asio::error_code error;
-    while (asio::read(socket, response,
-          asio::transfer_at_least(1), error))
+    asio_sockio::error_code error;
+    while (asio_sockio::read(socket, response,
+          asio_sockio::transfer_at_least(1), error))
       std::cout << &response;
-    if (error != asio::error::eof)
-      throw asio::system_error(error);
+    if (error != asio_sockio::error::eof)
+      throw asio_sockio::system_error(error);
   }
   catch (std::exception& e)
   {

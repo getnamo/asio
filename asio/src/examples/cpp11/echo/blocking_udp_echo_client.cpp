@@ -13,7 +13,7 @@
 #include <iostream>
 #include "asio.hpp"
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 enum { max_length = 1024 };
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     udp::socket s(io_context, udp::endpoint(udp::v4(), 0));
 
@@ -39,12 +39,12 @@ int main(int argc, char* argv[])
     char request[max_length];
     std::cin.getline(request, max_length);
     size_t request_length = std::strlen(request);
-    s.send_to(asio::buffer(request, request_length), *endpoints.begin());
+    s.send_to(asio_sockio::buffer(request, request_length), *endpoints.begin());
 
     char reply[max_length];
     udp::endpoint sender_endpoint;
     size_t reply_length = s.receive_from(
-        asio::buffer(reply, max_length), sender_endpoint);
+        asio_sockio::buffer(reply, max_length), sender_endpoint);
     std::cout << "Reply is: ";
     std::cout.write(reply, reply_length);
     std::cout << "\n";

@@ -15,7 +15,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 namespace third_party_lib {
 
@@ -40,11 +40,11 @@ public:
   }
 
   // Notify that third party library that it should perform its read operation.
-  void do_read(asio::error_code& ec)
+  void do_read(asio_sockio::error_code& ec)
   {
-    if (std::size_t len = socket_.read_some(asio::buffer(data_), ec))
+    if (std::size_t len = socket_.read_some(asio_sockio::buffer(data_), ec))
     {
-      write_buffer_ = asio::buffer(data_, len);
+      write_buffer_ = asio_sockio::buffer(data_, len);
       state_ = writing;
     }
   }
@@ -57,13 +57,13 @@ public:
   }
 
   // Notify that third party library that it should perform its write operation.
-  void do_write(asio::error_code& ec)
+  void do_write(asio_sockio::error_code& ec)
   {
     if (std::size_t len = socket_.write_some(
-          asio::buffer(write_buffer_), ec))
+          asio_sockio::buffer(write_buffer_), ec))
     {
       write_buffer_ = write_buffer_ + len;
-      state_ = asio::buffer_size(write_buffer_) > 0 ? writing : reading;
+      state_ = asio_sockio::buffer_size(write_buffer_) > 0 ? writing : reading;
     }
   }
 
@@ -71,7 +71,7 @@ private:
   tcp::socket& socket_;
   enum { reading, writing } state_;
   boost::array<char, 128> data_;
-  asio::const_buffer write_buffer_;
+  asio_sockio::const_buffer write_buffer_;
 };
 
 } // namespace third_party_lib
@@ -83,7 +83,7 @@ class connection
 public:
   typedef boost::shared_ptr<connection> pointer;
 
-  static pointer create(asio::io_context& io_context)
+  static pointer create(asio_sockio::io_context& io_context)
   {
     return pointer(new connection(io_context));
   }
@@ -102,7 +102,7 @@ public:
   }
 
 private:
-  connection(asio::io_context& io_context)
+  connection(asio_sockio::io_context& io_context)
     : socket_(io_context),
       session_impl_(socket_),
       read_in_progress_(false),
@@ -119,7 +119,7 @@ private:
       socket_.async_wait(tcp::socket::wait_read,
           boost::bind(&connection::handle_read,
             shared_from_this(),
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
 
     // Start a write operation if the third party library wants one.
@@ -129,11 +129,11 @@ private:
       socket_.async_wait(tcp::socket::wait_write,
           boost::bind(&connection::handle_write,
             shared_from_this(),
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
   }
 
-  void handle_read(asio::error_code ec)
+  void handle_read(asio_sockio::error_code ec)
   {
     read_in_progress_ = false;
 
@@ -143,7 +143,7 @@ private:
 
     // The third party library successfully performed a read on the socket.
     // Start new read or write operations based on what it now wants.
-    if (!ec || ec == asio::error::would_block)
+    if (!ec || ec == asio_sockio::error::would_block)
       start_operations();
 
     // Otherwise, an error occurred. Closing the socket cancels any outstanding
@@ -153,7 +153,7 @@ private:
       socket_.close();
   }
 
-  void handle_write(asio::error_code ec)
+  void handle_write(asio_sockio::error_code ec)
   {
     write_in_progress_ = false;
 
@@ -163,7 +163,7 @@ private:
 
     // The third party library successfully performed a write on the socket.
     // Start new read or write operations based on what it now wants.
-    if (!ec || ec == asio::error::would_block)
+    if (!ec || ec == asio_sockio::error::would_block)
       start_operations();
 
     // Otherwise, an error occurred. Closing the socket cancels any outstanding
@@ -183,7 +183,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
   {
     start_accept();
@@ -197,11 +197,11 @@ private:
 
     acceptor_.async_accept(new_connection->socket(),
         boost::bind(&server::handle_accept, this, new_connection,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(connection::pointer new_connection,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

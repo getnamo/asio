@@ -24,7 +24,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 inline strand_service::strand_impl::strand_impl()
@@ -64,7 +64,7 @@ void strand_service::dispatch(strand_service::implementation_type& impl,
 
   // Allocate and construct an operation to wrap the handler.
   typedef completion_handler<Handler> op;
-  typename op::ptr p = { asio::detail::addressof(handler),
+  typename op::ptr p = { asio_sockio::detail::addressof(handler),
     op::ptr::allocate(handler), 0 };
   p.p = new (p.v) op(handler);
 
@@ -85,7 +85,7 @@ void strand_service::dispatch(strand_service::implementation_type& impl,
     (void)on_exit;
 
     completion_handler<Handler>::do_complete(
-        &io_context_, o, asio::error_code(), 0);
+        &io_context_, o, asio_sockio::error_code(), 0);
   }
 }
 
@@ -99,7 +99,7 @@ void strand_service::post(strand_service::implementation_type& impl,
 
   // Allocate and construct an operation to wrap the handler.
   typedef completion_handler<Handler> op;
-  typename op::ptr p = { asio::detail::addressof(handler),
+  typename op::ptr p = { asio_sockio::detail::addressof(handler),
     op::ptr::allocate(handler), 0 };
   p.p = new (p.v) op(handler);
 
@@ -111,7 +111,7 @@ void strand_service::post(strand_service::implementation_type& impl,
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

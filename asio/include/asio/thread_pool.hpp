@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// A simple fixed-size thread pool.
 /**
@@ -32,8 +32,8 @@ namespace asio {
  *
  * @par Submitting tasks to the pool
  *
- * To submit functions to the thread_pool, use the @ref asio::dispatch,
- * @ref asio::post or @ref asio::defer free functions.
+ * To submit functions to the thread_pool, use the @ref asio_sockio::dispatch,
+ * @ref asio_sockio::post or @ref asio_sockio::defer free functions.
  *
  * For example:
  *
@@ -45,13 +45,13 @@ namespace asio {
  * ...
  *
  * // Launch the pool with four threads.
- * asio::thread_pool pool(4);
+ * asio_sockio::thread_pool pool(4);
  *
  * // Submit a function to the pool.
- * asio::post(pool, my_task);
+ * asio_sockio::post(pool, my_task);
  *
  * // Submit a lambda object to the pool.
- * asio::post(pool,
+ * asio_sockio::post(pool,
  *     []()
  *     {
  *       ...
@@ -220,7 +220,7 @@ private:
   thread_pool& pool_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -27,7 +27,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Provides serialised handler execution.
 /**
@@ -95,9 +95,9 @@ public:
    * @param io_context The io_context object that the strand will use to
    * dispatch handlers that are ready to be run.
    */
-  explicit strand(asio::io_context& io_context)
-    : service_(asio::use_service<
-        asio::detail::strand_service>(io_context))
+  explicit strand(asio_sockio::io_context& io_context)
+    : service_(asio_sockio::use_service<
+        asio_sockio::detail::strand_service>(io_context))
   {
     service_.construct(impl_);
   }
@@ -123,7 +123,7 @@ public:
    * @return A reference to the io_context object that the strand will use to
    * dispatch handlers. Ownership is not transferred to the caller.
    */
-  asio::io_context& get_io_context()
+  asio_sockio::io_context& get_io_context()
   {
     return service_.get_io_context();
   }
@@ -137,14 +137,14 @@ public:
    * @return A reference to the io_context object that the strand will use to
    * dispatch handlers. Ownership is not transferred to the caller.
    */
-  asio::io_context& get_io_service()
+  asio_sockio::io_context& get_io_service()
   {
     return service_.get_io_context();
   }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Obtain the underlying execution context.
-  asio::io_context& context() const ASIO_NOEXCEPT
+  asio_sockio::io_context& context() const ASIO_NOEXCEPT
   {
     return service_.get_io_context();
   }
@@ -191,7 +191,7 @@ public:
   }
 
 #if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use asio::dispatch().) Request the strand to invoke
+  /// (Deprecated: Use asio_sockio::dispatch().) Request the strand to invoke
   /// the given handler.
   /**
    * This function is used to ask the strand to execute the given handler.
@@ -250,7 +250,7 @@ public:
   }
 
 #if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use asio::post().) Request the strand to invoke the
+  /// (Deprecated: Use asio_sockio::post().) Request the strand to invoke the
   /// given handler and return immediately.
   /**
    * This function is used to ask the strand to execute the given handler, but
@@ -305,7 +305,7 @@ public:
   }
 
 #if !defined(ASIO_NO_DEPRECATED)
-  /// (Deprecated: Use asio::bind_executor().) Create a new handler that
+  /// (Deprecated: Use asio_sockio::bind_executor().) Create a new handler that
   /// automatically dispatches the wrapped handler on the strand.
   /**
    * This function is used to create a new handler function object that, when
@@ -371,11 +371,11 @@ public:
   }
 
 private:
-  asio::detail::strand_service& service_;
-  mutable asio::detail::strand_service::implementation_type impl_;
+  asio_sockio::detail::strand_service& service_;
+  mutable asio_sockio::detail::strand_service::implementation_type impl_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

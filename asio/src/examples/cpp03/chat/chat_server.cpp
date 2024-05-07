@@ -20,7 +20,7 @@
 #include "asio.hpp"
 #include "chat_message.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 //----------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ class chat_session
     public boost::enable_shared_from_this<chat_session>
 {
 public:
-  chat_session(asio::io_context& io_context, chat_room& room)
+  chat_session(asio_sockio::io_context& io_context, chat_room& room)
     : socket_(io_context),
       room_(room)
   {
@@ -91,11 +91,11 @@ public:
   void start()
   {
     room_.join(shared_from_this());
-    asio::async_read(socket_,
-        asio::buffer(read_msg_.data(), chat_message::header_length),
+    asio_sockio::async_read(socket_,
+        asio_sockio::buffer(read_msg_.data(), chat_message::header_length),
         boost::bind(
           &chat_session::handle_read_header, shared_from_this(),
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void deliver(const chat_message& msg)
@@ -104,22 +104,22 @@ public:
     write_msgs_.push_back(msg);
     if (!write_in_progress)
     {
-      asio::async_write(socket_,
-          asio::buffer(write_msgs_.front().data(),
+      asio_sockio::async_write(socket_,
+          asio_sockio::buffer(write_msgs_.front().data(),
             write_msgs_.front().length()),
           boost::bind(&chat_session::handle_write, shared_from_this(),
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
   }
 
-  void handle_read_header(const asio::error_code& error)
+  void handle_read_header(const asio_sockio::error_code& error)
   {
     if (!error && read_msg_.decode_header())
     {
-      asio::async_read(socket_,
-          asio::buffer(read_msg_.body(), read_msg_.body_length()),
+      asio_sockio::async_read(socket_,
+          asio_sockio::buffer(read_msg_.body(), read_msg_.body_length()),
           boost::bind(&chat_session::handle_read_body, shared_from_this(),
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -127,15 +127,15 @@ public:
     }
   }
 
-  void handle_read_body(const asio::error_code& error)
+  void handle_read_body(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       room_.deliver(read_msg_);
-      asio::async_read(socket_,
-          asio::buffer(read_msg_.data(), chat_message::header_length),
+      asio_sockio::async_read(socket_,
+          asio_sockio::buffer(read_msg_.data(), chat_message::header_length),
           boost::bind(&chat_session::handle_read_header, shared_from_this(),
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -143,18 +143,18 @@ public:
     }
   }
 
-  void handle_write(const asio::error_code& error)
+  void handle_write(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       write_msgs_.pop_front();
       if (!write_msgs_.empty())
       {
-        asio::async_write(socket_,
-            asio::buffer(write_msgs_.front().data(),
+        asio_sockio::async_write(socket_,
+            asio_sockio::buffer(write_msgs_.front().data(),
               write_msgs_.front().length()),
             boost::bind(&chat_session::handle_write, shared_from_this(),
-              asio::placeholders::error));
+              asio_sockio::placeholders::error));
       }
     }
     else
@@ -177,7 +177,7 @@ typedef boost::shared_ptr<chat_session> chat_session_ptr;
 class chat_server
 {
 public:
-  chat_server(asio::io_context& io_context,
+  chat_server(asio_sockio::io_context& io_context,
       const tcp::endpoint& endpoint)
     : io_context_(io_context),
       acceptor_(io_context, endpoint)
@@ -190,11 +190,11 @@ public:
     chat_session_ptr new_session(new chat_session(io_context_, room_));
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&chat_server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(chat_session_ptr session,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -205,7 +205,7 @@ public:
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   tcp::acceptor acceptor_;
   chat_room room_;
 };
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     chat_server_list servers;
     for (int i = 1; i < argc; ++i)

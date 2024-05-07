@@ -33,8 +33,8 @@ inline void invoke(Function& function, Context& context)
   Function tmp(function);
   tmp();
 #else
-  using asio::asio_handler_invoke;
-  asio_handler_invoke(function, asio::detail::addressof(context));
+  using asio_sockio::asio_handler_invoke;
+  asio_handler_invoke(function, asio_sockio::detail::addressof(context));
 #endif
 }
 
@@ -45,12 +45,12 @@ inline void invoke(const Function& function, Context& context)
   Function tmp(function);
   tmp();
 #else
-  using asio::asio_handler_invoke;
-  asio_handler_invoke(function, asio::detail::addressof(context));
+  using asio_sockio::asio_handler_invoke;
+  asio_handler_invoke(function, asio_sockio::detail::addressof(context));
 #endif
 }
 
-} // namespace asio_handler_invoke_helpers
+} // namespace asio_sockio_handler_invoke_helpers
 
 #include "asio/detail/pop_options.hpp"
 

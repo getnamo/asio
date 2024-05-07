@@ -19,7 +19,7 @@
 #include <iostream>
 #include <string>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 //----------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ public:
     // The blocking_udp_client.cpp example shows how you can use std::bind
     // rather than a lambda.
     std::error_code error;
-    asio::async_connect(socket_, endpoints,
+    asio_sockio::async_connect(socket_, endpoints,
         [&](const std::error_code& result_error,
             const tcp::endpoint& /*result_endpoint*/)
         {
@@ -70,8 +70,8 @@ public:
     // than a lambda.
     std::error_code error;
     std::size_t n = 0;
-    asio::async_read_until(socket_,
-        asio::dynamic_buffer(input_buffer_), '\n',
+    asio_sockio::async_read_until(socket_,
+        asio_sockio::dynamic_buffer(input_buffer_), '\n',
         [&](const std::error_code& result_error,
             std::size_t result_n)
         {
@@ -101,7 +101,7 @@ public:
     // The blocking_udp_client.cpp example shows how you can use std::bind
     // rather than a lambda.
     std::error_code error;
-    asio::async_write(socket_, asio::buffer(data),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(data),
         [&](const std::error_code& result_error,
             std::size_t /*result_n*/)
         {
@@ -142,7 +142,7 @@ private:
     }
   }
 
-  asio::io_context io_context_;
+  asio_sockio::io_context io_context_;
   tcp::socket socket_{io_context_};
   std::string input_buffer_;
 };

@@ -30,7 +30,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Protocol>
@@ -47,13 +47,13 @@ public:
   typedef typename Protocol::endpoint endpoint_type;
 
   // The query type.
-  typedef asio::ip::basic_resolver_query<Protocol> query_type;
+  typedef asio_sockio::ip::basic_resolver_query<Protocol> query_type;
 
   // The results type.
-  typedef asio::ip::basic_resolver_results<Protocol> results_type;
+  typedef asio_sockio::ip::basic_resolver_results<Protocol> results_type;
 
   // Constructor.
-  winrt_resolver_service(asio::io_context& io_context)
+  winrt_resolver_service(asio_sockio::io_context& io_context)
     : service_base<winrt_resolver_service<Protocol> >(io_context),
       io_context_(use_service<io_context_impl>(io_context)),
       async_manager_(use_service<winrt_async_manager>(io_context))
@@ -71,7 +71,7 @@ public:
   }
 
   // Perform any fork-related housekeeping.
-  void notify_fork(asio::io_context::fork_event)
+  void notify_fork(asio_sockio::io_context::fork_event)
   {
   }
 
@@ -104,7 +104,7 @@ public:
 
   // Resolve a query to a list of entries.
   results_type resolve(implementation_type&,
-      const query_type& query, asio::error_code& ec)
+      const query_type& query, asio_sockio::error_code& ec)
   {
     try
     {
@@ -123,8 +123,8 @@ public:
     }
     catch (Platform::Exception^ e)
     {
-      ec = asio::error_code(e->HResult,
-          asio::system_category());
+      ec = asio_sockio::error_code(e->HResult,
+          asio_sockio::system_category());
       return results_type();
     }
   }
@@ -139,7 +139,7 @@ public:
 
     // Allocate and construct an operation to wrap the handler.
     typedef winrt_resolve_op<Protocol, Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(query, handler);
 
@@ -157,8 +157,8 @@ public:
     }
     catch (Platform::Exception^ e)
     {
-      p.p->ec_ = asio::error_code(
-          e->HResult, asio::system_category());
+      p.p->ec_ = asio_sockio::error_code(
+          e->HResult, asio_sockio::system_category());
       io_context_.post_immediate_completion(p.p, is_continuation);
       p.v = p.p = 0;
     }
@@ -166,9 +166,9 @@ public:
 
   // Resolve an endpoint to a list of entries.
   results_type resolve(implementation_type&,
-      const endpoint_type&, asio::error_code& ec)
+      const endpoint_type&, asio_sockio::error_code& ec)
   {
-    ec = asio::error::operation_not_supported;
+    ec = asio_sockio::error::operation_not_supported;
     return results_type();
   }
 
@@ -177,7 +177,7 @@ public:
   void async_resolve(implementation_type&,
       const endpoint_type&, Handler& handler)
   {
-    asio::error_code ec = asio::error::operation_not_supported;
+    asio_sockio::error_code ec = asio_sockio::error::operation_not_supported;
     const results_type results;
     io_context_.get_io_context().post(
         detail::bind_handler(handler, ec, results));
@@ -189,7 +189,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

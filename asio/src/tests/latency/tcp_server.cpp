@@ -18,11 +18,11 @@
 #include <cstring>
 #include <vector>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 #include <asio/yield.hpp>
 
-class tcp_server : asio::coroutine
+class tcp_server : asio_sockio::coroutine
 {
 public:
   tcp_server(tcp::acceptor& acceptor, std::size_t buf_size) :
@@ -32,7 +32,7 @@ public:
   {
   }
 
-  void operator()(asio::error_code ec, std::size_t n = 0)
+  void operator()(asio_sockio::error_code ec, std::size_t n = 0)
   {
     reenter (this) for (;;)
     {
@@ -40,15 +40,15 @@ public:
 
       while (!ec)
       {
-        yield asio::async_read(socket_,
-            asio::buffer(buffer_), ref(this));
+        yield asio_sockio::async_read(socket_,
+            asio_sockio::buffer(buffer_), ref(this));
 
         if (!ec)
         {
           for (std::size_t i = 0; i < n; ++i) buffer_[i] = ~buffer_[i];
 
-          yield asio::async_write(socket_,
-              asio::buffer(buffer_), ref(this));
+          yield asio_sockio::async_write(socket_,
+              asio_sockio::buffer(buffer_), ref(this));
         }
       }
 
@@ -63,7 +63,7 @@ public:
     {
     }
 
-    void operator()(asio::error_code ec, std::size_t n = 0)
+    void operator()(asio_sockio::error_code ec, std::size_t n = 0)
     {
       (*p_)(ec, n);
     }
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   std::size_t buf_size = std::atoi(argv[3]);
   bool spin = (std::strcmp(argv[4], "spin") == 0);
 
-  asio::io_context io_context(1);
+  asio_sockio::io_context io_context(1);
   tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
   std::vector<boost::shared_ptr<tcp_server> > servers;
 
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   {
     boost::shared_ptr<tcp_server> s(new tcp_server(acceptor, buf_size));
     servers.push_back(s);
-    (*s)(asio::error_code());
+    (*s)(asio_sockio::error_code());
   }
 
   if (spin)

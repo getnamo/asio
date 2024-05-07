@@ -12,7 +12,7 @@
 #include <boost/array.hpp>
 #include <asio.hpp>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     udp::resolver resolver(io_context);
     udp::endpoint receiver_endpoint =
@@ -34,12 +34,12 @@ int main(int argc, char* argv[])
     socket.open(udp::v4());
 
     boost::array<char, 1> send_buf  = {{ 0 }};
-    socket.send_to(asio::buffer(send_buf), receiver_endpoint);
+    socket.send_to(asio_sockio::buffer(send_buf), receiver_endpoint);
 
     boost::array<char, 128> recv_buf;
     udp::endpoint sender_endpoint;
     size_t len = socket.receive_from(
-        asio::buffer(recv_buf), sender_endpoint);
+        asio_sockio::buffer(recv_buf), sender_endpoint);
 
     std::cout.write(recv_buf.data(), len);
   }

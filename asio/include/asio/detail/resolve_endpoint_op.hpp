@@ -29,7 +29,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Protocol, typename Handler>
@@ -39,7 +39,7 @@ public:
   ASIO_DEFINE_HANDLER_PTR(resolve_endpoint_op);
 
   typedef typename Protocol::endpoint endpoint_type;
-  typedef asio::ip::basic_resolver_results<Protocol> results_type;
+  typedef asio_sockio::ip::basic_resolver_results<Protocol> results_type;
 
   resolve_endpoint_op(socket_ops::weak_cancel_token_type cancel_token,
       const endpoint_type& endpoint, io_context_impl& ioc, Handler& handler)
@@ -53,12 +53,12 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
+      const asio_sockio::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the operation object.
     resolve_endpoint_op* o(static_cast<resolve_endpoint_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     if (owner && owner != &o->io_context_impl_)
@@ -91,9 +91,9 @@ public:
       // associated with the handler. Consequently, a local copy of the handler
       // is required to ensure that any owning sub-object remains valid until
       // after we have deallocated the memory here.
-      detail::binder2<Handler, asio::error_code, results_type>
+      detail::binder2<Handler, asio_sockio::error_code, results_type>
         handler(o->handler_, o->ec_, o->results_);
-      p.h = asio::detail::addressof(handler.handler_);
+      p.h = asio_sockio::detail::addressof(handler.handler_);
       p.reset();
 
       if (owner)
@@ -115,7 +115,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

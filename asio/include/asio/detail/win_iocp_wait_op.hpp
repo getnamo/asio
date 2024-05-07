@@ -31,7 +31,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Handler>
@@ -56,14 +56,14 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& result_ec,
+      const asio_sockio::error_code& result_ec,
       std::size_t /*bytes_transferred*/)
   {
-    asio::error_code ec(result_ec);
+    asio_sockio::error_code ec(result_ec);
 
     // Take ownership of the operation object.
     win_iocp_wait_op* o(static_cast<win_iocp_wait_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     ASIO_HANDLER_COMPLETION((*o));
@@ -76,13 +76,13 @@ public:
     if (ec.value() == ERROR_NETNAME_DELETED)
     {
       if (o->cancel_token_.expired())
-        ec = asio::error::operation_aborted;
+        ec = asio_sockio::error::operation_aborted;
       else
-        ec = asio::error::connection_reset;
+        ec = asio_sockio::error::connection_reset;
     }
     else if (ec.value() == ERROR_PORT_UNREACHABLE)
     {
-      ec = asio::error::connection_refused;
+      ec = asio_sockio::error::connection_refused;
     }
 
     // Make a copy of the handler so that the memory can be deallocated before
@@ -91,9 +91,9 @@ public:
     // with the handler. Consequently, a local copy of the handler is required
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
-    detail::binder1<Handler, asio::error_code>
+    detail::binder1<Handler, asio_sockio::error_code>
       handler(o->handler_, ec);
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = asio_sockio::detail::addressof(handler.handler_);
     p.reset();
 
     // Make the upcall if required.
@@ -112,7 +112,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

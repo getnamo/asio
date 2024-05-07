@@ -24,7 +24,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 template <typename Stream>
 std::size_t buffered_read_stream<Stream>::fill()
@@ -41,7 +41,7 @@ std::size_t buffered_read_stream<Stream>::fill()
 }
 
 template <typename Stream>
-std::size_t buffered_read_stream<Stream>::fill(asio::error_code& ec)
+std::size_t buffered_read_stream<Stream>::fill(asio_sockio::error_code& ec)
 {
   detail::buffer_resize_guard<detail::buffered_stream_storage>
     resize_guard(storage_);
@@ -85,7 +85,7 @@ namespace detail
     }
 #endif // defined(ASIO_HAS_MOVE)
 
-    void operator()(const asio::error_code& ec,
+    void operator()(const asio_sockio::error_code& ec,
         const std::size_t bytes_transferred)
     {
       storage_.resize(previous_size_ + bytes_transferred);
@@ -172,7 +172,7 @@ struct associated_executor<
 template <typename Stream>
 template <typename ReadHandler>
 ASIO_INITFN_RESULT_TYPE(ReadHandler,
-    void (asio::error_code, std::size_t))
+    void (asio_sockio::error_code, std::size_t))
 buffered_read_stream<Stream>::async_fill(
     ASIO_MOVE_ARG(ReadHandler) handler)
 {
@@ -181,7 +181,7 @@ buffered_read_stream<Stream>::async_fill(
   ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
   async_completion<ReadHandler,
-    void (asio::error_code, std::size_t)> init(handler);
+    void (asio_sockio::error_code, std::size_t)> init(handler);
 
   std::size_t previous_size = storage_.size();
   storage_.resize(storage_.capacity());
@@ -190,7 +190,7 @@ buffered_read_stream<Stream>::async_fill(
         storage_.data() + previous_size,
         storage_.size() - previous_size),
       detail::buffered_fill_handler<ASIO_HANDLER_TYPE(
-        ReadHandler, void (asio::error_code, std::size_t))>(
+        ReadHandler, void (asio_sockio::error_code, std::size_t))>(
         storage_, previous_size, init.completion_handler));
 
   return init.result.get();
@@ -201,7 +201,7 @@ template <typename MutableBufferSequence>
 std::size_t buffered_read_stream<Stream>::read_some(
     const MutableBufferSequence& buffers)
 {
-  using asio::buffer_size;
+  using asio_sockio::buffer_size;
   if (buffer_size(buffers) == 0)
     return 0;
 
@@ -214,11 +214,11 @@ std::size_t buffered_read_stream<Stream>::read_some(
 template <typename Stream>
 template <typename MutableBufferSequence>
 std::size_t buffered_read_stream<Stream>::read_some(
-    const MutableBufferSequence& buffers, asio::error_code& ec)
+    const MutableBufferSequence& buffers, asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
 
-  using asio::buffer_size;
+  using asio_sockio::buffer_size;
   if (buffer_size(buffers) == 0)
     return 0;
 
@@ -258,7 +258,7 @@ namespace detail
       }
 #endif // defined(ASIO_HAS_MOVE)
 
-    void operator()(const asio::error_code& ec, std::size_t)
+    void operator()(const asio_sockio::error_code& ec, std::size_t)
     {
       if (ec || storage_.empty())
       {
@@ -267,7 +267,7 @@ namespace detail
       }
       else
       {
-        const std::size_t bytes_copied = asio::buffer_copy(
+        const std::size_t bytes_copied = asio_sockio::buffer_copy(
             buffers_, storage_.data(), storage_.size());
         storage_.consume(bytes_copied);
         handler_(ec, bytes_copied);
@@ -369,7 +369,7 @@ struct associated_executor<
 template <typename Stream>
 template <typename MutableBufferSequence, typename ReadHandler>
 ASIO_INITFN_RESULT_TYPE(ReadHandler,
-    void (asio::error_code, std::size_t))
+    void (asio_sockio::error_code, std::size_t))
 buffered_read_stream<Stream>::async_read_some(
     const MutableBufferSequence& buffers,
     ASIO_MOVE_ARG(ReadHandler) handler)
@@ -379,22 +379,22 @@ buffered_read_stream<Stream>::async_read_some(
   ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
   async_completion<ReadHandler,
-    void (asio::error_code, std::size_t)> init(handler);
+    void (asio_sockio::error_code, std::size_t)> init(handler);
 
-  using asio::buffer_size;
+  using asio_sockio::buffer_size;
   if (buffer_size(buffers) == 0 || !storage_.empty())
   {
     next_layer_.async_read_some(ASIO_MUTABLE_BUFFER(0, 0),
         detail::buffered_read_some_handler<
           MutableBufferSequence, ASIO_HANDLER_TYPE(
-            ReadHandler, void (asio::error_code, std::size_t))>(
+            ReadHandler, void (asio_sockio::error_code, std::size_t))>(
             storage_, buffers, init.completion_handler));
   }
   else
   {
     this->async_fill(detail::buffered_read_some_handler<
           MutableBufferSequence, ASIO_HANDLER_TYPE(
-            ReadHandler, void (asio::error_code, std::size_t))>(
+            ReadHandler, void (asio_sockio::error_code, std::size_t))>(
             storage_, buffers, init.completion_handler));
   }
 
@@ -414,15 +414,15 @@ std::size_t buffered_read_stream<Stream>::peek(
 template <typename Stream>
 template <typename MutableBufferSequence>
 std::size_t buffered_read_stream<Stream>::peek(
-    const MutableBufferSequence& buffers, asio::error_code& ec)
+    const MutableBufferSequence& buffers, asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   if (storage_.empty() && !this->fill(ec))
     return 0;
   return this->peek_copy(buffers);
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

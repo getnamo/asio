@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Executor>
@@ -82,7 +82,7 @@ public:
 
     // Run all ready handlers. No lock is required since the ready queue is
     // accessed only within the strand.
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     while (scheduler_operation* o = impl_->ready_queue_.front())
     {
       impl_->ready_queue_.pop();
@@ -172,7 +172,7 @@ void strand_executor_service::defer(const implementation_type& impl,
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 #if !defined(GENERATING_DOCUMENTATION)
 
@@ -380,7 +380,7 @@ const Executor* executor::target() const ASIO_NOEXCEPT
 
 #endif // !defined(GENERATING_DOCUMENTATION)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

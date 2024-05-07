@@ -24,12 +24,12 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 winrt_timer_scheduler::winrt_timer_scheduler(
-    asio::io_context& io_context)
-  : asio::detail::service_base<winrt_timer_scheduler>(io_context),
+    asio_sockio::io_context& io_context)
+  : asio_sockio::detail::service_base<winrt_timer_scheduler>(io_context),
     io_context_(use_service<io_context_impl>(io_context)),
     mutex_(),
     event_(),
@@ -38,7 +38,7 @@ winrt_timer_scheduler::winrt_timer_scheduler(
     stop_thread_(false),
     shutdown_(false)
 {
-  thread_ = new asio::detail::thread(
+  thread_ = new asio_sockio::detail::thread(
       bind_handler(&winrt_timer_scheduler::call_run_thread, this));
 }
 
@@ -49,7 +49,7 @@ winrt_timer_scheduler::~winrt_timer_scheduler()
 
 void winrt_timer_scheduler::shutdown()
 {
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
   shutdown_ = true;
   stop_thread_ = true;
   event_.signal(lock);
@@ -67,7 +67,7 @@ void winrt_timer_scheduler::shutdown()
   io_context_.abandon_operations(ops);
 }
 
-void winrt_timer_scheduler::notify_fork(asio::io_context::fork_event)
+void winrt_timer_scheduler::notify_fork(asio_sockio::io_context::fork_event)
 {
 }
 
@@ -77,7 +77,7 @@ void winrt_timer_scheduler::init_task()
 
 void winrt_timer_scheduler::run_thread()
 {
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
   while (!stop_thread_)
   {
     const long max_wait_duration = 5 * 60 * 1000000;
@@ -113,7 +113,7 @@ void winrt_timer_scheduler::do_remove_timer_queue(timer_queue_base& queue)
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

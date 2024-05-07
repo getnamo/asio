@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 template <typename Service>
 inline Service& use_service(io_context& ioc)
@@ -45,7 +45,7 @@ inline detail::io_context_impl& use_service<detail::io_context_impl>(
   return ioc.impl_;
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 
@@ -57,7 +57,7 @@ inline detail::io_context_impl& use_service<detail::io_context_impl>(
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 inline io_context::executor_type
 io_context::get_executor() ASIO_NOEXCEPT
@@ -103,11 +103,11 @@ std::size_t io_context::run_one_until(
     if (rel_time > chrono::seconds(1))
       rel_time = chrono::seconds(1);
 
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t s = impl_.wait_one(
         static_cast<long>(chrono::duration_cast<
           chrono::microseconds>(rel_time).count()), ec);
-    asio::detail::throw_error(ec);
+    asio_sockio::detail::throw_error(ec);
 
     if (s || impl_.stopped())
       return s;
@@ -296,7 +296,7 @@ io_context::executor_type::running_in_this_thread() const ASIO_NOEXCEPT
 }
 
 #if !defined(ASIO_NO_DEPRECATED)
-inline io_context::work::work(asio::io_context& io_context)
+inline io_context::work::work(asio_sockio::io_context& io_context)
   : io_context_impl_(io_context.impl_)
 {
   io_context_impl_.work_started();
@@ -313,30 +313,30 @@ inline io_context::work::~work()
   io_context_impl_.work_finished();
 }
 
-inline asio::io_context& io_context::work::get_io_context()
+inline asio_sockio::io_context& io_context::work::get_io_context()
 {
-  return static_cast<asio::io_context&>(io_context_impl_.context());
+  return static_cast<asio_sockio::io_context&>(io_context_impl_.context());
 }
 
-inline asio::io_context& io_context::work::get_io_service()
+inline asio_sockio::io_context& io_context::work::get_io_service()
 {
-  return static_cast<asio::io_context&>(io_context_impl_.context());
+  return static_cast<asio_sockio::io_context&>(io_context_impl_.context());
 }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-inline asio::io_context& io_context::service::get_io_context()
+inline asio_sockio::io_context& io_context::service::get_io_context()
 {
-  return static_cast<asio::io_context&>(context());
+  return static_cast<asio_sockio::io_context&>(context());
 }
 
 #if !defined(ASIO_NO_DEPRECATED)
-inline asio::io_context& io_context::service::get_io_service()
+inline asio_sockio::io_context& io_context::service::get_io_service()
 {
-  return static_cast<asio::io_context&>(context());
+  return static_cast<asio_sockio::io_context&>(context());
 }
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

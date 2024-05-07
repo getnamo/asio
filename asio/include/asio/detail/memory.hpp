@@ -27,7 +27,7 @@
 # include <boost/utility/addressof.hpp>
 #endif // !defined(ASIO_HAS_STD_ADDRESSOF)
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 #if defined(ASIO_HAS_STD_SHARED_PTR)
@@ -65,6 +65,6 @@ struct allocator_arg_t {};
   /**/
 #endif // defined(ASIO_HAS_CXX11_ALLOCATORS)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #endif // ASIO_DETAIL_MEMORY_HPP

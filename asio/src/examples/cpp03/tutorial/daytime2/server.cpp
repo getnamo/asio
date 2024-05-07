@@ -13,7 +13,7 @@
 #include <string>
 #include <asio.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 std::string make_daytime_string()
 {
@@ -26,7 +26,7 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 13));
 
@@ -37,8 +37,8 @@ int main()
 
       std::string message = make_daytime_string();
 
-      asio::error_code ignored_error;
-      asio::write(socket, asio::buffer(message), ignored_error);
+      asio_sockio::error_code ignored_error;
+      asio_sockio::write(socket, asio_sockio::buffer(message), ignored_error);
     }
   }
   catch (std::exception& e)

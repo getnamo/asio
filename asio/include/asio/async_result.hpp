@@ -21,7 +21,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// An interface for customising the behaviour of an initiating function.
 /**
@@ -142,7 +142,7 @@ template <typename CompletionToken, typename Signature>
 struct async_completion
 {
   /// The real handler type to be used for the asynchronous operation.
-  typedef typename asio::async_result<
+  typedef typename asio_sockio::async_result<
     typename decay<CompletionToken>::type,
       Signature>::completion_handler_type completion_handler_type;
 
@@ -195,7 +195,7 @@ struct async_result_helper
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 
@@ -204,18 +204,18 @@ struct async_result_helper
   void_or_deduced
 #elif defined(_MSC_VER) && (_MSC_VER < 1500)
 # define ASIO_INITFN_RESULT_TYPE(ct, sig) \
-  typename ::asio::detail::async_result_helper< \
+  typename ::asio_sockio::detail::async_result_helper< \
     ct, sig>::return_type
 #define ASIO_HANDLER_TYPE(ct, sig) \
-  typename ::asio::detail::async_result_helper< \
+  typename ::asio_sockio::detail::async_result_helper< \
     ct, sig>::completion_handler_type
 #else
 # define ASIO_INITFN_RESULT_TYPE(ct, sig) \
-  typename ::asio::async_result< \
-    typename ::asio::decay<ct>::type, sig>::return_type
+  typename ::asio_sockio::async_result< \
+    typename ::asio_sockio::decay<ct>::type, sig>::return_type
 #define ASIO_HANDLER_TYPE(ct, sig) \
-  typename ::asio::async_result< \
-    typename ::asio::decay<ct>::type, sig>::completion_handler_type
+  typename ::asio_sockio::async_result< \
+    typename ::asio_sockio::decay<ct>::type, sig>::completion_handler_type
 #endif
 
 #endif // ASIO_ASYNC_RESULT_HPP

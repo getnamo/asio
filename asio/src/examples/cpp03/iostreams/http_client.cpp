@@ -14,7 +14,7 @@
 #include <string>
 #include <asio/ip/tcp.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 int main(int argc, char* argv[])
 {
@@ -28,12 +28,12 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::ip::tcp::iostream s;
+    asio_sockio::ip::tcp::iostream s;
 
     // The entire sequence of I/O operations must complete within 60 seconds.
     // If an expiry occurs, the socket is automatically closed and the stream
     // becomes bad.
-    s.expires_after(asio::chrono::seconds(60));
+    s.expires_after(asio_sockio::chrono::seconds(60));
 
     // Establish a connection to the server.
     s.connect(argv[1], "http");

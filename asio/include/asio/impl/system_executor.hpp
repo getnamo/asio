@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 inline system_context& system_executor::context() const ASIO_NOEXCEPT
 {
@@ -78,7 +78,7 @@ void system_executor::defer(
   p.v = p.p = 0;
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

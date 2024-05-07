@@ -16,7 +16,7 @@
 #include <utility>
 #include "asio.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 // Class to manage the memory to be used for handler-based custom allocation.
 // It contains a single block of memory which may be returned for allocation
@@ -170,7 +170,7 @@ private:
   void do_read()
   {
     auto self(shared_from_this());
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         make_custom_alloc_handler(handler_memory_,
           [this, self](std::error_code ec, std::size_t length)
           {
@@ -184,7 +184,7 @@ private:
   void do_write(std::size_t length)
   {
     auto self(shared_from_this());
-    asio::async_write(socket_, asio::buffer(data_, length),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(data_, length),
         make_custom_alloc_handler(handler_memory_,
           [this, self](std::error_code ec, std::size_t /*length*/)
           {
@@ -208,7 +208,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, short port)
+  server(asio_sockio::io_context& io_context, short port)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
   {
     do_accept();
@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     server s(io_context, std::atoi(argv[1]));
     io_context.run();
   }

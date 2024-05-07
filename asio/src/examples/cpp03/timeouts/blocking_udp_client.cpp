@@ -15,7 +15,7 @@
 #include <boost/bind.hpp>
 #include <iostream>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 //----------------------------------------------------------------------
 
@@ -50,14 +50,14 @@ public:
   {
   }
 
-  std::size_t receive(const asio::mutable_buffer& buffer,
-      asio::chrono::steady_clock::duration timeout,
-      asio::error_code& ec)
+  std::size_t receive(const asio_sockio::mutable_buffer& buffer,
+      asio_sockio::chrono::steady_clock::duration timeout,
+      asio_sockio::error_code& ec)
   {
     // Start the asynchronous operation. The handle_receive function used as a
     // callback will update the ec and length variables.
     std::size_t length = 0;
-    socket_.async_receive(asio::buffer(buffer),
+    socket_.async_receive(asio_sockio::buffer(buffer),
         boost::bind(&client::handle_receive, _1, _2, &ec, &length));
 
     // Run the operation until it completes, or until the timeout.
@@ -67,7 +67,7 @@ public:
   }
 
 private:
-  void run(asio::chrono::steady_clock::duration timeout)
+  void run(asio_sockio::chrono::steady_clock::duration timeout)
   {
     // Restart the io_context, as it may have been left in the "stopped" state
     // by a previous operation.
@@ -93,15 +93,15 @@ private:
   }
 
   static void handle_receive(
-      const asio::error_code& ec, std::size_t length,
-      asio::error_code* out_ec, std::size_t* out_length)
+      const asio_sockio::error_code& ec, std::size_t length,
+      asio_sockio::error_code* out_ec, std::size_t* out_length)
   {
     *out_ec = ec;
     *out_length = length;
   }
 
 private:
-  asio::io_context io_context_;
+  asio_sockio::io_context io_context_;
   udp::socket socket_;
 };
 
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
     }
 
     udp::endpoint listen_endpoint(
-        asio::ip::make_address(argv[1]),
+        asio_sockio::ip::make_address(argv[1]),
         std::atoi(argv[2]));
 
     client c(listen_endpoint);
@@ -128,9 +128,9 @@ int main(int argc, char* argv[])
     for (;;)
     {
       char data[1024];
-      asio::error_code ec;
-      std::size_t n = c.receive(asio::buffer(data),
-          asio::chrono::seconds(10), ec);
+      asio_sockio::error_code ec;
+      std::size_t n = c.receive(asio_sockio::buffer(data),
+          asio_sockio::chrono::seconds(10), ec);
 
       if (ec)
       {

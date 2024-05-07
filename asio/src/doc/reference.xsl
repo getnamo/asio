@@ -97,7 +97,7 @@
     <xsl:choose>
       <xsl:when test="@kind='class' or @kind='struct'">
         <xsl:if test="
-            contains(compoundname, 'asio::') and
+            contains(compoundname, 'asio_sockio::') and
             not(contains(compoundname, '::detail')) and
             not(contains(compoundname, '::service::key')) and
             not(contains(compoundname, '_handler')) and
@@ -136,8 +136,8 @@
     <xsl:when test="contains($name, 'boost::system::is_error_code_enum')">
       <xsl:value-of select="$name"/>
     </xsl:when>
-    <xsl:when test="contains($name, 'asio::')">
-      <xsl:value-of select="substring-after($name, 'asio::')"/>
+    <xsl:when test="contains($name, 'asio_sockio::')">
+      <xsl:value-of select="substring-after($name, 'asio_sockio::')"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:value-of select="$name"/>
@@ -212,10 +212,10 @@
          select="substring-after($name, 'boost::system::')"/>
       </xsl:call-template>
     </xsl:when>
-    <xsl:when test="contains($name, 'boost::asio::error::')">
+    <xsl:when test="contains($name, 'boost::asio_sockio::error::')">
       <xsl:call-template name="make-id">
         <xsl:with-param name="name"
-         select="concat(substring-before($name, 'boost::asio::error::'), substring-after($name, 'boost::asio::error::'))"/>
+         select="concat(substring-before($name, 'boost::asio_sockio::error::'), substring-after($name, 'boost::asio_sockio::error::'))"/>
       </xsl:call-template>
     </xsl:when>
     <xsl:when test="contains($name, '::')">
@@ -626,7 +626,7 @@
     <xsl:value-of select="."/>
   </xsl:variable>
   <xsl:choose>
-    <xsl:when test="contains(@refid, 'asio') or contains($name, 'asio::')">
+    <xsl:when test="contains(@refid, 'asio') or contains($name, 'asio_sockio::')">
       <xsl:variable name="dox-ref-id" select="@refid"/>
       <xsl:variable name="ref-name">
         <xsl:call-template name="strip-asio-ns">
@@ -659,7 +659,7 @@
     <xsl:value-of select="."/>
   </xsl:variable>
   <xsl:choose>
-    <xsl:when test="contains(@refid, 'asio') or contains($name, 'asio::')">
+    <xsl:when test="contains(@refid, 'asio') or contains($name, 'asio_sockio::')">
       <xsl:variable name="dox-ref-id" select="@refid"/>
       <xsl:variable name="ref-name">
         <xsl:call-template name="strip-asio-ns">

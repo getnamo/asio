@@ -30,21 +30,21 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace windows {
 
 /// Default service implementation for an object handle.
 class object_handle_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 #else
-  : public asio::detail::service_base<object_handle_service>
+  : public asio_sockio::detail::service_base<object_handle_service>
 #endif
 {
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 #endif
 
 private:
@@ -67,8 +67,8 @@ public:
 #endif
 
   /// Construct a new object handle service for the specified io_context.
-  explicit object_handle_service(asio::io_context& io_context)
-    : asio::detail::service_base<object_handle_service>(io_context),
+  explicit object_handle_service(asio_sockio::io_context& io_context)
+    : asio_sockio::detail::service_base<object_handle_service>(io_context),
       service_impl_(io_context)
   {
   }
@@ -104,7 +104,7 @@ public:
 
   /// Assign an existing native handle to an object handle.
   ASIO_SYNC_OP_VOID assign(implementation_type& impl,
-      const native_handle_type& handle, asio::error_code& ec)
+      const native_handle_type& handle, asio_sockio::error_code& ec)
   {
     service_impl_.assign(impl, handle, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -118,7 +118,7 @@ public:
 
   /// Close an object handle implementation.
   ASIO_SYNC_OP_VOID close(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.close(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -132,14 +132,14 @@ public:
 
   /// Cancel all asynchronous operations associated with the handle.
   ASIO_SYNC_OP_VOID cancel(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.cancel(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   // Wait for a signaled state.
-  void wait(implementation_type& impl, asio::error_code& ec)
+  void wait(implementation_type& impl, asio_sockio::error_code& ec)
   {
     service_impl_.wait(impl, ec);
   }
@@ -147,12 +147,12 @@ public:
   /// Start an asynchronous wait.
   template <typename WaitHandler>
   ASIO_INITFN_RESULT_TYPE(WaitHandler,
-      void (asio::error_code))
+      void (asio_sockio::error_code))
   async_wait(implementation_type& impl,
       ASIO_MOVE_ARG(WaitHandler) handler)
   {
-    asio::async_completion<WaitHandler,
-      void (asio::error_code)> init(handler);
+    asio_sockio::async_completion<WaitHandler,
+      void (asio_sockio::error_code)> init(handler);
 
     service_impl_.async_wait(impl, init.completion_handler);
 
@@ -171,7 +171,7 @@ private:
 };
 
 } // namespace windows
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

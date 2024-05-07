@@ -30,7 +30,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Protocol, typename Handler>
@@ -43,8 +43,8 @@ public:
   ASIO_DEFINE_HANDLER_PTR(winrt_resolve_op);
 
   typedef typename Protocol::endpoint endpoint_type;
-  typedef asio::ip::basic_resolver_query<Protocol> query_type;
-  typedef asio::ip::basic_resolver_results<Protocol> results_type;
+  typedef asio_sockio::ip::basic_resolver_query<Protocol> query_type;
+  typedef asio_sockio::ip::basic_resolver_results<Protocol> results_type;
 
   winrt_resolve_op(const query_type& query, Handler& handler)
     : winrt_async_op<
@@ -58,11 +58,11 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code&, std::size_t)
+      const asio_sockio::error_code&, std::size_t)
   {
     // Take ownership of the operation object.
     winrt_resolve_op* o(static_cast<winrt_resolve_op*>(base));
-    ptr p = { asio::detail::addressof(o->handler_), o, o };
+    ptr p = { asio_sockio::detail::addressof(o->handler_), o, o };
     handler_work<Handler> w(o->handler_);
 
     ASIO_HANDLER_COMPLETION((*o));
@@ -77,8 +77,8 @@ public:
       }
       catch (Platform::Exception^ e)
       {
-        o->ec_ = asio::error_code(e->HResult,
-            asio::system_category());
+        o->ec_ = asio_sockio::error_code(e->HResult,
+            asio_sockio::system_category());
       }
     }
 
@@ -88,9 +88,9 @@ public:
     // with the handler. Consequently, a local copy of the handler is required
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
-    detail::binder2<Handler, asio::error_code, results_type>
+    detail::binder2<Handler, asio_sockio::error_code, results_type>
       handler(o->handler_, o->ec_, results);
-    p.h = asio::detail::addressof(handler.handler_);
+    p.h = asio_sockio::detail::addressof(handler.handler_);
     p.reset();
 
     // Make the upcall if required.
@@ -109,7 +109,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

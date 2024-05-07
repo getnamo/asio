@@ -23,14 +23,14 @@ so we need the user to specify the server.
 
 \until }
 
-All programs that use asio need to have at least one asio::io_context
+All programs that use asio need to have at least one asio_sockio::io_context
 object.
 
-\until asio::io_context
+\until asio_sockio::io_context
 
 We need to turn the server name that was specified as a parameter to the
 application, into a TCP endpoint. To do this we use an
-asio::ip::tcp::resolver object.
+asio_sockio::ip::tcp::resolver object.
 
 \until tcp::resolver
 
@@ -41,30 +41,30 @@ and the name of the service, in this case <tt>"daytime"</tt>.
 \until tcp::resolver::query
 
 The list of endpoints is returned using an iterator of type
-asio::ip::tcp::resolver::iterator. (Note that a default constructed
-asio::ip::tcp::resolver::iterator object can be used as an end iterator.)
+asio_sockio::ip::tcp::resolver::iterator. (Note that a default constructed
+asio_sockio::ip::tcp::resolver::iterator object can be used as an end iterator.)
 
 \until tcp::resolver::iterator
 
 Now we create and connect the socket. The list of endpoints obtained above may
 contain both IPv4 and IPv6 endpoints, so we need to try each of them until we
 find one that works. This keeps the client program independent of a specific IP
-version. The asio::connect() function does this for us automatically.
+version. The asio_sockio::connect() function does this for us automatically.
 
-\until asio::connect
+\until asio_sockio::connect
 
 The connection is open. All we need to do now is read the response from the
 daytime service.
 
-We use a <tt>boost::array</tt> to hold the received data. The asio::buffer()
+We use a <tt>boost::array</tt> to hold the received data. The asio_sockio::buffer()
 function automatically determines the size of the array to help prevent buffer
 overruns. Instead of a <tt>boost::array</tt>, we could have used a <tt>char
 []</tt> or <tt>std::vector</tt>.
 
 \until read_some
 
-When the server closes the connection, the asio::ip::tcp::socket::read_some()
-function will exit with the asio::error::eof error, which is how we know to
+When the server closes the connection, the asio_sockio::ip::tcp::socket::read_some()
+function will exit with the asio_sockio::error::eof error, which is how we know to
 exit the loop.
 
 \until }
@@ -101,9 +101,9 @@ We define the function <tt>make_daytime_string()</tt> to create the string to
 be sent back to the client. This function will be reused in all of our daytime
 server applications.
 
-\until asio::io_context
+\until asio_sockio::io_context
 
-A asio::ip::tcp::acceptor object needs to be created to listen
+A asio_sockio::ip::tcp::acceptor object needs to be created to listen
 for new connections. It is initialised to listen on TCP port 13, for IP version 4.
 
 \until tcp::acceptor
@@ -149,12 +149,12 @@ Return to \ref tutdaytime2
 \until {
 
 We need to create a server object to accept incoming client connections. The
-asio::io_context object provides I/O services, such as sockets, that the
+asio_sockio::io_context object provides I/O services, such as sockets, that the
 server object will use.
 
 \until tcp_server
 
-Run the asio::io_context object so that it will perform asynchronous operations
+Run the asio_sockio::io_context object so that it will perform asynchronous operations
 on your behalf.
 
 \until return 0;
@@ -195,9 +195,9 @@ operation that refers to it.
 \until }
 \until }
 
-In the function <tt>start()</tt>, we call asio::async_write() to serve the data
-to the client. Note that we are using asio::async_write(), rather than
-asio::ip::tcp::socket::async_write_some(), to ensure that the entire block of
+In the function <tt>start()</tt>, we call asio_sockio::async_write() to serve the data
+to the client. Note that we are using asio_sockio::async_write(), rather than
+asio_sockio::ip::tcp::socket::async_write_some(), to ensure that the entire block of
 data is sent.
 
 \until {
@@ -209,8 +209,8 @@ to keep the data valid until the asynchronous operation is complete.
 
 When initiating the asynchronous operation, and if using \ref boost_bind, you
 must specify only the arguments that match the handler's parameter list. In
-this program, both of the argument placeholders (asio::placeholders::error and
-asio::placeholders::bytes_transferred) could potentially have been removed,
+this program, both of the argument placeholders (asio_sockio::placeholders::error and
+asio_sockio::placeholders::bytes_transferred) could potentially have been removed,
 since they are not being used in <tt>handle_write()</tt>.
 
 \until placeholders::bytes_transferred
@@ -233,11 +233,11 @@ that it looks like:
   }
 \endcode
 
-The asio::async_write() call used to initiate the call can then be changed to
+The asio_sockio::async_write() call used to initiate the call can then be changed to
 just:
 
 \code
-  asio::async_write(socket_, asio::buffer(message_),
+  asio_sockio::async_write(socket_, asio_sockio::buffer(message_),
       boost::bind(&tcp_connection::handle_write, shared_from_this()));
 \endcode
 
@@ -262,33 +262,33 @@ with UDP.
 
 \dontinclude daytime4/client.cpp
 \skip #include
-\until using asio::ip::udp;
+\until using asio_sockio::ip::udp;
 
 The start of the application is essentially the same as for the TCP daytime
 client.
 
-\until asio::io_context
+\until asio_sockio::io_context
 
-We use an asio::ip::udp::resolver object to find the correct remote endpoint to
+We use an asio_sockio::ip::udp::resolver object to find the correct remote endpoint to
 use based on the host and service names. The query is restricted to return only
-IPv4 endpoints by the asio::ip::udp::v4() argument.
+IPv4 endpoints by the asio_sockio::ip::udp::v4() argument.
 
 \until udp::v4
 
-The asio::ip::udp::resolver::resolve() function is guaranteed to return at
+The asio_sockio::ip::udp::resolver::resolve() function is guaranteed to return at
 least one endpoint in the list if it does not fail. This means it is safe to
 dereference the return value directly.
 
 \until udp::endpoint
 
 Since UDP is datagram-oriented, we will not be using a stream socket. Create an
-asio::ip::udp::socket and initiate contact with the remote endpoint.
+asio_sockio::ip::udp::socket and initiate contact with the remote endpoint.
 
 \until receiver_endpoint
 
 Now we need to be ready to accept whatever the server sends back to us. The
 endpoint on our side that receives the server's response will be initialised by
-asio::ip::udp::socket::receive_from(). 
+asio_sockio::ip::udp::socket::receive_from(). 
 
 \until }
 
@@ -317,14 +317,14 @@ with UDP.
 
 \dontinclude daytime5/server.cpp
 \skip int main()
-\until asio::io_context
+\until asio_sockio::io_context
 
-Create an asio::ip::udp::socket object to receive requests on UDP port 13.
+Create an asio_sockio::ip::udp::socket object to receive requests on UDP port 13.
 
 \until udp::socket
 
 Wait for a client to initiate contact with us. The remote_endpoint object will
-be populated by asio::ip::udp::socket::receive_from().
+be populated by asio_sockio::ip::udp::socket::receive_from().
 
 \until throw
 
@@ -366,7 +366,7 @@ Return to \ref tutdaytime5
 \until {
 
 Create a server object to accept incoming client requests, and run
-the asio::io_context object.
+the asio_sockio::io_context object.
 
 \until return 0;
 \until }
@@ -382,11 +382,11 @@ The constructor initialises a socket to listen on UDP port 13.
 \until private:
 \until {
 
-The function asio::ip::udp::socket::async_receive_from() will cause the
+The function asio_sockio::ip::udp::socket::async_receive_from() will cause the
 application to listen in the background for a new request. When such a request
-is received, the asio::io_context object will invoke the
+is received, the asio_sockio::io_context object will invoke the
 <tt>handle_receive()</tt> function with two arguments: a value of type
-asio::error_code indicating whether the operation succeeded or failed, and a
+asio_sockio::error_code indicating whether the operation succeeded or failed, and a
 <tt>size_t</tt> value <tt>bytes_transferred</tt> specifying the number of bytes
 received.
 
@@ -398,7 +398,7 @@ The function <tt>handle_receive()</tt> will service the client request.
 
 The <tt>error</tt> parameter contains the result of the asynchronous operation.
 Since we only provide the 1-byte <tt>recv_buffer_</tt> to contain the client's
-request, the asio::io_context object would return an error if the client sent
+request, the asio_sockio::io_context object would return an error if the client sent
 anything larger. We can ignore such an error if it comes up.
 
 \until {
@@ -407,15 +407,15 @@ Determine what we are going to send.
 
 \until make_daytime_string()
 
-We now call asio::ip::udp::socket::async_send_to() to serve the data to the
+We now call asio_sockio::ip::udp::socket::async_send_to() to serve the data to the
 client.
 
-\until asio::placeholders::bytes_transferred
+\until asio_sockio::placeholders::bytes_transferred
 
 When initiating the asynchronous operation, and if using \ref boost_bind, you
 must specify only the arguments that match the handler's parameter list. In
-this program, both of the argument placeholders (asio::placeholders::error and
-asio::placeholders::bytes_transferred) could potentially have been removed.
+this program, both of the argument placeholders (asio_sockio::placeholders::error and
+asio_sockio::placeholders::bytes_transferred) could potentially have been removed.
 
 Start listening for the next client request.
 
@@ -456,7 +456,7 @@ have just written, into a single server application.
 
 \dontinclude daytime7/server.cpp
 \skip int main()
-\until asio::io_context
+\until asio_sockio::io_context
 
 We will begin by creating a server object to accept a TCP client connection.
 
@@ -466,7 +466,7 @@ We also need a server object to accept a UDP client request.
 
 \until udp_server
 
-We have created two lots of work for the asio::io_context object to do.
+We have created two lots of work for the asio_sockio::io_context object to do.
 
 \until return 0;
 \until }

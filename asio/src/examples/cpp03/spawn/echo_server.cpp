@@ -18,12 +18,12 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 class session : public boost::enable_shared_from_this<session>
 {
 public:
-  explicit session(asio::io_context& io_context)
+  explicit session(asio_sockio::io_context& io_context)
     : strand_(io_context),
       socket_(io_context),
       timer_(io_context)
@@ -37,25 +37,25 @@ public:
 
   void go()
   {
-    asio::spawn(strand_,
+    asio_sockio::spawn(strand_,
         boost::bind(&session::echo,
           shared_from_this(), _1));
-    asio::spawn(strand_,
+    asio_sockio::spawn(strand_,
         boost::bind(&session::timeout,
           shared_from_this(), _1));
   }
 
 private:
-  void echo(asio::yield_context yield)
+  void echo(asio_sockio::yield_context yield)
   {
     try
     {
       char data[128];
       for (;;)
       {
-        timer_.expires_after(asio::chrono::seconds(10));
-        std::size_t n = socket_.async_read_some(asio::buffer(data), yield);
-        asio::async_write(socket_, asio::buffer(data, n), yield);
+        timer_.expires_after(asio_sockio::chrono::seconds(10));
+        std::size_t n = socket_.async_read_some(asio_sockio::buffer(data), yield);
+        asio_sockio::async_write(socket_, asio_sockio::buffer(data, n), yield);
       }
     }
     catch (std::exception& e)
@@ -65,30 +65,30 @@ private:
     }
   }
 
-  void timeout(asio::yield_context yield)
+  void timeout(asio_sockio::yield_context yield)
   {
     while (socket_.is_open())
     {
-      asio::error_code ignored_ec;
+      asio_sockio::error_code ignored_ec;
       timer_.async_wait(yield[ignored_ec]);
-      if (timer_.expiry() <= asio::steady_timer::clock_type::now())
+      if (timer_.expiry() <= asio_sockio::steady_timer::clock_type::now())
         socket_.close();
     }
   }
 
-  asio::io_context::strand strand_;
+  asio_sockio::io_context::strand strand_;
   tcp::socket socket_;
-  asio::steady_timer timer_;
+  asio_sockio::steady_timer timer_;
 };
 
-void do_accept(asio::io_context& io_context,
-    unsigned short port, asio::yield_context yield)
+void do_accept(asio_sockio::io_context& io_context,
+    unsigned short port, asio_sockio::yield_context yield)
 {
   tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
 
   for (;;)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     boost::shared_ptr<session> new_session(new session(io_context));
     acceptor.async_accept(new_session->socket(), yield[ec]);
     if (!ec) new_session->go();
@@ -105,9 +105,9 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
-    asio::spawn(io_context,
+    asio_sockio::spawn(io_context,
         boost::bind(do_accept,
           boost::ref(io_context), atoi(argv[1]), _1));
 

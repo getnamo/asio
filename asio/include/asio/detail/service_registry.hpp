@@ -24,7 +24,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 class io_context;
 
@@ -142,7 +142,7 @@ private:
       const execution_context::service::key& key) const;
 
   // Mutex to protect access to internal data.
-  mutable asio::detail::mutex mutex_;
+  mutable asio_sockio::detail::mutex mutex_;
 
   // The owner of this service registry and the services it contains.
   execution_context& owner_;
@@ -152,7 +152,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

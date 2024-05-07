@@ -22,7 +22,7 @@ Given a copy of a user-defined `Handler` object `h`, if the implementation
 needs to allocate memory associated with that handler it will obtain an
 allocator using the `get_associated_allocator` function. For example:
 
-  asio::associated_allocator_t<Handler> a = asio::get_associated_allocator(h);
+  asio_sockio::associated_allocator_t<Handler> a = asio_sockio::get_associated_allocator(h);
 
 The associated allocator must satisfy the standard Allocator requirements.
 
@@ -49,7 +49,7 @@ customised for a particular handler type by specifying a nested type
 In more complex cases, the `associated_allocator` template may be partially
 specialised directly:
 
-  namespace asio {
+  namespace asio_sockio {
 
     template <typename Allocator>
     struct associated_allocator<my_handler, Allocator>
@@ -65,7 +65,7 @@ specialised directly:
       }
     };
 
-  } // namespace asio
+  } // namespace asio_sockio
 
 The implementation guarantees that the deallocation will occur before the
 associated handler is invoked, which means the memory is ready to be reused for

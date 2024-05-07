@@ -42,7 +42,7 @@ using boost::array;
 using std::array;
 #endif // defined(ASIO_HAS_BOOST_ARRAY)
 using std::vector;
-using namespace asio;
+using namespace asio_sockio;
 
 void test()
 {

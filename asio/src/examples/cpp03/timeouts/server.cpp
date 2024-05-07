@@ -25,9 +25,9 @@
 #include "asio/steady_timer.hpp"
 #include "asio/write.hpp"
 
-using asio::steady_timer;
-using asio::ip::tcp;
-using asio::ip::udp;
+using asio_sockio::steady_timer;
+using asio_sockio::ip::tcp;
+using asio_sockio::ip::udp;
 
 //----------------------------------------------------------------------
 
@@ -134,7 +134,7 @@ class tcp_session
     public boost::enable_shared_from_this<tcp_session>
 {
 public:
-  tcp_session(asio::io_context& io_context, channel& ch)
+  tcp_session(asio_sockio::io_context& io_context, channel& ch)
     : channel_(ch),
       socket_(io_context),
       input_deadline_(io_context),
@@ -178,7 +178,7 @@ private:
   {
     channel_.leave(shared_from_this());
 
-    asio::error_code ignored_ec;
+    asio_sockio::error_code ignored_ec;
     socket_.close(ignored_ec);
     input_deadline_.cancel();
     non_empty_output_queue_.cancel();
@@ -202,15 +202,15 @@ private:
   void start_read()
   {
     // Set a deadline for the read operation.
-    input_deadline_.expires_after(asio::chrono::seconds(30));
+    input_deadline_.expires_after(asio_sockio::chrono::seconds(30));
 
     // Start an asynchronous operation to read a newline-delimited message.
-    asio::async_read_until(socket_,
-        asio::dynamic_buffer(input_buffer_), '\n',
+    asio_sockio::async_read_until(socket_,
+        asio_sockio::dynamic_buffer(input_buffer_), '\n',
         boost::bind(&tcp_session::handle_read, shared_from_this(), _1, _2));
   }
 
-  void handle_read(const asio::error_code& ec, std::size_t n)
+  void handle_read(const asio_sockio::error_code& ec, std::size_t n)
   {
     if (stopped())
       return;
@@ -270,15 +270,15 @@ private:
   void start_write()
   {
     // Set a deadline for the write operation.
-    output_deadline_.expires_after(asio::chrono::seconds(30));
+    output_deadline_.expires_after(asio_sockio::chrono::seconds(30));
 
     // Start an asynchronous operation to send a message.
-    asio::async_write(socket_,
-        asio::buffer(output_queue_.front()),
+    asio_sockio::async_write(socket_,
+        asio_sockio::buffer(output_queue_.front()),
         boost::bind(&tcp_session::handle_write, shared_from_this(), _1));
   }
 
-  void handle_write(const asio::error_code& ec)
+  void handle_write(const asio_sockio::error_code& ec)
   {
     if (stopped())
       return;
@@ -335,7 +335,7 @@ class udp_broadcaster
   : public subscriber
 {
 public:
-  udp_broadcaster(asio::io_context& io_context,
+  udp_broadcaster(asio_sockio::io_context& io_context,
       const udp::endpoint& broadcast_endpoint)
     : socket_(io_context)
   {
@@ -346,8 +346,8 @@ public:
 private:
   void deliver(const std::string& msg)
   {
-    asio::error_code ignored_ec;
-    socket_.send(asio::buffer(msg), 0, ignored_ec);
+    asio_sockio::error_code ignored_ec;
+    socket_.send(asio_sockio::buffer(msg), 0, ignored_ec);
   }
 
   udp::socket socket_;
@@ -358,7 +358,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context,
+  server(asio_sockio::io_context& io_context,
       const tcp::endpoint& listen_endpoint,
       const udp::endpoint& broadcast_endpoint)
     : io_context_(io_context),
@@ -379,7 +379,7 @@ public:
   }
 
   void handle_accept(tcp_session_ptr session,
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     if (!ec)
     {
@@ -390,7 +390,7 @@ public:
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   tcp::acceptor acceptor_;
   channel channel_;
 };
@@ -409,12 +409,12 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::endpoint listen_endpoint(tcp::v4(), atoi(argv[1]));
 
     udp::endpoint broadcast_endpoint(
-        asio::ip::make_address(argv[2]), atoi(argv[3]));
+        asio_sockio::ip::make_address(argv[2]), atoi(argv[3]));
 
     server s(io_context, listen_endpoint, broadcast_endpoint);
 

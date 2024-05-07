@@ -30,12 +30,12 @@ namespace ip_address_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // address constructors.
 

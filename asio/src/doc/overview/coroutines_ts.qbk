@@ -16,26 +16,26 @@ function. This `co_spawn()` function enables programs to implement asynchronous
 logic in a synchronous manner, in conjunction with the `co_await` keyword, as
 shown in the following example:
 
-  asio::experimental::co_spawn(executor,
+  asio_sockio::experimental::co_spawn(executor,
       [socket = std::move(socket)]() mutable
       {
         return echo(std::move(socket));
       },
-      asio::experimental::detached);
+      asio_sockio::experimental::detached);
 
   // ...
 
-  asio::experimental::awaitable<void> echo(tcp::socket socket)
+  asio_sockio::experimental::awaitable<void> echo(tcp::socket socket)
   {
-    auto token = co_await asio::experimental::this_coro::token();
+    auto token = co_await asio_sockio::experimental::this_coro::token();
 
     try
     {
       char data[1024];
       for (;;)
       {
-        std::size_t n = co_await socket.async_read_some(asio::buffer(data), token);
-        co_await async_write(socket, asio::buffer(data, n), token);
+        std::size_t n = co_await socket.async_read_some(asio_sockio::buffer(data), token);
+        co_await async_write(socket, asio_sockio::buffer(data, n), token);
       }
     }
     catch (std::exception& e)
@@ -51,7 +51,7 @@ coroutines; they should all run on the same `strand` so that no explicit
 synchronisation is required.
 
 The second argument is a nullary function object that returns a [link
-asio.reference.experimental__awaitable `asio::awaitable<R>`],
+asio.reference.experimental__awaitable `asio_sockio::awaitable<R>`],
 where `R` is the type of return value produced by the coroutine. In the above
 example, the coroutine returns `void`.
 
@@ -60,24 +60,24 @@ produce a completion handler with signature `void(std::exception_ptr, R)`. This
 completion handler is invoked with the result of the coroutine once it has
 finished. In the above example we pass a completion token type, [link
 asio.reference.experimental__detached
-`asio::experimental::detached`], which is used to explicitly ignore the
+`asio_sockio::experimental::detached`], which is used to explicitly ignore the
 result of an asynchronous operation.
 
 In this example the body of the coroutine is implemented in the `echo`
 function. This function first obtains a completion token that represents the
 current coroutine:
 
-  auto token = co_await asio::experimental::this_coro::token();
+  auto token = co_await asio_sockio::experimental::this_coro::token();
 
 When this completion token is passed to an asynchronous operation, the
 operation's initiating function returns an `awaitable` that may be used with
 the `co_await` keyword:
 
-  std::size_t n = co_await socket.async_read_some(asio::buffer(data), token);
+  std::size_t n = co_await socket.async_read_some(asio_sockio::buffer(data), token);
 
 Where an asynchronous operation's handler signature has the form:
 
-  void handler(asio::error_code ec, result_type result);
+  void handler(asio_sockio::error_code ec, result_type result);
 
 the resulting type of the `co_await` expression is `result_type`. In the
 `async_read_some` example above, this is `size_t`. If the asynchronous
@@ -86,7 +86,7 @@ and thrown.
 
 Where a handler signature has the form:
 
-  void handler(asio::error_code ec);
+  void handler(asio_sockio::error_code ec);
 
 the `co_await` expression produces a `void` result. As above, an error is
 passed back to the coroutine as a `system_error` exception.

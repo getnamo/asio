@@ -25,12 +25,12 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ip {
 
 /// Describes an endpoint for a version-independent IP socket.
 /**
- * The asio::ip::basic_endpoint class template describes an endpoint that
+ * The asio_sockio::ip::basic_endpoint class template describes an endpoint that
  * may be associated with a particular socket.
  *
  * @par Thread Safety
@@ -52,7 +52,7 @@ public:
 #if defined(GENERATING_DOCUMENTATION)
   typedef implementation_defined data_type;
 #else
-  typedef asio::detail::socket_addr_type data_type;
+  typedef asio_sockio::detail::socket_addr_type data_type;
 #endif
 
   /// Default constructor.
@@ -69,12 +69,12 @@ public:
    * @par Examples
    * To initialise an IPv4 TCP endpoint for port 1234, use:
    * @code
-   * asio::ip::tcp::endpoint ep(asio::ip::tcp::v4(), 1234);
+   * asio_sockio::ip::tcp::endpoint ep(asio_sockio::ip::tcp::v4(), 1234);
    * @endcode
    *
    * To specify an IPv6 UDP endpoint for port 9876, use:
    * @code
-   * asio::ip::udp::endpoint ep(asio::ip::udp::v6(), 9876);
+   * asio_sockio::ip::udp::endpoint ep(asio_sockio::ip::udp::v6(), 9876);
    * @endcode
    */
   basic_endpoint(const InternetProtocol& internet_protocol,
@@ -86,7 +86,7 @@ public:
   /// Construct an endpoint using a port number and an IP address. This
   /// constructor may be used for accepting connections on a specific interface
   /// or for making a connection to a remote endpoint.
-  basic_endpoint(const asio::ip::address& addr,
+  basic_endpoint(const asio_sockio::ip::address& addr,
       unsigned short port_num) ASIO_NOEXCEPT
     : impl_(addr, port_num)
   {
@@ -175,13 +175,13 @@ public:
   }
 
   /// Get the IP address associated with the endpoint.
-  asio::ip::address address() const ASIO_NOEXCEPT
+  asio_sockio::ip::address address() const ASIO_NOEXCEPT
   {
     return impl_.address();
   }
 
   /// Set the IP address associated with the endpoint.
-  void address(const asio::ip::address& addr) ASIO_NOEXCEPT
+  void address(const asio_sockio::ip::address& addr) ASIO_NOEXCEPT
   {
     impl_.address(addr);
   }
@@ -230,7 +230,7 @@ public:
 
 private:
   // The underlying IP endpoint.
-  asio::ip::detail::endpoint impl_;
+  asio_sockio::ip::detail::endpoint impl_;
 };
 
 #if !defined(ASIO_NO_IOSTREAM)
@@ -245,7 +245,7 @@ private:
  *
  * @return The output stream.
  *
- * @relates asio::ip::basic_endpoint
+ * @relates asio_sockio::ip::basic_endpoint
  */
 template <typename Elem, typename Traits, typename InternetProtocol>
 std::basic_ostream<Elem, Traits>& operator<<(
@@ -255,7 +255,7 @@ std::basic_ostream<Elem, Traits>& operator<<(
 #endif // !defined(ASIO_NO_IOSTREAM)
 
 } // namespace ip
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

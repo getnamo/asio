@@ -33,11 +33,11 @@ class connection
 {
 public:
   /// Construct a connection with the given io_context.
-  explicit connection(asio::io_context& io_context,
+  explicit connection(asio_sockio::io_context& io_context,
       connection_manager& manager, request_handler& handler);
 
   /// Get the socket associated with the connection.
-  asio::ip::tcp::socket& socket();
+  asio_sockio::ip::tcp::socket& socket();
 
   /// Start the first asynchronous operation for the connection.
   void start();
@@ -47,14 +47,14 @@ public:
 
 private:
   /// Handle completion of a read operation.
-  void handle_read(const asio::error_code& e,
+  void handle_read(const asio_sockio::error_code& e,
       std::size_t bytes_transferred);
 
   /// Handle completion of a write operation.
-  void handle_write(const asio::error_code& e);
+  void handle_write(const asio_sockio::error_code& e);
 
   /// Socket for the connection.
-  asio::ip::tcp::socket socket_;
+  asio_sockio::ip::tcp::socket socket_;
 
   /// The manager for this connection.
   connection_manager& connection_manager_;

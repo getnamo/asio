@@ -25,7 +25,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 win_event::win_event()
@@ -40,9 +40,9 @@ win_event::win_event()
   if (!events_[0])
   {
     DWORD last_error = ::GetLastError();
-    asio::error_code ec(last_error,
-        asio::error::get_system_category());
-    asio::detail::throw_error(ec, "event");
+    asio_sockio::error_code ec(last_error,
+        asio_sockio::error::get_system_category());
+    asio_sockio::detail::throw_error(ec, "event");
   }
 
 #if defined(ASIO_WINDOWS_APP)
@@ -54,9 +54,9 @@ win_event::win_event()
   {
     DWORD last_error = ::GetLastError();
     ::CloseHandle(events_[0]);
-    asio::error_code ec(last_error,
-        asio::error::get_system_category());
-    asio::detail::throw_error(ec, "event");
+    asio_sockio::error_code ec(last_error,
+        asio_sockio::error::get_system_category());
+    asio_sockio::detail::throw_error(ec, "event");
   }
 }
 
@@ -67,7 +67,7 @@ win_event::~win_event()
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

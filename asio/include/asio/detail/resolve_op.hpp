@@ -21,14 +21,14 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class resolve_op : public operation
 {
 public:
   // The error code to be passed to the completion handler.
-  asio::error_code ec_;
+  asio_sockio::error_code ec_;
 
 protected:
   resolve_op(func_type complete_func)
@@ -38,7 +38,7 @@ protected:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

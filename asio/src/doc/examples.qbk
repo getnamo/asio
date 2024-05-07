@@ -303,7 +303,7 @@ library that wants to perform the I/O operations itself.
 
 [heading Spawn]
 
-Example of using the asio::spawn() function, a wrapper around the
+Example of using the asio_sockio::spawn() function, a wrapper around the
 [@http://www.boost.org/doc/libs/release/libs/coroutine/index.html Boost.Coroutine]
 library, to implement a chain of asynchronous operations using stackful
 coroutines.
@@ -467,7 +467,7 @@ a proxy.
 
 [heading Spawn]
 
-Example of using the asio::spawn() function, a wrapper around the
+Example of using the asio_sockio::spawn() function, a wrapper around the
 [@http://www.boost.org/doc/libs/release/libs/coroutine/index.html Boost.Coroutine]
 library, to implement a chain of asynchronous operations using stackful
 coroutines.

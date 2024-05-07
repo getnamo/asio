@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class winrt_buffer_impl :
@@ -37,14 +37,14 @@ class winrt_buffer_impl :
     Windows::Storage::Streams::IBufferByteAccess>
 {
 public:
-  explicit winrt_buffer_impl(const asio::const_buffer& b)
+  explicit winrt_buffer_impl(const asio_sockio::const_buffer& b)
   {
     bytes_ = const_cast<byte*>(static_cast<const byte*>(b.data()));
     length_ = b.size();
     capacity_ = b.size();
   }
 
-  explicit winrt_buffer_impl(const asio::mutable_buffer& b)
+  explicit winrt_buffer_impl(const asio_sockio::mutable_buffer& b)
   {
     bytes_ = static_cast<byte*>(b.data());
     length_ = 0;
@@ -89,7 +89,7 @@ private:
 
 void buffer_sequence_adapter_base::init_native_buffer(
     buffer_sequence_adapter_base::native_buffer_type& buf,
-    const asio::mutable_buffer& buffer)
+    const asio_sockio::mutable_buffer& buffer)
 {
   std::memset(&buf, 0, sizeof(native_buffer_type));
   Microsoft::WRL::ComPtr<IInspectable> insp
@@ -99,7 +99,7 @@ void buffer_sequence_adapter_base::init_native_buffer(
 
 void buffer_sequence_adapter_base::init_native_buffer(
     buffer_sequence_adapter_base::native_buffer_type& buf,
-    const asio::const_buffer& buffer)
+    const asio_sockio::const_buffer& buffer)
 {
   std::memset(&buf, 0, sizeof(native_buffer_type));
   Microsoft::WRL::ComPtr<IInspectable> insp
@@ -109,7 +109,7 @@ void buffer_sequence_adapter_base::init_native_buffer(
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

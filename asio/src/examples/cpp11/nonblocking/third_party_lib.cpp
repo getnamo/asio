@@ -13,7 +13,7 @@
 #include <iostream>
 #include <memory>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 namespace third_party_lib {
 
@@ -39,9 +39,9 @@ public:
   // Notify that third party library that it should perform its read operation.
   void do_read(std::error_code& ec)
   {
-    if (std::size_t len = socket_.read_some(asio::buffer(data_), ec))
+    if (std::size_t len = socket_.read_some(asio_sockio::buffer(data_), ec))
     {
-      write_buffer_ = asio::buffer(data_, len);
+      write_buffer_ = asio_sockio::buffer(data_, len);
       state_ = writing;
     }
   }
@@ -57,10 +57,10 @@ public:
   void do_write(std::error_code& ec)
   {
     if (std::size_t len = socket_.write_some(
-          asio::buffer(write_buffer_), ec))
+          asio_sockio::buffer(write_buffer_), ec))
     {
       write_buffer_ = write_buffer_ + len;
-      state_ = asio::buffer_size(write_buffer_) > 0 ? writing : reading;
+      state_ = asio_sockio::buffer_size(write_buffer_) > 0 ? writing : reading;
     }
   }
 
@@ -68,7 +68,7 @@ private:
   tcp::socket& socket_;
   enum { reading, writing } state_ = reading;
   std::array<char, 128> data_;
-  asio::const_buffer write_buffer_;
+  asio_sockio::const_buffer write_buffer_;
 };
 
 } // namespace third_party_lib
@@ -112,7 +112,7 @@ private:
             // The third party library successfully performed a read on the
             // socket. Start new read or write operations based on what it now
             // wants.
-            if (!ec || ec == asio::error::would_block)
+            if (!ec || ec == asio_sockio::error::would_block)
               do_operations();
 
             // Otherwise, an error occurred. Closing the socket cancels any
@@ -140,7 +140,7 @@ private:
             // The third party library successfully performed a write on the
             // socket. Start new read or write operations based on what it now
             // wants.
-            if (!ec || ec == asio::error::would_block)
+            if (!ec || ec == asio_sockio::error::would_block)
               do_operations();
 
             // Otherwise, an error occurred. Closing the socket cancels any
@@ -163,7 +163,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : acceptor_(io_context, {tcp::v4(), port})
   {
     do_accept();
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     server s(io_context, std::atoi(argv[1]));
 

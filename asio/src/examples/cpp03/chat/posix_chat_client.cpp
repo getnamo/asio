@@ -18,53 +18,53 @@
 
 #if defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR)
 
-using asio::ip::tcp;
-namespace posix = asio::posix;
+using asio_sockio::ip::tcp;
+namespace posix = asio_sockio::posix;
 
 class posix_chat_client
 {
 public:
-  posix_chat_client(asio::io_context& io_context,
+  posix_chat_client(asio_sockio::io_context& io_context,
       const tcp::resolver::results_type& endpoints)
     : socket_(io_context),
       input_(io_context, ::dup(STDIN_FILENO)),
       output_(io_context, ::dup(STDOUT_FILENO)),
       input_buffer_(chat_message::max_body_length)
   {
-    asio::async_connect(socket_, endpoints,
+    asio_sockio::async_connect(socket_, endpoints,
         boost::bind(&posix_chat_client::handle_connect, this,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
 private:
 
-  void handle_connect(const asio::error_code& error)
+  void handle_connect(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       // Read the fixed-length header of the next message from the server.
-      asio::async_read(socket_,
-          asio::buffer(read_msg_.data(), chat_message::header_length),
+      asio_sockio::async_read(socket_,
+          asio_sockio::buffer(read_msg_.data(), chat_message::header_length),
           boost::bind(&posix_chat_client::handle_read_header, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
 
       // Read a line of input entered by the user.
-      asio::async_read_until(input_, input_buffer_, '\n',
+      asio_sockio::async_read_until(input_, input_buffer_, '\n',
           boost::bind(&posix_chat_client::handle_read_input, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
   }
 
-  void handle_read_header(const asio::error_code& error)
+  void handle_read_header(const asio_sockio::error_code& error)
   {
     if (!error && read_msg_.decode_header())
     {
       // Read the variable-length body of the message from the server.
-      asio::async_read(socket_,
-          asio::buffer(read_msg_.body(), read_msg_.body_length()),
+      asio_sockio::async_read(socket_,
+          asio_sockio::buffer(read_msg_.body(), read_msg_.body_length()),
           boost::bind(&posix_chat_client::handle_read_body, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -72,18 +72,18 @@ private:
     }
   }
 
-  void handle_read_body(const asio::error_code& error)
+  void handle_read_body(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       // Write out the message we just received, terminated by a newline.
       static char eol[] = { '\n' };
-      boost::array<asio::const_buffer, 2> buffers = {{
-        asio::buffer(read_msg_.body(), read_msg_.body_length()),
-        asio::buffer(eol) }};
-      asio::async_write(output_, buffers,
+      boost::array<asio_sockio::const_buffer, 2> buffers = {{
+        asio_sockio::buffer(read_msg_.body(), read_msg_.body_length()),
+        asio_sockio::buffer(eol) }};
+      asio_sockio::async_write(output_, buffers,
           boost::bind(&posix_chat_client::handle_write_output, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -91,15 +91,15 @@ private:
     }
   }
 
-  void handle_write_output(const asio::error_code& error)
+  void handle_write_output(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       // Read the fixed-length header of the next message from the server.
-      asio::async_read(socket_,
-          asio::buffer(read_msg_.data(), chat_message::header_length),
+      asio_sockio::async_read(socket_,
+          asio_sockio::buffer(read_msg_.data(), chat_message::header_length),
           boost::bind(&posix_chat_client::handle_read_header, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -107,7 +107,7 @@ private:
     }
   }
 
-  void handle_read_input(const asio::error_code& error,
+  void handle_read_input(const asio_sockio::error_code& error,
       std::size_t length)
   {
     if (!error)
@@ -117,21 +117,21 @@ private:
       input_buffer_.sgetn(write_msg_.body(), length - 1);
       input_buffer_.consume(1); // Remove newline from input.
       write_msg_.encode_header();
-      asio::async_write(socket_,
-          asio::buffer(write_msg_.data(), write_msg_.length()),
+      asio_sockio::async_write(socket_,
+          asio_sockio::buffer(write_msg_.data(), write_msg_.length()),
           boost::bind(&posix_chat_client::handle_write, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
-    else if (error == asio::error::not_found)
+    else if (error == asio_sockio::error::not_found)
     {
       // Didn't get a newline. Send whatever we have.
       write_msg_.body_length(input_buffer_.size());
       input_buffer_.sgetn(write_msg_.body(), input_buffer_.size());
       write_msg_.encode_header();
-      asio::async_write(socket_,
-          asio::buffer(write_msg_.data(), write_msg_.length()),
+      asio_sockio::async_write(socket_,
+          asio_sockio::buffer(write_msg_.data(), write_msg_.length()),
           boost::bind(&posix_chat_client::handle_write, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -139,15 +139,15 @@ private:
     }
   }
 
-  void handle_write(const asio::error_code& error)
+  void handle_write(const asio_sockio::error_code& error)
   {
     if (!error)
     {
       // Read a line of input entered by the user.
-      asio::async_read_until(input_, input_buffer_, '\n',
+      asio_sockio::async_read_until(input_, input_buffer_, '\n',
           boost::bind(&posix_chat_client::handle_read_input, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
     else
     {
@@ -169,7 +169,7 @@ private:
   posix::stream_descriptor output_;
   chat_message read_msg_;
   chat_message write_msg_;
-  asio::streambuf input_buffer_;
+  asio_sockio::streambuf input_buffer_;
 };
 
 int main(int argc, char* argv[])
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     tcp::resolver resolver(io_context);
     tcp::resolver::results_type endpoints = resolver.resolve(argv[1], argv[2]);

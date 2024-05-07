@@ -27,7 +27,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Time_Traits>
@@ -85,7 +85,7 @@ void win_iocp_io_context::move_timer(timer_queue<Time_Traits>& queue,
     typename timer_queue<Time_Traits>::per_timer_data& to,
     typename timer_queue<Time_Traits>::per_timer_data& from)
 {
-  asio::detail::mutex::scoped_lock lock(dispatch_mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(dispatch_mutex_);
   op_queue<operation> ops;
   queue.cancel_timer(to, ops);
   queue.move_timer(to, from);
@@ -94,7 +94,7 @@ void win_iocp_io_context::move_timer(timer_queue<Time_Traits>& queue,
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

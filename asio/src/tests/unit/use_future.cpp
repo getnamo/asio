@@ -26,7 +26,7 @@
 
 void use_future_0_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<void> f;
@@ -57,9 +57,9 @@ void use_future_0_test()
     f.get();
     ASIO_CHECK(false);
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -94,7 +94,7 @@ void use_future_0_test()
 
 void use_future_1_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
@@ -128,9 +128,9 @@ void use_future_1_test()
     ASIO_CHECK(false);
     (void)i;
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -167,7 +167,7 @@ void use_future_1_test()
 
 void use_future_2_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<std::tuple<int, double>> f;
@@ -207,9 +207,9 @@ void use_future_2_test()
     ASIO_CHECK(false);
     (void)t;
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -249,7 +249,7 @@ void use_future_2_test()
 
 void use_future_3_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<std::tuple<int, double, char>> f;
@@ -293,9 +293,9 @@ void use_future_3_test()
     ASIO_CHECK(false);
     (void)t;
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -340,7 +340,7 @@ int package_0()
   return 42;
 }
 
-int package_ec_0(asio::error_code ec)
+int package_ec_0(asio_sockio::error_code ec)
 {
   return ec ? 0 : 42;
 }
@@ -352,7 +352,7 @@ int package_ex_0(std::exception_ptr ex)
 
 void use_future_package_0_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
@@ -418,7 +418,7 @@ int package_1(int i)
   return i;
 }
 
-int package_ec_1(asio::error_code ec, int i)
+int package_ec_1(asio_sockio::error_code ec, int i)
 {
   return ec ? 0 : i;
 }
@@ -430,7 +430,7 @@ int package_ex_1(std::exception_ptr ex, int i)
 
 void use_future_package_1_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
@@ -496,7 +496,7 @@ int package_2(int i, double)
   return i;
 }
 
-int package_ec_2(asio::error_code ec, int i, double)
+int package_ec_2(asio_sockio::error_code ec, int i, double)
 {
   return ec ? 0 : i;
 }
@@ -508,7 +508,7 @@ int package_ex_2(std::exception_ptr ex, int i, double)
 
 void use_future_package_2_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
@@ -574,7 +574,7 @@ int package_3(int i, double, char)
   return i;
 }
 
-int package_ec_3(asio::error_code ec, int i, double, char)
+int package_ec_3(asio_sockio::error_code ec, int i, double, char)
 {
   return ec ? 0 : i;
 }
@@ -586,7 +586,7 @@ int package_ex_3(std::exception_ptr ex, int i, double, char)
 
 void use_future_package_3_test()
 {
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
@@ -650,11 +650,11 @@ void use_future_package_3_test()
 void deprecated_use_future_0_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<void> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_0(ctx, use_future);
   ctx.restart();
@@ -688,9 +688,9 @@ void deprecated_use_future_0_test()
     f.get();
     ASIO_CHECK(false);
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -731,11 +731,11 @@ void deprecated_use_future_0_test()
 void deprecated_use_future_1_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_1(ctx, use_future);
   ctx.restart();
@@ -772,9 +772,9 @@ void deprecated_use_future_1_test()
     ASIO_CHECK(false);
     (void)i;
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -817,11 +817,11 @@ void deprecated_use_future_1_test()
 void deprecated_use_future_2_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<std::tuple<int, double>> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_2(ctx, use_future);
   ctx.restart();
@@ -864,9 +864,9 @@ void deprecated_use_future_2_test()
     ASIO_CHECK(false);
     (void)t;
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -912,11 +912,11 @@ void deprecated_use_future_2_test()
 void deprecated_use_future_3_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<std::tuple<int, double, char>> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_3(ctx, use_future);
   ctx.restart();
@@ -963,9 +963,9 @@ void deprecated_use_future_3_test()
     ASIO_CHECK(false);
     (void)t;
   }
-  catch (asio::system_error& e)
+  catch (asio_sockio::system_error& e)
   {
-    ASIO_CHECK(e.code() == asio::error::operation_aborted);
+    ASIO_CHECK(e.code() == asio_sockio::error::operation_aborted);
   }
   catch (...)
   {
@@ -1013,11 +1013,11 @@ void deprecated_use_future_3_test()
 void deprecated_use_future_package_0_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_0(ctx, use_future(package_0));
   ctx.restart();
@@ -1089,11 +1089,11 @@ void deprecated_use_future_package_0_test()
 void deprecated_use_future_package_1_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_1(ctx, use_future(package_1));
   ctx.restart();
@@ -1165,11 +1165,11 @@ void deprecated_use_future_package_1_test()
 void deprecated_use_future_package_2_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_2(ctx, use_future(package_2));
   ctx.restart();
@@ -1241,11 +1241,11 @@ void deprecated_use_future_package_2_test()
 void deprecated_use_future_package_3_test()
 {
 #if !defined(ASIO_NO_DEPRECATED)
-  using asio::use_future;
+  using asio_sockio::use_future;
   using namespace archetypes;
 
   std::future<int> f;
-  asio::io_context ctx;
+  asio_sockio::io_context ctx;
 
   f = deprecated_async_op_3(ctx, use_future(package_3));
   ctx.restart();

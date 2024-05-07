@@ -35,7 +35,7 @@
 # include <functional>
 #endif // defined(ASIO_HAS_BOOST_BIND)
 
-using namespace asio;
+using namespace asio_sockio;
 
 #if defined(ASIO_HAS_BOOST_BIND)
 namespace bindns = boost;
@@ -48,7 +48,7 @@ typedef deadline_timer timer;
 namespace chronons = boost::posix_time;
 #elif defined(ASIO_HAS_CHRONO)
 typedef steady_timer timer;
-namespace chronons = asio::chrono;
+namespace chronons = asio_sockio::chrono;
 #endif // defined(ASIO_HAS_BOOST_DATE_TIME)
 
 void increment(int* count)

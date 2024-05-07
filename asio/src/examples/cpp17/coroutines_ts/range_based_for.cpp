@@ -16,11 +16,11 @@
 #include <asio/write.hpp>
 #include <cstdio>
 
-using asio::ip::tcp;
-using asio::experimental::awaitable;
-using asio::experimental::co_spawn;
-using asio::experimental::detached;
-namespace this_coro = asio::experimental::this_coro;
+using asio_sockio::ip::tcp;
+using asio_sockio::experimental::awaitable;
+using asio_sockio::experimental::co_spawn;
+using asio_sockio::experimental::detached;
+namespace this_coro = asio_sockio::experimental::this_coro;
 
 class connection_iter
 {
@@ -81,7 +81,7 @@ awaitable<void> listener(tcp::acceptor acceptor)
 
   for co_await (tcp::socket s : connections(acceptor))
   {
-    co_await asio::async_write(s, asio::buffer("hello\r\n", 7), token);
+    co_await asio_sockio::async_write(s, asio_sockio::buffer("hello\r\n", 7), token);
   }
 }
 
@@ -89,9 +89,9 @@ int main()
 {
   try
   {
-    asio::io_context io_context(1);
+    asio_sockio::io_context io_context(1);
 
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
+    asio_sockio::signal_set signals(io_context, SIGINT, SIGTERM);
     signals.async_wait([&](auto, auto){ io_context.stop(); });
 
     tcp::acceptor acceptor(io_context, {tcp::v4(), 55555});

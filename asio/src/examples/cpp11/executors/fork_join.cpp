@@ -8,9 +8,9 @@
 #include <thread>
 #include <numeric>
 
-using asio::dispatch;
-using asio::execution_context;
-using asio::thread_pool;
+using asio_sockio::dispatch;
+using asio_sockio::execution_context;
+using asio_sockio::thread_pool;
 
 // A fixed-size thread pool used to implement fork/join semantics. Functions
 // are scheduled using a simple FIFO queue. Implementing work stealing, or

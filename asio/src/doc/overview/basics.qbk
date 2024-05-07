@@ -20,12 +20,12 @@ operations.
 [*Your program] will have at least one [*io_context] object. The [*io_context]
 represents [*your program]'s link to the [*operating system]'s I/O services.
 
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
 To perform I/O operations [*your program] will need an [*I/O object] such as a
 TCP socket:
 
-  asio::ip::tcp::socket socket(io_context);
+  asio_sockio::ip::tcp::socket socket(io_context);
 
 When a synchronous connect operation is performed, the following sequence of
 events occurs:
@@ -44,15 +44,15 @@ operation.
 [*io_context].
 
 5. The [*io_context] translates any error resulting from the operation into an
-object of type `asio::error_code`. An `error_code` may be compared with
+object of type `asio_sockio::error_code`. An `error_code` may be compared with
 specific values, or tested as a boolean (where a `false` result means that no
 error occurred). The result is then forwarded back up to the [*I/O object].
 
-6. The [*I/O object] throws an exception of type `asio::system_error` if the
+6. The [*I/O object] throws an exception of type `asio_sockio::system_error` if the
 operation failed. If the code to initiate the operation had instead been
 written as:
 
-  asio::error_code ec;
+  asio_sockio::error_code ec;
   socket.connect(server_endpoint, ec);
 
 then the `error_code` variable `ec` would be set to the result of the
@@ -70,7 +70,7 @@ object]:
 where `your_completion_handler` is a function or function object with the
 signature:
 
-  void your_completion_handler(const asio::error_code& ec);
+  void your_completion_handler(const asio_sockio::error_code& ec);
 
 The exact signature required depends on the asynchronous operation being
 performed. The reference documentation indicates the appropriate form for each

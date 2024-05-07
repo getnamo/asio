@@ -35,30 +35,30 @@
 
 namespace generic_stream_protocol_socket_compile {
 
-void connect_handler(const asio::error_code&)
+void connect_handler(const asio_sockio::error_code&)
 {
 }
 
-void send_handler(const asio::error_code&, std::size_t)
+void send_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void receive_handler(const asio::error_code&, std::size_t)
+void receive_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void write_some_handler(const asio::error_code&, std::size_t)
+void write_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void read_some_handler(const asio::error_code&, std::size_t)
+void read_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
 void test()
 {
-  using namespace asio;
-  namespace generic = asio::generic;
+  using namespace asio_sockio;
+  namespace generic = asio_sockio::generic;
   typedef generic::stream_protocol sp;
 
   const int af_inet = ASIO_OS_DEF(AF_INET);
@@ -73,7 +73,7 @@ void test()
     socket_base::message_flags in_flags = 0;
     socket_base::keep_alive socket_option;
     socket_base::bytes_readable io_control_command;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_stream_socket constructors.
 
@@ -90,7 +90,7 @@ void test()
 
 #if defined(ASIO_HAS_MOVE)
     sp::socket socket5(std::move(socket4));
-    asio::ip::tcp::socket tcp_socket(ioc);
+    asio_sockio::ip::tcp::socket tcp_socket(ioc);
     sp::socket socket6(std::move(tcp_socket));
 #endif // defined(ASIO_HAS_MOVE)
 
@@ -99,7 +99,7 @@ void test()
 #if defined(ASIO_HAS_MOVE)
     socket1 = sp::socket(ioc);
     socket1 = std::move(socket2);
-    socket1 = asio::ip::tcp::socket(ioc);
+    socket1 = asio_sockio::ip::tcp::socket(ioc);
 #endif // defined(ASIO_HAS_MOVE)
 
     // basic_io_object functions.

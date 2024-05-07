@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 //----------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ struct close_after
   tcp::socket& socket_;
 };
 
-namespace asio {
+namespace asio_sockio {
 
 // The async_result template is specialised to allow the close_after token to
 // be used with asynchronous operations that have a completion signature of
@@ -93,7 +93,7 @@ public:
   // use this function to run the io_context until the operation is complete.
   return_type get()
   {
-    asio::io_context& io_context = socket_.get_executor().context();
+    asio_sockio::io_context& io_context = socket_.get_executor().context();
 
     // Restart the io_context, as it may have been left in the "stopped" state
     // by a previous operation.
@@ -129,7 +129,7 @@ private:
   T t_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 //----------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Resolve the host name and service to a list of endpoints.
     auto endpoints = tcp::resolver(io_context).resolve(argv[1], argv[2]);
@@ -151,21 +151,21 @@ int main(int argc, char* argv[])
     tcp::socket socket(io_context);
 
     // Run an asynchronous connect operation with a timeout.
-    asio::async_connect(socket, endpoints,
+    asio_sockio::async_connect(socket, endpoints,
         close_after(std::chrono::seconds(10), socket));
 
     auto time_sent = std::chrono::steady_clock::now();
 
     // Run an asynchronous write operation with a timeout.
     std::string msg = argv[3] + std::string("\n");
-    asio::async_write(socket, asio::buffer(msg),
+    asio_sockio::async_write(socket, asio_sockio::buffer(msg),
         close_after(std::chrono::seconds(10), socket));
 
     for (std::string input_buffer;;)
     {
       // Run an asynchronous read operation with a timeout.
-      std::size_t n = asio::async_read_until(socket,
-          asio::dynamic_buffer(input_buffer), '\n',
+      std::size_t n = asio_sockio::async_read_until(socket,
+          asio_sockio::dynamic_buffer(input_buffer), '\n',
           close_after(std::chrono::seconds(10), socket));
 
       std::string line(input_buffer.substr(0, n - 1));

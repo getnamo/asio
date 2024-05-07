@@ -18,13 +18,13 @@
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 
-using asio::local::stream_protocol;
+using asio_sockio::local::stream_protocol;
 
 class session
   : public boost::enable_shared_from_this<session>
 {
 public:
-  session(asio::io_context& io_context)
+  session(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
@@ -36,35 +36,35 @@ public:
 
   void start()
   {
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         boost::bind(&session::handle_read,
           shared_from_this(),
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred));
   }
 
-  void handle_read(const asio::error_code& error,
+  void handle_read(const asio_sockio::error_code& error,
       size_t bytes_transferred)
   {
     if (!error)
     {
-      asio::async_write(socket_,
-          asio::buffer(data_, bytes_transferred),
+      asio_sockio::async_write(socket_,
+          asio_sockio::buffer(data_, bytes_transferred),
           boost::bind(&session::handle_write,
             shared_from_this(),
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
   }
 
-  void handle_write(const asio::error_code& error)
+  void handle_write(const asio_sockio::error_code& error)
   {
     if (!error)
     {
-      socket_.async_read_some(asio::buffer(data_),
+      socket_.async_read_some(asio_sockio::buffer(data_),
           boost::bind(&session::handle_read,
             shared_from_this(),
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
   }
 
@@ -81,18 +81,18 @@ typedef boost::shared_ptr<session> session_ptr;
 class server
 {
 public:
-  server(asio::io_context& io_context, const std::string& file)
+  server(asio_sockio::io_context& io_context, const std::string& file)
     : io_context_(io_context),
       acceptor_(io_context, stream_protocol::endpoint(file))
   {
     session_ptr new_session(new session(io_context_));
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(session_ptr new_session,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -102,11 +102,11 @@ public:
     new_session.reset(new session(io_context_));
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   stream_protocol::acceptor acceptor_;
 };
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     std::remove(argv[1]);
     server s(io_context, argv[1]);

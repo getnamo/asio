@@ -24,12 +24,12 @@
 #include <asio/steady_timer.hpp>
 #include <asio/write.hpp>
 
-using asio::ip::tcp;
-using asio::experimental::awaitable;
-using asio::experimental::co_spawn;
-using asio::experimental::detached;
-using asio::experimental::redirect_error;
-namespace this_coro = asio::experimental::this_coro;
+using asio_sockio::ip::tcp;
+using asio_sockio::experimental::awaitable;
+using asio_sockio::experimental::co_spawn;
+using asio_sockio::experimental::detached;
+using asio_sockio::experimental::redirect_error;
+namespace this_coro = asio_sockio::experimental::this_coro;
 
 //----------------------------------------------------------------------
 
@@ -118,8 +118,8 @@ private:
     {
       for (std::string read_msg;;)
       {
-        std::size_t n = co_await asio::async_read_until(socket_,
-            asio::dynamic_buffer(read_msg, 1024), "\n", token);
+        std::size_t n = co_await asio_sockio::async_read_until(socket_,
+            asio_sockio::dynamic_buffer(read_msg, 1024), "\n", token);
 
         room_.deliver(read_msg.substr(0, n));
         read_msg.erase(0, n);
@@ -141,13 +141,13 @@ private:
       {
         if (write_msgs_.empty())
         {
-          asio::error_code ec;
+          asio_sockio::error_code ec;
           co_await timer_.async_wait(redirect_error(token, ec));
         }
         else
         {
-          co_await asio::async_write(socket_,
-              asio::buffer(write_msgs_.front()), token);
+          co_await asio_sockio::async_write(socket_,
+              asio_sockio::buffer(write_msgs_.front()), token);
           write_msgs_.pop_front();
         }
       }
@@ -166,7 +166,7 @@ private:
   }
 
   tcp::socket socket_;
-  asio::steady_timer timer_;
+  asio_sockio::steady_timer timer_;
   chat_room& room_;
   std::deque<std::string> write_msgs_;
 };
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context(1);
+    asio_sockio::io_context io_context(1);
 
     for (int i = 1; i < argc; ++i)
     {
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
           detached);
     }
 
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
+    asio_sockio::signal_set signals(io_context, SIGINT, SIGTERM);
     signals.async_wait([&](auto, auto){ io_context.stop(); });
 
     io_context.run();

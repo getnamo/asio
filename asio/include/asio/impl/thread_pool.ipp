@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 struct thread_pool::thread_function
 {
@@ -28,7 +28,7 @@ struct thread_pool::thread_function
 
   void operator()()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     scheduler_->run(ec);
   }
 };
@@ -69,7 +69,7 @@ void thread_pool::join()
   threads_.join();
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -17,32 +17,32 @@
 #include <vector>
 #include "allocator.hpp"
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 #include <asio/yield.hpp>
 
-class udp_server : asio::coroutine
+class udp_server : asio_sockio::coroutine
 {
 public:
-  udp_server(asio::io_context& io_context,
+  udp_server(asio_sockio::io_context& io_context,
       unsigned short port, std::size_t buf_size) :
     socket_(io_context, udp::endpoint(udp::v4(), port)),
     buffer_(buf_size)
   {
   }
 
-  void operator()(asio::error_code ec, std::size_t n = 0)
+  void operator()(asio_sockio::error_code ec, std::size_t n = 0)
   {
     reenter (this) for (;;)
     {
       yield socket_.async_receive_from(
-          asio::buffer(buffer_),
+          asio_sockio::buffer(buffer_),
           sender_, ref(this));
 
       if (!ec)
       {
         for (std::size_t i = 0; i < n; ++i) buffer_[i] = ~buffer_[i];
-        socket_.send_to(asio::buffer(buffer_, n), sender_, 0, ec);
+        socket_.send_to(asio_sockio::buffer(buffer_, n), sender_, 0, ec);
       }
     }
   }
@@ -64,7 +64,7 @@ public:
     {
     }
 
-    void operator()(asio::error_code ec, std::size_t n = 0)
+    void operator()(asio_sockio::error_code ec, std::size_t n = 0)
     {
       (*p_)(ec, n);
     }
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
   std::size_t buf_size = std::atoi(argv[3]);
   bool spin = (std::strcmp(argv[4], "spin") == 0);
 
-  asio::io_context io_context(1);
+  asio_sockio::io_context io_context(1);
   std::vector<boost::shared_ptr<udp_server> > servers;
 
   for (unsigned short i = 0; i < num_ports; ++i)
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     unsigned short port = first_port + i;
     boost::shared_ptr<udp_server> s(new udp_server(io_context, port, buf_size));
     servers.push_back(s);
-    (*s)(asio::error_code());
+    (*s)(asio_sockio::error_code());
   }
 
   if (spin)

@@ -18,7 +18,7 @@
 class session
 {
 public:
-  session(asio::io_context& ioc, size_t block_size)
+  session(asio_sockio::io_context& ioc, size_t block_size)
     : io_context_(ioc),
       strand_(ioc),
       socket_(ioc),
@@ -37,33 +37,33 @@ public:
     delete[] write_data_;
   }
 
-  asio::ip::tcp::socket& socket()
+  asio_sockio::ip::tcp::socket& socket()
   {
     return socket_;
   }
 
   void start()
   {
-    asio::error_code set_option_err;
-    asio::ip::tcp::no_delay no_delay(true);
+    asio_sockio::error_code set_option_err;
+    asio_sockio::ip::tcp::no_delay no_delay(true);
     socket_.set_option(no_delay, set_option_err);
     if (!set_option_err)
     {
       ++op_count_;
-      socket_.async_read_some(asio::buffer(read_data_, block_size_),
-          asio::bind_executor(strand_,
+      socket_.async_read_some(asio_sockio::buffer(read_data_, block_size_),
+          asio_sockio::bind_executor(strand_,
             make_custom_alloc_handler(read_allocator_,
               boost::bind(&session::handle_read, this,
-                asio::placeholders::error,
-                asio::placeholders::bytes_transferred))));
+                asio_sockio::placeholders::error,
+                asio_sockio::placeholders::bytes_transferred))));
     }
     else
     {
-      asio::post(io_context_, boost::bind(&session::destroy, this));
+      asio_sockio::post(io_context_, boost::bind(&session::destroy, this));
     }
   }
 
-  void handle_read(const asio::error_code& err, size_t length)
+  void handle_read(const asio_sockio::error_code& err, size_t length)
   {
     --op_count_;
 
@@ -75,25 +75,25 @@ public:
       {
         op_count_ += 2;
         std::swap(read_data_, write_data_);
-        async_write(socket_, asio::buffer(write_data_, read_data_length_),
-            asio::bind_executor(strand_,
+        async_write(socket_, asio_sockio::buffer(write_data_, read_data_length_),
+            asio_sockio::bind_executor(strand_,
               make_custom_alloc_handler(write_allocator_,
                 boost::bind(&session::handle_write, this,
-                  asio::placeholders::error))));
-        socket_.async_read_some(asio::buffer(read_data_, block_size_),
-            asio::bind_executor(strand_,
+                  asio_sockio::placeholders::error))));
+        socket_.async_read_some(asio_sockio::buffer(read_data_, block_size_),
+            asio_sockio::bind_executor(strand_,
               make_custom_alloc_handler(read_allocator_,
                 boost::bind(&session::handle_read, this,
-                  asio::placeholders::error,
-                  asio::placeholders::bytes_transferred))));
+                  asio_sockio::placeholders::error,
+                  asio_sockio::placeholders::bytes_transferred))));
       }
     }
 
     if (op_count_ == 0)
-      asio::post(io_context_, boost::bind(&session::destroy, this));
+      asio_sockio::post(io_context_, boost::bind(&session::destroy, this));
   }
 
-  void handle_write(const asio::error_code& err)
+  void handle_write(const asio_sockio::error_code& err)
   {
     --op_count_;
 
@@ -104,22 +104,22 @@ public:
       {
         op_count_ += 2;
         std::swap(read_data_, write_data_);
-        async_write(socket_, asio::buffer(write_data_, read_data_length_),
-            asio::bind_executor(strand_,
+        async_write(socket_, asio_sockio::buffer(write_data_, read_data_length_),
+            asio_sockio::bind_executor(strand_,
               make_custom_alloc_handler(write_allocator_,
                 boost::bind(&session::handle_write, this,
-                  asio::placeholders::error))));
-        socket_.async_read_some(asio::buffer(read_data_, block_size_),
-            asio::bind_executor(strand_,
+                  asio_sockio::placeholders::error))));
+        socket_.async_read_some(asio_sockio::buffer(read_data_, block_size_),
+            asio_sockio::bind_executor(strand_,
               make_custom_alloc_handler(read_allocator_,
                 boost::bind(&session::handle_read, this,
-                  asio::placeholders::error,
-                  asio::placeholders::bytes_transferred))));
+                  asio_sockio::placeholders::error,
+                  asio_sockio::placeholders::bytes_transferred))));
       }
     }
 
     if (op_count_ == 0)
-      asio::post(io_context_, boost::bind(&session::destroy, this));
+      asio_sockio::post(io_context_, boost::bind(&session::destroy, this));
   }
 
   static void destroy(session* s)
@@ -128,9 +128,9 @@ public:
   }
 
 private:
-  asio::io_context& io_context_;
-  asio::io_context::strand strand_;
-  asio::ip::tcp::socket socket_;
+  asio_sockio::io_context& io_context_;
+  asio_sockio::io_context::strand strand_;
+  asio_sockio::ip::tcp::socket socket_;
   size_t block_size_;
   char* read_data_;
   size_t read_data_length_;
@@ -144,14 +144,14 @@ private:
 class server
 {
 public:
-  server(asio::io_context& ioc, const asio::ip::tcp::endpoint& endpoint,
+  server(asio_sockio::io_context& ioc, const asio_sockio::ip::tcp::endpoint& endpoint,
       size_t block_size)
     : io_context_(ioc),
       acceptor_(ioc),
       block_size_(block_size)
   {
     acceptor_.open(endpoint.protocol());
-    acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(1));
+    acceptor_.set_option(asio_sockio::ip::tcp::acceptor::reuse_address(1));
     acceptor_.bind(endpoint);
     acceptor_.listen();
 
@@ -163,10 +163,10 @@ public:
     session* new_session = new session(io_context_, block_size_);
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
-  void handle_accept(session* new_session, const asio::error_code& err)
+  void handle_accept(session* new_session, const asio_sockio::error_code& err)
   {
     if (!err)
     {
@@ -181,8 +181,8 @@ public:
   }
 
 private:
-  asio::io_context& io_context_;
-  asio::ip::tcp::acceptor acceptor_;
+  asio_sockio::io_context& io_context_;
+  asio_sockio::ip::tcp::acceptor acceptor_;
   size_t block_size_;
 };
 
@@ -197,21 +197,21 @@ int main(int argc, char* argv[])
     }
 
     using namespace std; // For atoi.
-    asio::ip::address address = asio::ip::make_address(argv[1]);
+    asio_sockio::ip::address address = asio_sockio::ip::make_address(argv[1]);
     short port = atoi(argv[2]);
     int thread_count = atoi(argv[3]);
     size_t block_size = atoi(argv[4]);
 
-    asio::io_context ioc;
+    asio_sockio::io_context ioc;
 
-    server s(ioc, asio::ip::tcp::endpoint(address, port), block_size);
+    server s(ioc, asio_sockio::ip::tcp::endpoint(address, port), block_size);
 
     // Threads not currently supported in this test.
-    std::list<asio::thread*> threads;
+    std::list<asio_sockio::thread*> threads;
     while (--thread_count > 0)
     {
-      asio::thread* new_thread = new asio::thread(
-          boost::bind(&asio::io_context::run, &ioc));
+      asio_sockio::thread* new_thread = new asio_sockio::thread(
+          boost::bind(&asio_sockio::io_context::run, &ioc));
       threads.push_back(new_thread);
     }
 

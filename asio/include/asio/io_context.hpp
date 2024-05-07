@@ -38,7 +38,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 namespace detail {
 #if defined(ASIO_HAS_IOCP)
@@ -54,10 +54,10 @@ namespace detail {
  * The io_context class provides the core I/O functionality for users of the
  * asynchronous I/O objects, including:
  *
- * @li asio::ip::tcp::socket
- * @li asio::ip::tcp::acceptor
- * @li asio::ip::udp::socket
- * @li asio::deadline_timer.
+ * @li asio_sockio::ip::tcp::socket
+ * @li asio_sockio::ip::tcp::acceptor
+ * @li asio_sockio::ip::udp::socket
+ * @li asio_sockio::deadline_timer.
  *
  * The io_context class also includes facilities intended for developers of
  * custom asynchronous services.
@@ -102,7 +102,7 @@ namespace detail {
  * For example:
  *
  * @code
- * asio::io_context io_context;
+ * asio_sockio::io_context io_context;
  * ...
  * for (;;)
  * {
@@ -120,8 +120,8 @@ namespace detail {
  *
  * @par Submitting arbitrary tasks to the io_context
  *
- * To submit functions to the io_context, use the @ref asio::dispatch,
- * @ref asio::post or @ref asio::defer free functions.
+ * To submit functions to the io_context, use the @ref asio_sockio::dispatch,
+ * @ref asio_sockio::post or @ref asio_sockio::defer free functions.
  *
  * For example:
  *
@@ -132,13 +132,13 @@ namespace detail {
  *
  * ...
  *
- * asio::io_context io_context;
+ * asio_sockio::io_context io_context;
  *
  * // Submit a function to the io_context.
- * asio::post(io_context, my_task);
+ * asio_sockio::post(io_context, my_task);
  *
  * // Submit a lambda object to the io_context.
- * asio::post(io_context,
+ * asio_sockio::post(io_context,
  *     []()
  *     {
  *       ...
@@ -154,11 +154,11 @@ namespace detail {
  * be being run in a background thread that is launched prior to the
  * application's asynchronous operations. The run() call may be kept running by
  * creating an object of type
- * asio::executor_work_guard<io_context::executor_type>:
+ * asio_sockio::executor_work_guard<io_context::executor_type>:
  *
- * @code asio::io_context io_context;
- * asio::executor_work_guard<asio::io_context::executor_type>
- *   = asio::make_work_guard(io_context);
+ * @code asio_sockio::io_context io_context;
+ * asio_sockio::executor_work_guard<asio_sockio::io_context::executor_type>
+ *   = asio_sockio::make_work_guard(io_context);
  * ... @endcode
  *
  * To effect a shutdown, the application will then need to call the io_context
@@ -169,9 +169,9 @@ namespace detail {
  * Alternatively, if the application requires that all operations and handlers
  * be allowed to finish normally, the work object may be explicitly reset.
  *
- * @code asio::io_context io_context;
- * asio::executor_work_guard<asio::io_context::executor_type>
- *   = asio::make_work_guard(io_context);
+ * @code asio_sockio::io_context io_context;
+ * asio_sockio::executor_work_guard<asio_sockio::io_context::executor_type>
+ *   = asio_sockio::make_work_guard(io_context);
  * ...
  * work.reset(); // Allow run() to exit. @endcode
  */
@@ -307,7 +307,7 @@ public:
    * The poll() function may also be used to dispatch ready handlers, but
    * without blocking.
    */
-  ASIO_DECL count_type run(asio::error_code& ec);
+  ASIO_DECL count_type run(asio_sockio::error_code& ec);
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 #if defined(ASIO_HAS_CHRONO) || defined(GENERATING_DOCUMENTATION)
@@ -378,7 +378,7 @@ public:
    * poll_one() on the same io_context object may introduce the potential for
    * deadlock. It is the caller's reponsibility to avoid this.
    */
-  ASIO_DECL count_type run_one(asio::error_code& ec);
+  ASIO_DECL count_type run_one(asio_sockio::error_code& ec);
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 #if defined(ASIO_HAS_CHRONO) || defined(GENERATING_DOCUMENTATION)
@@ -433,7 +433,7 @@ public:
    *
    * @return The number of handlers that were executed.
    */
-  ASIO_DECL count_type poll(asio::error_code& ec);
+  ASIO_DECL count_type poll(asio_sockio::error_code& ec);
 #endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Run the io_context object's event processing loop to execute one ready
@@ -457,7 +457,7 @@ public:
    *
    * @return The number of handlers that were executed.
    */
-  ASIO_DECL count_type poll_one(asio::error_code& ec);
+  ASIO_DECL count_type poll_one(asio_sockio::error_code& ec);
 #endif // !defined(ASIO_NO_DEPRECATED)
 
   /// Stop the io_context object's event processing loop.
@@ -509,7 +509,7 @@ public:
    */
   void reset();
 
-  /// (Deprecated: Use asio::dispatch().) Request the io_context to
+  /// (Deprecated: Use asio_sockio::dispatch().) Request the io_context to
   /// invoke the given handler.
   /**
    * This function is used to ask the io_context to execute the given handler.
@@ -535,7 +535,7 @@ public:
   ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
   dispatch(ASIO_MOVE_ARG(LegacyCompletionHandler) handler);
 
-  /// (Deprecated: Use asio::post().) Request the io_context to invoke
+  /// (Deprecated: Use asio_sockio::post().) Request the io_context to invoke
   /// the given handler and return immediately.
   /**
    * This function is used to ask the io_context to execute the given handler,
@@ -562,7 +562,7 @@ public:
   ASIO_INITFN_RESULT_TYPE(LegacyCompletionHandler, void ())
   post(ASIO_MOVE_ARG(LegacyCompletionHandler) handler);
 
-  /// (Deprecated: Use asio::bind_executor().) Create a new handler that
+  /// (Deprecated: Use asio_sockio::bind_executor().) Create a new handler that
   /// automatically dispatches the wrapped handler on the io_context.
   /**
    * This function is used to create a new handler function object that, when
@@ -747,7 +747,7 @@ public:
    * This ensures that the io_context object's run() function will not exit
    * while the work is underway.
    */
-  explicit work(asio::io_context& io_context);
+  explicit work(asio_sockio::io_context& io_context);
 
   /// Copy constructor notifies the io_context that work is starting.
   /**
@@ -766,11 +766,11 @@ public:
   ~work();
 
   /// Get the io_context associated with the work.
-  asio::io_context& get_io_context();
+  asio_sockio::io_context& get_io_context();
 
   /// (Deprecated: Use get_io_context().) Get the io_context associated with the
   /// work.
-  asio::io_context& get_io_service();
+  asio_sockio::io_context& get_io_service();
 
 private:
   // Prevent assignment.
@@ -787,11 +787,11 @@ class io_context::service
 {
 public:
   /// Get the io_context object that owns the service.
-  asio::io_context& get_io_context();
+  asio_sockio::io_context& get_io_context();
 
 #if !defined(ASIO_NO_DEPRECATED)
   /// Get the io_context object that owns the service.
-  asio::io_context& get_io_service();
+  asio_sockio::io_context& get_io_service();
 #endif // !defined(ASIO_NO_DEPRECATED)
 
 private:
@@ -829,7 +829,7 @@ protected:
   /**
    * @param owner The io_context object that owns the service.
    */
-  ASIO_DECL service(asio::io_context& owner);
+  ASIO_DECL service(asio_sockio::io_context& owner);
 
   /// Destructor.
   ASIO_DECL virtual ~service();
@@ -840,23 +840,23 @@ namespace detail {
 // Special service base class to keep classes header-file only.
 template <typename Type>
 class service_base
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 {
 public:
-  static asio::detail::service_id<Type> id;
+  static asio_sockio::detail::service_id<Type> id;
 
   // Constructor.
-  service_base(asio::io_context& io_context)
-    : asio::io_context::service(io_context)
+  service_base(asio_sockio::io_context& io_context)
+    : asio_sockio::io_context::service(io_context)
   {
   }
 };
 
 template <typename Type>
-asio::detail::service_id<Type> service_base<Type>::id;
+asio_sockio::detail::service_id<Type> service_base<Type>::id;
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

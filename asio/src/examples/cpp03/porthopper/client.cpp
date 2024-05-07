@@ -21,8 +21,8 @@
 #include "protocol.hpp"
 
 using namespace boost;
-using asio::ip::tcp;
-using asio::ip::udp;
+using asio_sockio::ip::tcp;
+using asio_sockio::ip::udp;
 
 int main(int argc, char* argv[])
 {
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     std::string host_name = argv[1];
     std::string port = argv[2];
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Determine the location of the server.
     tcp::resolver resolver(io_context);
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
     // Ask the server to start sending us data.
     control_request start = control_request::start(data_endpoint.port());
-    asio::write(control_socket, start.to_buffers());
+    asio_sockio::write(control_socket, start.to_buffers());
 
     unsigned long last_frame_number = 0;
     for (;;)
@@ -89,8 +89,8 @@ int main(int argc, char* argv[])
       // Ask the server to switch over to the new port.
       control_request change = control_request::change(
           data_endpoint.port(), new_data_endpoint.port());
-      asio::error_code control_result;
-      asio::async_write(control_socket, change.to_buffers(),
+      asio_sockio::error_code control_result;
+      asio_sockio::async_write(control_socket, change.to_buffers(),
           (
             lambda::var(control_result) = lambda::_1
           ));
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
       // socket, which will cause any outstanding receive operation on it to be
       // cancelled.
       frame f1;
-      asio::error_code new_data_socket_result;
+      asio_sockio::error_code new_data_socket_result;
       new_data_socket->async_receive(f1.to_buffers(),
           (
             // Note: lambda::_1 is the first argument to the callback handler,
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
                 [
                   // We have successfully received a frame on the old data
                   // socket. Stop the io_context so that we can print it.
-                  lambda::bind(&asio::io_context::stop, &io_context),
+                  lambda::bind(&asio_sockio::io_context::stop, &io_context),
                   lambda::var(done) = false
                 ]
               ));
@@ -166,9 +166,9 @@ int main(int argc, char* argv[])
       // the renegotation, or an error has occurred. First we'll check for
       // errors.
       if (control_result)
-        throw asio::system_error(control_result);
+        throw asio_sockio::system_error(control_result);
       if (new_data_socket_result)
-        throw asio::system_error(new_data_socket_result);
+        throw asio_sockio::system_error(new_data_socket_result);
 
       // If we get here it means we have successfully started receiving data on
       // the new data socket. This new data socket will be used from now on

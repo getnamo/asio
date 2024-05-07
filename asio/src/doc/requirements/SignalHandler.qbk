@@ -17,7 +17,7 @@ type `const error_code` and `n` is an lvalue of type `const int`.
 A free function as a signal handler:
 
   void signal_handler(
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       int signal_number)
   {
     ...
@@ -29,7 +29,7 @@ A signal handler function object:
   {
     ...
     void operator()(
-        const asio::error_code& ec,
+        const asio_sockio::error_code& ec,
         int signal_number)
     {
       ...
@@ -40,7 +40,7 @@ A signal handler function object:
 A lambda as a signal handler:
 
   my_signal_set.async_wait(
-      [](const asio::error_code& ec,
+      [](const asio_sockio::error_code& ec,
         int signal_number)
       {
         ...
@@ -50,7 +50,7 @@ A non-static class member function adapted to a signal handler using
 `std::bind()`:
 
   void my_class::signal_handler(
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       int signal_number)
   {
     ...
@@ -65,7 +65,7 @@ A non-static class member function adapted to a signal handler using
 `boost::bind()`:
 
   void my_class::signal_handler(
-      const asio::error_code& ec,
+      const asio_sockio::error_code& ec,
       int signal_number)
   {
     ...
@@ -73,7 +73,7 @@ A non-static class member function adapted to a signal handler using
   ...
   my_signal_set.async_wait(
       boost::bind(&my_class::signal_handler,
-        this, asio::placeholders::error,
-        asio::placeholders::signal_number));
+        this, asio_sockio::placeholders::error,
+        asio_sockio::placeholders::signal_number));
 
 [endsect]

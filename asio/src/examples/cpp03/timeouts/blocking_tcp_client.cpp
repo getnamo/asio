@@ -21,7 +21,7 @@
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 using boost::lambda::bind;
 using boost::lambda::var;
 using boost::lambda::_1;
@@ -48,7 +48,7 @@ public:
   }
 
   void connect(const std::string& host, const std::string& service,
-      asio::chrono::steady_clock::duration timeout)
+      asio_sockio::chrono::steady_clock::duration timeout)
   {
     // Resolve the host name and service to a list of endpoints.
     tcp::resolver::results_type endpoints =
@@ -58,27 +58,27 @@ public:
     // object is used as a callback and will update the ec variable when the
     // operation completes. The blocking_udp_client.cpp example shows how you
     // can use boost::bind rather than boost::lambda.
-    asio::error_code ec;
-    asio::async_connect(socket_, endpoints, var(ec) = _1);
+    asio_sockio::error_code ec;
+    asio_sockio::async_connect(socket_, endpoints, var(ec) = _1);
 
     // Run the operation until it completes, or until the timeout.
     run(timeout);
 
     // Determine whether a connection was successfully established.
     if (ec)
-      throw asio::system_error(ec);
+      throw asio_sockio::system_error(ec);
   }
 
-  std::string read_line(asio::chrono::steady_clock::duration timeout)
+  std::string read_line(asio_sockio::chrono::steady_clock::duration timeout)
   {
     // Start the asynchronous operation. The boost::lambda function object is
     // used as a callback and will update the ec variable when the operation
     // completes. The blocking_udp_client.cpp example shows how you can use
     // boost::bind rather than boost::lambda.
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     std::size_t n = 0;
-    asio::async_read_until(socket_,
-        asio::dynamic_buffer(input_buffer_),
+    asio_sockio::async_read_until(socket_,
+        asio_sockio::dynamic_buffer(input_buffer_),
         '\n', (var(ec) = _1, var(n) = _2));
 
     // Run the operation until it completes, or until the timeout.
@@ -86,7 +86,7 @@ public:
 
     // Determine whether the read completed successfully.
     if (ec)
-      throw asio::system_error(ec);
+      throw asio_sockio::system_error(ec);
 
     std::string line(input_buffer_.substr(0, n - 1));
     input_buffer_.erase(0, n);
@@ -94,7 +94,7 @@ public:
   }
 
   void write_line(const std::string& line,
-      asio::chrono::steady_clock::duration timeout)
+      asio_sockio::chrono::steady_clock::duration timeout)
   {
     std::string data = line + "\n";
 
@@ -102,19 +102,19 @@ public:
     // used as a callback and will update the ec variable when the operation
     // completes. The blocking_udp_client.cpp example shows how you can use
     // boost::bind rather than boost::lambda.
-    asio::error_code ec;
-    asio::async_write(socket_, asio::buffer(data), var(ec) = _1);
+    asio_sockio::error_code ec;
+    asio_sockio::async_write(socket_, asio_sockio::buffer(data), var(ec) = _1);
 
     // Run the operation until it completes, or until the timeout.
     run(timeout);
 
     // Determine whether the read completed successfully.
     if (ec)
-      throw asio::system_error(ec);
+      throw asio_sockio::system_error(ec);
   }
 
 private:
-  void run(asio::chrono::steady_clock::duration timeout)
+  void run(asio_sockio::chrono::steady_clock::duration timeout)
   {
     // Restart the io_context, as it may have been left in the "stopped" state
     // by a previous operation.
@@ -139,7 +139,7 @@ private:
     }
   }
 
-  asio::io_context io_context_;
+  asio_sockio::io_context io_context_;
   tcp::socket socket_;
   std::string input_buffer_;
 };
@@ -157,28 +157,28 @@ int main(int argc, char* argv[])
     }
 
     client c;
-    c.connect(argv[1], argv[2], asio::chrono::seconds(10));
+    c.connect(argv[1], argv[2], asio_sockio::chrono::seconds(10));
 
-    asio::chrono::steady_clock::time_point time_sent =
-      asio::chrono::steady_clock::now();
+    asio_sockio::chrono::steady_clock::time_point time_sent =
+      asio_sockio::chrono::steady_clock::now();
 
-    c.write_line(argv[3], asio::chrono::seconds(10));
+    c.write_line(argv[3], asio_sockio::chrono::seconds(10));
 
     for (;;)
     {
-      std::string line = c.read_line(asio::chrono::seconds(10));
+      std::string line = c.read_line(asio_sockio::chrono::seconds(10));
 
       // Keep going until we get back the line that was sent.
       if (line == argv[3])
         break;
     }
 
-    asio::chrono::steady_clock::time_point time_received =
-      asio::chrono::steady_clock::now();
+    asio_sockio::chrono::steady_clock::time_point time_received =
+      asio_sockio::chrono::steady_clock::now();
 
     std::cout << "Round trip time: ";
-    std::cout << asio::chrono::duration_cast<
-      asio::chrono::microseconds>(
+    std::cout << asio_sockio::chrono::duration_cast<
+      asio_sockio::chrono::microseconds>(
         time_received - time_sent).count();
     std::cout << " microseconds\n";
   }

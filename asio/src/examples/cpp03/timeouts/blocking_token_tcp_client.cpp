@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 //----------------------------------------------------------------------
 
@@ -28,26 +28,26 @@ using asio::ip::tcp;
 // though they are blocking calls with a timeout.
 struct close_after
 {
-  close_after(asio::chrono::steady_clock::duration t, tcp::socket& s)
+  close_after(asio_sockio::chrono::steady_clock::duration t, tcp::socket& s)
     : timeout_(t), socket_(s)
   {
   }
 
   // The maximum time to wait for an asynchronous operation to complete.
-  asio::chrono::steady_clock::duration timeout_;
+  asio_sockio::chrono::steady_clock::duration timeout_;
 
   // The socket to be closed if the operation does not complete in time.
   tcp::socket& socket_;
 };
 
-namespace asio {
+namespace asio_sockio {
 
 // The async_result template is specialised to allow the close_after token to
 // be used with asynchronous operations that have a completion signature of
 // void(error_code, T). Generalising this for all completion signature forms is
 // left as an exercise for the reader.
 template <typename T>
-class async_result<close_after, void(asio::error_code, T)>
+class async_result<close_after, void(asio_sockio::error_code, T)>
 {
 public:
   // An asynchronous operation's initiating function automatically creates an
@@ -61,7 +61,7 @@ public:
     {
     }
 
-    void operator()(asio::error_code ec, T t)
+    void operator()(asio_sockio::error_code ec, T t)
     {
       *ec_ = ec;
       *t_ = t;
@@ -70,7 +70,7 @@ public:
   private:
     friend class async_result;
     close_after token_;
-    asio::error_code* ec_;
+    asio_sockio::error_code* ec_;
     T* t_;
   };
 
@@ -93,7 +93,7 @@ public:
   // use this function to run the io_context until the operation is complete.
   return_type get()
   {
-    asio::io_context& io_context = socket_.get_executor().context();
+    asio_sockio::io_context& io_context = socket_.get_executor().context();
 
     // Restart the io_context, as it may have been left in the "stopped" state
     // by a previous operation.
@@ -119,17 +119,17 @@ public:
     }
 
     // If the operation failed, throw an exception. Otherwise return the result.
-    return ec_ ? throw asio::system_error(ec_) : t_;
+    return ec_ ? throw asio_sockio::system_error(ec_) : t_;
   }
 
 private:
-  asio::chrono::steady_clock::duration timeout_;
+  asio_sockio::chrono::steady_clock::duration timeout_;
   tcp::socket& socket_;
-  asio::error_code ec_;
+  asio_sockio::error_code ec_;
   T t_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 //----------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Resolve the host name and service to a list of endpoints.
     tcp::resolver::results_type endpoints =
@@ -152,23 +152,23 @@ int main(int argc, char* argv[])
     tcp::socket socket(io_context);
 
     // Run an asynchronous connect operation with a timeout.
-    asio::async_connect(socket, endpoints,
-        close_after(asio::chrono::seconds(10), socket));
+    asio_sockio::async_connect(socket, endpoints,
+        close_after(asio_sockio::chrono::seconds(10), socket));
 
-    asio::chrono::steady_clock::time_point time_sent =
-      asio::chrono::steady_clock::now();
+    asio_sockio::chrono::steady_clock::time_point time_sent =
+      asio_sockio::chrono::steady_clock::now();
 
     // Run an asynchronous write operation with a timeout.
     std::string msg = argv[3] + std::string("\n");
-    asio::async_write(socket, asio::buffer(msg),
-        close_after(asio::chrono::seconds(10), socket));
+    asio_sockio::async_write(socket, asio_sockio::buffer(msg),
+        close_after(asio_sockio::chrono::seconds(10), socket));
 
     for (std::string input_buffer;;)
     {
       // Run an asynchronous read operation with a timeout.
-      std::size_t n = asio::async_read_until(socket,
-          asio::dynamic_buffer(input_buffer), '\n',
-          close_after(asio::chrono::seconds(10), socket));
+      std::size_t n = asio_sockio::async_read_until(socket,
+          asio_sockio::dynamic_buffer(input_buffer), '\n',
+          close_after(asio_sockio::chrono::seconds(10), socket));
 
       std::string line(input_buffer.substr(0, n - 1));
       input_buffer.erase(0, n);
@@ -178,12 +178,12 @@ int main(int argc, char* argv[])
         break;
     }
 
-    asio::chrono::steady_clock::time_point time_received =
-      asio::chrono::steady_clock::now();
+    asio_sockio::chrono::steady_clock::time_point time_received =
+      asio_sockio::chrono::steady_clock::now();
 
     std::cout << "Round trip time: ";
-    std::cout << asio::chrono::duration_cast<
-      asio::chrono::microseconds>(
+    std::cout << asio_sockio::chrono::duration_cast<
+      asio_sockio::chrono::microseconds>(
         time_received - time_sent).count();
     std::cout << " microseconds\n";
   }

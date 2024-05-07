@@ -13,11 +13,11 @@
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 enum { max_length = 1024 };
 
-void server(asio::io_context& io_context, unsigned short port)
+void server(asio_sockio::io_context& io_context, unsigned short port)
 {
   udp::socket sock(io_context, udp::endpoint(udp::v4(), port));
   for (;;)
@@ -25,8 +25,8 @@ void server(asio::io_context& io_context, unsigned short port)
     char data[max_length];
     udp::endpoint sender_endpoint;
     size_t length = sock.receive_from(
-        asio::buffer(data, max_length), sender_endpoint);
-    sock.send_to(asio::buffer(data, length), sender_endpoint);
+        asio_sockio::buffer(data, max_length), sender_endpoint);
+    sock.send_to(asio_sockio::buffer(data, length), sender_endpoint);
   }
 }
 
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     server(io_context, std::atoi(argv[1]));
   }

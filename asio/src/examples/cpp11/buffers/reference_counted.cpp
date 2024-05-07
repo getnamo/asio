@@ -15,7 +15,7 @@
 #include <vector>
 #include <ctime>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 // A reference-counted non-modifiable buffer class.
 class shared_const_buffer
@@ -24,19 +24,19 @@ public:
   // Construct from a std::string.
   explicit shared_const_buffer(const std::string& data)
     : data_(new std::vector<char>(data.begin(), data.end())),
-      buffer_(asio::buffer(*data_))
+      buffer_(asio_sockio::buffer(*data_))
   {
   }
 
   // Implement the ConstBufferSequence requirements.
-  typedef asio::const_buffer value_type;
-  typedef const asio::const_buffer* const_iterator;
-  const asio::const_buffer* begin() const { return &buffer_; }
-  const asio::const_buffer* end() const { return &buffer_ + 1; }
+  typedef asio_sockio::const_buffer value_type;
+  typedef const asio_sockio::const_buffer* const_iterator;
+  const asio_sockio::const_buffer* begin() const { return &buffer_; }
+  const asio_sockio::const_buffer* end() const { return &buffer_ + 1; }
 
 private:
   std::shared_ptr<std::vector<char> > data_;
-  asio::const_buffer buffer_;
+  asio_sockio::const_buffer buffer_;
 };
 
 class session
@@ -60,7 +60,7 @@ private:
     shared_const_buffer buffer(std::ctime(&now));
 
     auto self(shared_from_this());
-    asio::async_write(socket_, buffer,
+    asio_sockio::async_write(socket_, buffer,
         [this, self](std::error_code /*ec*/, std::size_t /*length*/)
         {
         });
@@ -73,7 +73,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, short port)
+  server(asio_sockio::io_context& io_context, short port)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
   {
     do_accept();
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     server s(io_context, std::atoi(argv[1]));
 

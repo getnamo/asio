@@ -33,7 +33,7 @@ namespace serial_port_base_compile {
 void test()
 {
 #if defined(ASIO_HAS_SERIAL_PORT)
-  using namespace asio;
+  using namespace asio_sockio;
 
   try
   {

@@ -30,7 +30,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Adds buffering to the write-related operations of a stream.
 /**
@@ -108,14 +108,14 @@ public:
 #if !defined(ASIO_NO_DEPRECATED)
   /// (Deprecated: Use get_executor().) Get the io_context associated with the
   /// object.
-  asio::io_context& get_io_context()
+  asio_sockio::io_context& get_io_context()
   {
     return next_layer_.get_io_context();
   }
 
   /// (Deprecated: Use get_executor().) Get the io_context associated with the
   /// object.
-  asio::io_context& get_io_service()
+  asio_sockio::io_context& get_io_service()
   {
     return next_layer_.get_io_service();
   }
@@ -128,7 +128,7 @@ public:
   }
 
   /// Close the stream.
-  ASIO_SYNC_OP_VOID close(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID close(asio_sockio::error_code& ec)
   {
     next_layer_.close(ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -142,12 +142,12 @@ public:
   /// Flush all data from the buffer to the next layer. Returns the number of
   /// bytes written to the next layer on the last write operation, or 0 if an
   /// error occurred.
-  std::size_t flush(asio::error_code& ec);
+  std::size_t flush(asio_sockio::error_code& ec);
 
   /// Start an asynchronous flush.
   template <typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_flush(ASIO_MOVE_ARG(WriteHandler) handler);
 
   /// Write the given data to the stream. Returns the number of bytes written.
@@ -159,13 +159,13 @@ public:
   /// or 0 if an error occurred and the error handler did not throw.
   template <typename ConstBufferSequence>
   std::size_t write_some(const ConstBufferSequence& buffers,
-      asio::error_code& ec);
+      asio_sockio::error_code& ec);
 
   /// Start an asynchronous write. The data being written must be valid for the
   /// lifetime of the asynchronous operation.
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
       ASIO_MOVE_ARG(WriteHandler) handler);
 
@@ -181,7 +181,7 @@ public:
   /// an error occurred.
   template <typename MutableBufferSequence>
   std::size_t read_some(const MutableBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return next_layer_.read_some(buffers, ec);
   }
@@ -190,7 +190,7 @@ public:
   /// must be valid for the lifetime of the asynchronous operation.
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
@@ -210,7 +210,7 @@ public:
   /// or 0 if an error occurred.
   template <typename MutableBufferSequence>
   std::size_t peek(const MutableBufferSequence& buffers,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return next_layer_.peek(buffers, ec);
   }
@@ -222,7 +222,7 @@ public:
   }
 
   /// Determine the amount of data that may be read without blocking.
-  std::size_t in_avail(asio::error_code& ec)
+  std::size_t in_avail(asio_sockio::error_code& ec)
   {
     return next_layer_.in_avail(ec);
   }
@@ -240,7 +240,7 @@ private:
   detail::buffered_stream_storage storage_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

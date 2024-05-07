@@ -25,9 +25,9 @@ class server
 public:
   /// Constructor opens the acceptor and starts waiting for the first incoming
   /// connection.
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : acceptor_(io_context,
-        asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
+        asio_sockio::ip::tcp::endpoint(asio_sockio::ip::tcp::v4(), port))
   {
     // Create the data to be sent to each client.
     stock s;
@@ -58,11 +58,11 @@ public:
     connection_ptr new_conn(new connection(acceptor_.get_io_context()));
     acceptor_.async_accept(new_conn->socket(),
         boost::bind(&server::handle_accept, this,
-          asio::placeholders::error, new_conn));
+          asio_sockio::placeholders::error, new_conn));
   }
 
   /// Handle completion of a accept operation.
-  void handle_accept(const asio::error_code& e, connection_ptr conn)
+  void handle_accept(const asio_sockio::error_code& e, connection_ptr conn)
   {
     if (!e)
     {
@@ -71,18 +71,18 @@ public:
       // serialize the data structure for us.
       conn->async_write(stocks_,
           boost::bind(&server::handle_write, this,
-            asio::placeholders::error, conn));
+            asio_sockio::placeholders::error, conn));
     }
 
     // Start an accept operation for a new connection.
     connection_ptr new_conn(new connection(acceptor_.get_io_context()));
     acceptor_.async_accept(new_conn->socket(),
         boost::bind(&server::handle_accept, this,
-          asio::placeholders::error, new_conn));
+          asio_sockio::placeholders::error, new_conn));
   }
 
   /// Handle completion of a write operation.
-  void handle_write(const asio::error_code& e, connection_ptr conn)
+  void handle_write(const asio_sockio::error_code& e, connection_ptr conn)
   {
     // Nothing to do. The socket will be closed automatically when the last
     // reference to the connection object goes away.
@@ -90,7 +90,7 @@ public:
 
 private:
   /// The acceptor object used to accept incoming socket connections.
-  asio::ip::tcp::acceptor acceptor_;
+  asio_sockio::ip::tcp::acceptor acceptor_;
 
   /// The data to be sent to each client.
   std::vector<stock> stocks_;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
     }
     unsigned short port = boost::lexical_cast<unsigned short>(argv[1]);
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     s11n_example::server server(io_context, port);
     io_context.run();
   }

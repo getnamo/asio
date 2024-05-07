@@ -30,19 +30,19 @@
 
 namespace windows_stream_handle_compile {
 
-void write_some_handler(const asio::error_code&, std::size_t)
+void write_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void read_some_handler(const asio::error_code&, std::size_t)
+void read_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
 void test()
 {
 #if defined(ASIO_HAS_WINDOWS_STREAM_HANDLE)
-  using namespace asio;
-  namespace win = asio::windows;
+  using namespace asio_sockio;
+  namespace win = asio_sockio::windows;
 
   try
   {
@@ -50,7 +50,7 @@ void test()
     char mutable_char_buffer[128] = "";
     const char const_char_buffer[128] = "";
     archetypes::lazy_handler lazy;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_stream_handle constructors.
 

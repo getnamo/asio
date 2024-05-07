@@ -5,8 +5,8 @@
 #include <mutex>
 #include <queue>
 
-using asio::dispatch;
-using asio::execution_context;
+using asio_sockio::dispatch;
+using asio_sockio::execution_context;
 
 class priority_scheduler : public execution_context
 {

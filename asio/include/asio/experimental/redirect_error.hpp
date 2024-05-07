@@ -21,7 +21,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace experimental {
 
 /// Completion token type used to specify that an error produced by an
@@ -37,7 +37,7 @@ public:
   /// Constructor. 
   template <typename T>
   redirect_error_t(ASIO_MOVE_ARG(T) completion_token,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
     : token_(ASIO_MOVE_CAST(T)(completion_token)),
       ec_(ec)
   {
@@ -45,20 +45,20 @@ public:
 
 //private:
   CompletionToken token_;
-  asio::error_code& ec_;
+  asio_sockio::error_code& ec_;
 };
 
 /// Create a completion token to capture error_code values to a variable.
 template <typename CompletionToken>
 inline redirect_error_t<typename decay<CompletionToken>::type> redirect_error(
-    CompletionToken&& completion_token, asio::error_code& ec)
+    CompletionToken&& completion_token, asio_sockio::error_code& ec)
 {
   return redirect_error_t<typename decay<CompletionToken>::type>(
       ASIO_MOVE_CAST(CompletionToken)(completion_token), ec);
 }
 
 } // namespace experimental
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

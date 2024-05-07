@@ -24,12 +24,12 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 struct posix_static_mutex
 {
-  typedef asio::detail::scoped_lock<posix_static_mutex> scoped_lock;
+  typedef asio_sockio::detail::scoped_lock<posix_static_mutex> scoped_lock;
 
   // Initialise the mutex.
   void init()
@@ -55,7 +55,7 @@ struct posix_static_mutex
 #define ASIO_POSIX_STATIC_MUTEX_INIT { PTHREAD_MUTEX_INITIALIZER }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

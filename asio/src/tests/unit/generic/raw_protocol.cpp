@@ -35,22 +35,22 @@
 
 namespace generic_raw_protocol_socket_compile {
 
-void connect_handler(const asio::error_code&)
+void connect_handler(const asio_sockio::error_code&)
 {
 }
 
-void send_handler(const asio::error_code&, std::size_t)
+void send_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void receive_handler(const asio::error_code&, std::size_t)
+void receive_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
 void test()
 {
-  using namespace asio;
-  namespace generic = asio::generic;
+  using namespace asio_sockio;
+  namespace generic = asio_sockio::generic;
   typedef generic::raw_protocol rp;
 
   const int af_inet = ASIO_OS_DEF(AF_INET);
@@ -65,7 +65,7 @@ void test()
     socket_base::message_flags in_flags = 0;
     socket_base::send_buffer_size socket_option;
     socket_base::bytes_readable io_control_command;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_raw_socket constructors.
 
@@ -80,7 +80,7 @@ void test()
 
 #if defined(ASIO_HAS_MOVE)
     rp::socket socket5(std::move(socket4));
-    asio::ip::icmp::socket icmp_socket(ioc);
+    asio_sockio::ip::icmp::socket icmp_socket(ioc);
     rp::socket socket6(std::move(icmp_socket));
 #endif // defined(ASIO_HAS_MOVE)
 
@@ -89,7 +89,7 @@ void test()
 #if defined(ASIO_HAS_MOVE)
     socket1 = rp::socket(ioc);
     socket1 = std::move(socket2);
-    socket1 = asio::ip::icmp::socket(ioc);
+    socket1 = asio_sockio::ip::icmp::socket(ioc);
 #endif // defined(ASIO_HAS_MOVE)
 
     // basic_io_object functions.

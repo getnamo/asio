@@ -19,7 +19,7 @@
 #include "asio/detail/scoped_ptr.hpp"
 #include "asio/detail/thread.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class thread_group
@@ -75,7 +75,7 @@ private:
     {
     }
 
-    asio::detail::thread thread_;
+    asio_sockio::detail::thread thread_;
     item* next_;
   };
 
@@ -84,6 +84,6 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #endif // ASIO_DETAIL_THREAD_GROUP_HPP

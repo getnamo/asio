@@ -58,7 +58,7 @@ putting the buffer objects into a container. The `MutableBufferSequence` and
 
 [heading Streambuf for Integration with Iostreams]
 
-The class `asio::basic_streambuf` is derived from `std::basic_streambuf` to
+The class `asio_sockio::basic_streambuf` is derived from `std::basic_streambuf` to
 associate the input sequence and output sequence with one or more objects of
 some character array type, whose elements store arbitrary values. These
 character array objects are internal to the streambuf object, but direct access
@@ -96,13 +96,13 @@ buffers_iterator<> template parameter is automatically deduced.
 As an example, to read a single line from a socket and into a `std::string`,
 you may write:
 
-  asio::streambuf sb;
+  asio_sockio::streambuf sb;
   ...
-  std::size_t n = asio::read_until(sock, sb, '\n');
-  asio::streambuf::const_buffers_type bufs = sb.data();
+  std::size_t n = asio_sockio::read_until(sock, sb, '\n');
+  asio_sockio::streambuf::const_buffers_type bufs = sb.data();
   std::string line(
-      asio::buffers_begin(bufs),
-      asio::buffers_begin(bufs) + n);
+      asio_sockio::buffers_begin(bufs),
+      asio_sockio::buffers_begin(bufs) + n);
 
 [heading Buffer Debugging]
 
@@ -123,7 +123,7 @@ following code:
   void dont_do_this()
   {
    std::string msg = "Hello, world!";
-   asio::async_write(sock, asio::buffer(msg), my_handler);
+   asio_sockio::async_write(sock, asio_sockio::buffer(msg), my_handler);
   }
 
 When you call an asynchronous read or write you need to ensure that the buffers

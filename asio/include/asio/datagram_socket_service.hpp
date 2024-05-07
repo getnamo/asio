@@ -35,21 +35,21 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Default service implementation for a datagram socket.
 template <typename Protocol>
 class datagram_socket_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 #else
-  : public asio::detail::service_base<datagram_socket_service<Protocol> >
+  : public asio_sockio::detail::service_base<datagram_socket_service<Protocol> >
 #endif
 {
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 #endif
 
   /// The protocol type.
@@ -84,8 +84,8 @@ public:
 #endif
 
   /// Construct a new datagram socket service for the specified io_context.
-  explicit datagram_socket_service(asio::io_context& io_context)
-    : asio::detail::service_base<
+  explicit datagram_socket_service(asio_sockio::io_context& io_context)
+    : asio_sockio::detail::service_base<
         datagram_socket_service<Protocol> >(io_context),
       service_impl_(io_context)
   {
@@ -139,19 +139,19 @@ public:
 
   // Open a new datagram socket implementation.
   ASIO_SYNC_OP_VOID open(implementation_type& impl,
-      const protocol_type& protocol, asio::error_code& ec)
+      const protocol_type& protocol, asio_sockio::error_code& ec)
   {
     if (protocol.type() == ASIO_OS_DEF(SOCK_DGRAM))
       service_impl_.open(impl, protocol, ec);
     else
-      ec = asio::error::invalid_argument;
+      ec = asio_sockio::error::invalid_argument;
     ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Assign an existing native socket to a datagram socket.
   ASIO_SYNC_OP_VOID assign(implementation_type& impl,
       const protocol_type& protocol, const native_handle_type& native_socket,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.assign(impl, protocol, native_socket, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -165,7 +165,7 @@ public:
 
   /// Close a datagram socket implementation.
   ASIO_SYNC_OP_VOID close(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.close(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -173,7 +173,7 @@ public:
 
   /// Release ownership of the underlying socket.
   native_handle_type release(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return service_impl_.release(impl, ec);
   }
@@ -186,7 +186,7 @@ public:
 
   /// Cancel all asynchronous operations associated with the socket.
   ASIO_SYNC_OP_VOID cancel(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.cancel(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -194,21 +194,21 @@ public:
 
   /// Determine whether the socket is at the out-of-band data mark.
   bool at_mark(const implementation_type& impl,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
     return service_impl_.at_mark(impl, ec);
   }
 
   /// Determine the number of bytes available for reading.
   std::size_t available(const implementation_type& impl,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
     return service_impl_.available(impl, ec);
   }
 
   // Bind the datagram socket to the specified local endpoint.
   ASIO_SYNC_OP_VOID bind(implementation_type& impl,
-      const endpoint_type& endpoint, asio::error_code& ec)
+      const endpoint_type& endpoint, asio_sockio::error_code& ec)
   {
     service_impl_.bind(impl, endpoint, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -216,7 +216,7 @@ public:
 
   /// Connect the datagram socket to the specified endpoint.
   ASIO_SYNC_OP_VOID connect(implementation_type& impl,
-      const endpoint_type& peer_endpoint, asio::error_code& ec)
+      const endpoint_type& peer_endpoint, asio_sockio::error_code& ec)
   {
     service_impl_.connect(impl, peer_endpoint, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -225,13 +225,13 @@ public:
   /// Start an asynchronous connect.
   template <typename ConnectHandler>
   ASIO_INITFN_RESULT_TYPE(ConnectHandler,
-      void (asio::error_code))
+      void (asio_sockio::error_code))
   async_connect(implementation_type& impl,
       const endpoint_type& peer_endpoint,
       ASIO_MOVE_ARG(ConnectHandler) handler)
   {
     async_completion<ConnectHandler,
-      void (asio::error_code)> init(handler);
+      void (asio_sockio::error_code)> init(handler);
 
     service_impl_.async_connect(impl, peer_endpoint, init.completion_handler);
 
@@ -241,7 +241,7 @@ public:
   /// Set a socket option.
   template <typename SettableSocketOption>
   ASIO_SYNC_OP_VOID set_option(implementation_type& impl,
-      const SettableSocketOption& option, asio::error_code& ec)
+      const SettableSocketOption& option, asio_sockio::error_code& ec)
   {
     service_impl_.set_option(impl, option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -250,7 +250,7 @@ public:
   /// Get a socket option.
   template <typename GettableSocketOption>
   ASIO_SYNC_OP_VOID get_option(const implementation_type& impl,
-      GettableSocketOption& option, asio::error_code& ec) const
+      GettableSocketOption& option, asio_sockio::error_code& ec) const
   {
     service_impl_.get_option(impl, option, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -259,7 +259,7 @@ public:
   /// Perform an IO control command on the socket.
   template <typename IoControlCommand>
   ASIO_SYNC_OP_VOID io_control(implementation_type& impl,
-      IoControlCommand& command, asio::error_code& ec)
+      IoControlCommand& command, asio_sockio::error_code& ec)
   {
     service_impl_.io_control(impl, command, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -273,7 +273,7 @@ public:
 
   /// Sets the non-blocking mode of the socket.
   ASIO_SYNC_OP_VOID non_blocking(implementation_type& impl,
-      bool mode, asio::error_code& ec)
+      bool mode, asio_sockio::error_code& ec)
   {
     service_impl_.non_blocking(impl, mode, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -287,7 +287,7 @@ public:
 
   /// Sets the non-blocking mode of the native socket implementation.
   ASIO_SYNC_OP_VOID native_non_blocking(implementation_type& impl,
-      bool mode, asio::error_code& ec)
+      bool mode, asio_sockio::error_code& ec)
   {
     service_impl_.native_non_blocking(impl, mode, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -295,21 +295,21 @@ public:
 
   /// Get the local endpoint.
   endpoint_type local_endpoint(const implementation_type& impl,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
     return service_impl_.local_endpoint(impl, ec);
   }
 
   /// Get the remote endpoint.
   endpoint_type remote_endpoint(const implementation_type& impl,
-      asio::error_code& ec) const
+      asio_sockio::error_code& ec) const
   {
     return service_impl_.remote_endpoint(impl, ec);
   }
 
   /// Disable sends or receives on the socket.
   ASIO_SYNC_OP_VOID shutdown(implementation_type& impl,
-      socket_base::shutdown_type what, asio::error_code& ec)
+      socket_base::shutdown_type what, asio_sockio::error_code& ec)
   {
     service_impl_.shutdown(impl, what, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -318,7 +318,7 @@ public:
   /// Wait for the socket to become ready to read, ready to write, or to have
   /// pending error conditions.
   ASIO_SYNC_OP_VOID wait(implementation_type& impl,
-      socket_base::wait_type w, asio::error_code& ec)
+      socket_base::wait_type w, asio_sockio::error_code& ec)
   {
     service_impl_.wait(impl, w, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -328,12 +328,12 @@ public:
   /// write, or to have pending error conditions.
   template <typename WaitHandler>
   ASIO_INITFN_RESULT_TYPE(WaitHandler,
-      void (asio::error_code))
+      void (asio_sockio::error_code))
   async_wait(implementation_type& impl, socket_base::wait_type w,
       ASIO_MOVE_ARG(WaitHandler) handler)
   {
     async_completion<WaitHandler,
-      void (asio::error_code)> init(handler);
+      void (asio_sockio::error_code)> init(handler);
 
     service_impl_.async_wait(impl, w, init.completion_handler);
 
@@ -344,7 +344,7 @@ public:
   template <typename ConstBufferSequence>
   std::size_t send(implementation_type& impl,
       const ConstBufferSequence& buffers,
-      socket_base::message_flags flags, asio::error_code& ec)
+      socket_base::message_flags flags, asio_sockio::error_code& ec)
   {
     return service_impl_.send(impl, buffers, flags, ec);
   }
@@ -352,13 +352,13 @@ public:
   /// Start an asynchronous send.
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_send(implementation_type& impl, const ConstBufferSequence& buffers,
       socket_base::message_flags flags,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
     async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_send(impl, buffers, flags, init.completion_handler);
 
@@ -369,7 +369,7 @@ public:
   template <typename ConstBufferSequence>
   std::size_t send_to(implementation_type& impl,
       const ConstBufferSequence& buffers, const endpoint_type& destination,
-      socket_base::message_flags flags, asio::error_code& ec)
+      socket_base::message_flags flags, asio_sockio::error_code& ec)
   {
     return service_impl_.send_to(impl, buffers, destination, flags, ec);
   }
@@ -377,14 +377,14 @@ public:
   /// Start an asynchronous send.
   template <typename ConstBufferSequence, typename WriteHandler>
   ASIO_INITFN_RESULT_TYPE(WriteHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_send_to(implementation_type& impl,
       const ConstBufferSequence& buffers, const endpoint_type& destination,
       socket_base::message_flags flags,
       ASIO_MOVE_ARG(WriteHandler) handler)
   {
     async_completion<WriteHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_send_to(impl, buffers,
         destination, flags, init.completion_handler);
@@ -396,7 +396,7 @@ public:
   template <typename MutableBufferSequence>
   std::size_t receive(implementation_type& impl,
       const MutableBufferSequence& buffers,
-      socket_base::message_flags flags, asio::error_code& ec)
+      socket_base::message_flags flags, asio_sockio::error_code& ec)
   {
     return service_impl_.receive(impl, buffers, flags, ec);
   }
@@ -404,14 +404,14 @@ public:
   /// Start an asynchronous receive.
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_receive(implementation_type& impl,
       const MutableBufferSequence& buffers,
       socket_base::message_flags flags,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
     async_completion<ReadHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_receive(impl, buffers, flags, init.completion_handler);
 
@@ -422,7 +422,7 @@ public:
   template <typename MutableBufferSequence>
   std::size_t receive_from(implementation_type& impl,
       const MutableBufferSequence& buffers, endpoint_type& sender_endpoint,
-      socket_base::message_flags flags, asio::error_code& ec)
+      socket_base::message_flags flags, asio_sockio::error_code& ec)
   {
     return service_impl_.receive_from(impl, buffers, sender_endpoint, flags,
         ec);
@@ -431,14 +431,14 @@ public:
   /// Start an asynchronous receive that will get the endpoint of the sender.
   template <typename MutableBufferSequence, typename ReadHandler>
   ASIO_INITFN_RESULT_TYPE(ReadHandler,
-      void (asio::error_code, std::size_t))
+      void (asio_sockio::error_code, std::size_t))
   async_receive_from(implementation_type& impl,
       const MutableBufferSequence& buffers, endpoint_type& sender_endpoint,
       socket_base::message_flags flags,
       ASIO_MOVE_ARG(ReadHandler) handler)
   {
     async_completion<ReadHandler,
-      void (asio::error_code, std::size_t)> init(handler);
+      void (asio_sockio::error_code, std::size_t)> init(handler);
 
     service_impl_.async_receive_from(impl, buffers,
         sender_endpoint, flags, init.completion_handler);
@@ -457,7 +457,7 @@ private:
   service_impl_type service_impl_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

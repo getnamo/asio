@@ -48,7 +48,7 @@ private:
 
 } // namespace archetypes
 
-namespace asio {
+namespace asio_sockio {
 
 template <typename Signature>
 struct handler_type<archetypes::deprecated_lazy_handler, Signature>
@@ -75,7 +75,7 @@ public:
   }
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #endif // !defined(ASIO_NO_DEPRECATED)
 

@@ -15,7 +15,7 @@
 #include <iostream>
 #include <vector>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 // A reference-counted non-modifiable buffer class.
 class shared_const_buffer
@@ -24,26 +24,26 @@ public:
   // Construct from a std::string.
   explicit shared_const_buffer(const std::string& data)
     : data_(new std::vector<char>(data.begin(), data.end())),
-      buffer_(asio::buffer(*data_))
+      buffer_(asio_sockio::buffer(*data_))
   {
   }
 
   // Implement the ConstBufferSequence requirements.
-  typedef asio::const_buffer value_type;
-  typedef const asio::const_buffer* const_iterator;
-  const asio::const_buffer* begin() const { return &buffer_; }
-  const asio::const_buffer* end() const { return &buffer_ + 1; }
+  typedef asio_sockio::const_buffer value_type;
+  typedef const asio_sockio::const_buffer* const_iterator;
+  const asio_sockio::const_buffer* begin() const { return &buffer_; }
+  const asio_sockio::const_buffer* end() const { return &buffer_ + 1; }
 
 private:
   boost::shared_ptr<std::vector<char> > data_;
-  asio::const_buffer buffer_;
+  asio_sockio::const_buffer buffer_;
 };
 
 class session
   : public boost::enable_shared_from_this<session>
 {
 public:
-  session(asio::io_context& io_context)
+  session(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
@@ -58,7 +58,7 @@ public:
     using namespace std; // For time_t, time and ctime.
     time_t now = time(0);
     shared_const_buffer buffer(ctime(&now));
-    asio::async_write(socket_, buffer,
+    asio_sockio::async_write(socket_, buffer,
         boost::bind(&session::handle_write, shared_from_this()));
   }
 
@@ -76,18 +76,18 @@ typedef boost::shared_ptr<session> session_ptr;
 class server
 {
 public:
-  server(asio::io_context& io_context, short port)
+  server(asio_sockio::io_context& io_context, short port)
     : io_context_(io_context),
       acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
   {
     session_ptr new_session(new session(io_context_));
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(session_ptr new_session,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -97,11 +97,11 @@ public:
     new_session.reset(new session(io_context_));
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   tcp::acceptor acceptor_;
 };
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

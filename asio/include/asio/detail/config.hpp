@@ -1413,7 +1413,7 @@
 # define ASIO_SYNC_OP_VOID void
 # define ASIO_SYNC_OP_VOID_RETURN(e) return
 #else // defined(ASIO_NO_DEPRECATED)
-# define ASIO_SYNC_OP_VOID asio::error_code
+# define ASIO_SYNC_OP_VOID asio_sockio::error_code
 # define ASIO_SYNC_OP_VOID_RETURN(e) return e
 #endif // defined(ASIO_NO_DEPRECATED)
 

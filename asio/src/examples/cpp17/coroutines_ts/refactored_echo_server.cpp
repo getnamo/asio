@@ -16,22 +16,22 @@
 #include <asio/write.hpp>
 #include <cstdio>
 
-using asio::ip::tcp;
-using asio::experimental::co_spawn;
-using asio::experimental::detached;
-namespace this_coro = asio::experimental::this_coro;
+using asio_sockio::ip::tcp;
+using asio_sockio::experimental::co_spawn;
+using asio_sockio::experimental::detached;
+namespace this_coro = asio_sockio::experimental::this_coro;
 
 template <typename T>
-  using awaitable = asio::experimental::awaitable<
-    T, asio::io_context::executor_type>;
+  using awaitable = asio_sockio::experimental::awaitable<
+    T, asio_sockio::io_context::executor_type>;
 
 awaitable<void> echo_once(tcp::socket& socket)
 {
   auto token = co_await this_coro::token();
 
   char data[128];
-  std::size_t n = co_await socket.async_read_some(asio::buffer(data), token);
-  co_await async_write(socket, asio::buffer(data, n), token);
+  std::size_t n = co_await socket.async_read_some(asio_sockio::buffer(data), token);
+  co_await async_write(socket, asio_sockio::buffer(data, n), token);
 }
 
 awaitable<void> echo(tcp::socket socket)
@@ -75,9 +75,9 @@ int main()
 {
   try
   {
-    asio::io_context io_context(1);
+    asio_sockio::io_context io_context(1);
 
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
+    asio_sockio::signal_set signals(io_context, SIGINT, SIGTERM);
     signals.async_wait([&](auto, auto){ io_context.stop(); });
 
     co_spawn(io_context, listener, detached);

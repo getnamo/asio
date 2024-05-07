@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 inline thread_pool::executor_type
 thread_pool::get_executor() ASIO_NOEXCEPT
@@ -120,7 +120,7 @@ thread_pool::executor_type::running_in_this_thread() const ASIO_NOEXCEPT
   return pool_.scheduler_.can_dispatch();
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

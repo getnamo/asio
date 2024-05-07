@@ -21,7 +21,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 struct strand_service::on_do_complete_exit
@@ -41,9 +41,9 @@ struct strand_service::on_do_complete_exit
   }
 };
 
-strand_service::strand_service(asio::io_context& io_context)
-  : asio::detail::service_base<strand_service>(io_context),
-    io_context_(asio::use_service<io_context_impl>(io_context)),
+strand_service::strand_service(asio_sockio::io_context& io_context)
+  : asio_sockio::detail::service_base<strand_service>(io_context),
+    io_context_(asio_sockio::use_service<io_context_impl>(io_context)),
     mutex_(),
     salt_(0)
 {
@@ -53,7 +53,7 @@ void strand_service::shutdown()
 {
   op_queue<operation> ops;
 
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
 
   for (std::size_t i = 0; i < num_implementations; ++i)
   {
@@ -67,7 +67,7 @@ void strand_service::shutdown()
 
 void strand_service::construct(strand_service::implementation_type& impl)
 {
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
 
   std::size_t salt = salt_++;
 #if defined(ASIO_ENABLE_SEQUENTIAL_STRAND_ALLOCATION)
@@ -145,7 +145,7 @@ void strand_service::do_post(implementation_type& impl,
 }
 
 void strand_service::do_complete(void* owner, operation* base,
-    const asio::error_code& ec, std::size_t /*bytes_transferred*/)
+    const asio_sockio::error_code& ec, std::size_t /*bytes_transferred*/)
 {
   if (owner)
   {
@@ -170,7 +170,7 @@ void strand_service::do_complete(void* owner, operation* base,
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

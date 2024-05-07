@@ -29,7 +29,7 @@
 # error Only Windows, POSIX and std::call_once are supported!
 #endif
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename T>
@@ -47,6 +47,6 @@ inline T& global()
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #endif // ASIO_DETAIL_GLOBAL_HPP

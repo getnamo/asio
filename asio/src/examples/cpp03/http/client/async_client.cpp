@@ -15,12 +15,12 @@
 #include <asio.hpp>
 #include <boost/bind.hpp>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 class client
 {
 public:
-  client(asio::io_context& io_context,
+  client(asio_sockio::io_context& io_context,
       const std::string& server, const std::string& path)
     : resolver_(io_context),
       socket_(io_context)
@@ -38,21 +38,21 @@ public:
     // into a list of endpoints.
     resolver_.async_resolve(server, "http",
         boost::bind(&client::handle_resolve, this,
-          asio::placeholders::error,
-          asio::placeholders::results));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::results));
   }
 
 private:
-  void handle_resolve(const asio::error_code& err,
+  void handle_resolve(const asio_sockio::error_code& err,
       const tcp::resolver::results_type& endpoints)
   {
     if (!err)
     {
       // Attempt a connection to each endpoint in the list until we
       // successfully establish a connection.
-      asio::async_connect(socket_, endpoints,
+      asio_sockio::async_connect(socket_, endpoints,
           boost::bind(&client::handle_connect, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -60,14 +60,14 @@ private:
     }
   }
 
-  void handle_connect(const asio::error_code& err)
+  void handle_connect(const asio_sockio::error_code& err)
   {
     if (!err)
     {
       // The connection was successful. Send the request.
-      asio::async_write(socket_, request_,
+      asio_sockio::async_write(socket_, request_,
           boost::bind(&client::handle_write_request, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -75,16 +75,16 @@ private:
     }
   }
 
-  void handle_write_request(const asio::error_code& err)
+  void handle_write_request(const asio_sockio::error_code& err)
   {
     if (!err)
     {
       // Read the response status line. The response_ streambuf will
       // automatically grow to accommodate the entire line. The growth may be
       // limited by passing a maximum size to the streambuf constructor.
-      asio::async_read_until(socket_, response_, "\r\n",
+      asio_sockio::async_read_until(socket_, response_, "\r\n",
           boost::bind(&client::handle_read_status_line, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -92,7 +92,7 @@ private:
     }
   }
 
-  void handle_read_status_line(const asio::error_code& err)
+  void handle_read_status_line(const asio_sockio::error_code& err)
   {
     if (!err)
     {
@@ -117,9 +117,9 @@ private:
       }
 
       // Read the response headers, which are terminated by a blank line.
-      asio::async_read_until(socket_, response_, "\r\n\r\n",
+      asio_sockio::async_read_until(socket_, response_, "\r\n\r\n",
           boost::bind(&client::handle_read_headers, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -127,7 +127,7 @@ private:
     }
   }
 
-  void handle_read_headers(const asio::error_code& err)
+  void handle_read_headers(const asio_sockio::error_code& err)
   {
     if (!err)
     {
@@ -143,10 +143,10 @@ private:
         std::cout << &response_;
 
       // Start reading remaining data until EOF.
-      asio::async_read(socket_, response_,
-          asio::transfer_at_least(1),
+      asio_sockio::async_read(socket_, response_,
+          asio_sockio::transfer_at_least(1),
           boost::bind(&client::handle_read_content, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -154,7 +154,7 @@ private:
     }
   }
 
-  void handle_read_content(const asio::error_code& err)
+  void handle_read_content(const asio_sockio::error_code& err)
   {
     if (!err)
     {
@@ -162,12 +162,12 @@ private:
       std::cout << &response_;
 
       // Continue reading remaining data until EOF.
-      asio::async_read(socket_, response_,
-          asio::transfer_at_least(1),
+      asio_sockio::async_read(socket_, response_,
+          asio_sockio::transfer_at_least(1),
           boost::bind(&client::handle_read_content, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
-    else if (err != asio::error::eof)
+    else if (err != asio_sockio::error::eof)
     {
       std::cout << "Error: " << err << "\n";
     }
@@ -175,8 +175,8 @@ private:
 
   tcp::resolver resolver_;
   tcp::socket socket_;
-  asio::streambuf request_;
-  asio::streambuf response_;
+  asio_sockio::streambuf request_;
+  asio_sockio::streambuf response_;
 };
 
 int main(int argc, char* argv[])
@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
     client c(io_context, argv[1], argv[2]);
     io_context.run();
   }

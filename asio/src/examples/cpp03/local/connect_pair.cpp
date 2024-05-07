@@ -17,12 +17,12 @@
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 
-using asio::local::stream_protocol;
+using asio_sockio::local::stream_protocol;
 
 class uppercase_filter
 {
 public:
-  uppercase_filter(asio::io_context& io_context)
+  uppercase_filter(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
@@ -35,14 +35,14 @@ public:
   void start()
   {
     // Wait for request.
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         boost::bind(&uppercase_filter::handle_read,
-          this, asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          this, asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred));
   }
 
 private:
-  void handle_read(const asio::error_code& ec, std::size_t size)
+  void handle_read(const asio_sockio::error_code& ec, std::size_t size)
   {
     if (!ec)
     {
@@ -51,29 +51,29 @@ private:
         data_[i] = std::toupper(data_[i]);
 
       // Send result.
-      asio::async_write(socket_, asio::buffer(data_, size),
+      asio_sockio::async_write(socket_, asio_sockio::buffer(data_, size),
           boost::bind(&uppercase_filter::handle_write,
-            this, asio::placeholders::error));
+            this, asio_sockio::placeholders::error));
     }
     else
     {
-      throw asio::system_error(ec);
+      throw asio_sockio::system_error(ec);
     }
   }
 
-  void handle_write(const asio::error_code& ec)
+  void handle_write(const asio_sockio::error_code& ec)
   {
     if (!ec)
     {
       // Wait for request.
-      socket_.async_read_some(asio::buffer(data_),
+      socket_.async_read_some(asio_sockio::buffer(data_),
           boost::bind(&uppercase_filter::handle_read,
-            this, asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            this, asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
     else
     {
-      throw asio::system_error(ec);
+      throw asio_sockio::system_error(ec);
     }
   }
 
@@ -81,7 +81,7 @@ private:
   boost::array<char, 512> data_;
 };
 
-void run(asio::io_context* io_context)
+void run(asio_sockio::io_context* io_context)
 {
   try
   {
@@ -98,16 +98,16 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Create filter and establish a connection to it.
     uppercase_filter filter(io_context);
     stream_protocol::socket socket(io_context);
-    asio::local::connect_pair(socket, filter.socket());
+    asio_sockio::local::connect_pair(socket, filter.socket());
     filter.start();
 
     // The io_context runs in a background thread to perform filtering.
-    asio::thread thread(boost::bind(run, &io_context));
+    asio_sockio::thread thread(boost::bind(run, &io_context));
 
     for (;;)
     {
@@ -117,11 +117,11 @@ int main()
       std::getline(std::cin, request);
 
       // Send request to filter.
-      asio::write(socket, asio::buffer(request));
+      asio_sockio::write(socket, asio_sockio::buffer(request));
 
       // Wait for reply from filter.
       std::vector<char> reply(request.size());
-      asio::read(socket, asio::buffer(reply));
+      asio_sockio::read(socket, asio_sockio::buffer(reply));
 
       // Show reply to user.
       std::cout << "Result: ";

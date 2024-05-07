@@ -30,7 +30,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace windows {
 
 /// Provides Windows handle functionality.
@@ -60,7 +60,7 @@ public:
    * @param io_context The io_context object that the handle will use to
    * dispatch handlers for any asynchronous operations performed on the handle.
    */
-  explicit basic_handle(asio::io_context& io_context)
+  explicit basic_handle(asio_sockio::io_context& io_context)
     : basic_io_object<HandleService>(io_context)
   {
   }
@@ -74,15 +74,15 @@ public:
    *
    * @param handle A native handle.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
-  basic_handle(asio::io_context& io_context,
+  basic_handle(asio_sockio::io_context& io_context,
       const native_handle_type& handle)
     : basic_io_object<HandleService>(io_context)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().assign(this->get_implementation(), handle, ec);
-    asio::detail::throw_error(ec, "assign");
+    asio_sockio::detail::throw_error(ec, "assign");
   }
 
 #if defined(ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
@@ -152,13 +152,13 @@ public:
    *
    * @param handle A native handle.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void assign(const native_handle_type& handle)
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().assign(this->get_implementation(), handle, ec);
-    asio::detail::throw_error(ec, "assign");
+    asio_sockio::detail::throw_error(ec, "assign");
   }
 
   /// Assign an existing native handle to the handle.
@@ -170,7 +170,7 @@ public:
    * @param ec Set to indicate what error occurred, if any.
    */
   ASIO_SYNC_OP_VOID assign(const native_handle_type& handle,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     this->get_service().assign(this->get_implementation(), handle, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -186,26 +186,26 @@ public:
   /**
    * This function is used to close the handle. Any asynchronous read or write
    * operations will be cancelled immediately, and will complete with the
-   * asio::error::operation_aborted error.
+   * asio_sockio::error::operation_aborted error.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void close()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().close(this->get_implementation(), ec);
-    asio::detail::throw_error(ec, "close");
+    asio_sockio::detail::throw_error(ec, "close");
   }
 
   /// Close the handle.
   /**
    * This function is used to close the handle. Any asynchronous read or write
    * operations will be cancelled immediately, and will complete with the
-   * asio::error::operation_aborted error.
+   * asio_sockio::error::operation_aborted error.
    *
    * @param ec Set to indicate what error occurred, if any.
    */
-  ASIO_SYNC_OP_VOID close(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID close(asio_sockio::error_code& ec)
   {
     this->get_service().close(this->get_implementation(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -226,26 +226,26 @@ public:
   /**
    * This function causes all outstanding asynchronous read or write operations
    * to finish immediately, and the handlers for cancelled operations will be
-   * passed the asio::error::operation_aborted error.
+   * passed the asio_sockio::error::operation_aborted error.
    *
-   * @throws asio::system_error Thrown on failure.
+   * @throws asio_sockio::system_error Thrown on failure.
    */
   void cancel()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     this->get_service().cancel(this->get_implementation(), ec);
-    asio::detail::throw_error(ec, "cancel");
+    asio_sockio::detail::throw_error(ec, "cancel");
   }
 
   /// Cancel all asynchronous operations associated with the handle.
   /**
    * This function causes all outstanding asynchronous read or write operations
    * to finish immediately, and the handlers for cancelled operations will be
-   * passed the asio::error::operation_aborted error.
+   * passed the asio_sockio::error::operation_aborted error.
    *
    * @param ec Set to indicate what error occurred, if any.
    */
-  ASIO_SYNC_OP_VOID cancel(asio::error_code& ec)
+  ASIO_SYNC_OP_VOID cancel(asio_sockio::error_code& ec)
   {
     this->get_service().cancel(this->get_implementation(), ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -259,7 +259,7 @@ protected:
 };
 
 } // namespace windows
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

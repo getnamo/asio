@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace windows {
 
 /// Wraps a handler to create an OVERLAPPED object for use with overlapped I/O.
@@ -50,7 +50,7 @@ public:
 
   /// Construct an overlapped_ptr to contain the specified handler.
   template <typename Handler>
-  explicit overlapped_ptr(asio::io_context& io_context,
+  explicit overlapped_ptr(asio_sockio::io_context& io_context,
       ASIO_MOVE_ARG(Handler) handler)
     : impl_(io_context, ASIO_MOVE_CAST(Handler)(handler))
   {
@@ -70,7 +70,7 @@ public:
   /// Reset to contain the specified handler, freeing any current OVERLAPPED
   /// object.
   template <typename Handler>
-  void reset(asio::io_context& io_context,
+  void reset(asio_sockio::io_context& io_context,
       ASIO_MOVE_ARG(Handler) handler)
   {
     impl_.reset(io_context, ASIO_MOVE_CAST(Handler)(handler));
@@ -95,7 +95,7 @@ public:
   }
 
   /// Post completion notification for overlapped operation. Releases ownership.
-  void complete(const asio::error_code& ec,
+  void complete(const asio_sockio::error_code& ec,
       std::size_t bytes_transferred)
   {
     impl_.complete(ec, bytes_transferred);
@@ -106,7 +106,7 @@ private:
 };
 
 } // namespace windows
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

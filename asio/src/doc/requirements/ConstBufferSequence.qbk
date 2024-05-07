@@ -21,8 +21,8 @@ denotes an identifier.
 [table ConstBufferSequence requirements
   [[expression] [return type] [assertion/note\npre/post-condition]]
   [
-    [`asio::buffer_sequence_begin(x)`\n
-     `asio::buffer_sequence_end(x)`]
+    [`asio_sockio::buffer_sequence_begin(x)`\n
+     `asio_sockio::buffer_sequence_end(x)`]
     [An iterator type meeting the requirements for bidirectional iterators
      (C++Std \[bidirectional.iterators\]) whose value type is convertible to
      `const_buffer`.]
@@ -36,10 +36,10 @@ denotes an identifier.
     [post:\n
      ``
        equal(
-         asio::buffer_sequence_begin(x),
-         asio::buffer_sequence_end(x),
-         asio::buffer_sequence_begin(u),
-         asio::buffer_sequence_end(u),
+         asio_sockio::buffer_sequence_begin(x),
+         asio_sockio::buffer_sequence_end(x),
+         asio_sockio::buffer_sequence_begin(u),
+         asio_sockio::buffer_sequence_end(u),
          [](const const_buffer& b1,
             const const_buffer& b2)
           {

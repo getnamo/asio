@@ -31,7 +31,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace experimental {
 namespace detail {
 
@@ -130,17 +130,17 @@ public:
 #if !defined(ASIO_DISABLE_AWAITEE_RECYCLING)
   void* operator new(std::size_t size)
   {
-    return asio::detail::thread_info_base::allocate(
-        asio::detail::thread_info_base::awaitee_tag(),
-        asio::detail::thread_context::thread_call_stack::top(),
+    return asio_sockio::detail::thread_info_base::allocate(
+        asio_sockio::detail::thread_info_base::awaitee_tag(),
+        asio_sockio::detail::thread_context::thread_call_stack::top(),
         size);
   }
 
   void operator delete(void* pointer, std::size_t size)
   {
-    asio::detail::thread_info_base::deallocate(
-        asio::detail::thread_info_base::awaitee_tag(),
-        asio::detail::thread_context::thread_call_stack::top(),
+    asio_sockio::detail::thread_info_base::deallocate(
+        asio_sockio::detail::thread_info_base::awaitee_tag(),
+        asio_sockio::detail::thread_context::thread_call_stack::top(),
         pointer, size);
   }
 #endif // !defined(ASIO_DISABLE_AWAITEE_RECYCLING)
@@ -501,7 +501,7 @@ public:
 };
 
 template <typename Executor>
-class await_handler<Executor, asio::error_code>
+class await_handler<Executor, asio_sockio::error_code>
   : public await_handler_base<Executor, void>
 {
 public:
@@ -509,13 +509,13 @@ public:
 
   using await_handler_base<Executor, void>::await_handler_base;
 
-  void operator()(const asio::error_code& ec)
+  void operator()(const asio_sockio::error_code& ec)
   {
     typename awaiter<Executor>::ptr ptr(std::move(this->awaiter_));
     if (ec)
     {
       this->awaitee_->set_except(
-          std::make_exception_ptr(asio::system_error(ec)));
+          std::make_exception_ptr(asio_sockio::system_error(ec)));
     }
     else
       this->awaitee_->return_void();
@@ -561,20 +561,20 @@ public:
 };
 
 template <typename Executor, typename T>
-class await_handler<Executor, asio::error_code, T>
+class await_handler<Executor, asio_sockio::error_code, T>
   : public await_handler_base<Executor, T>
 {
 public:
   using await_handler_base<Executor, T>::await_handler_base;
 
   template <typename Arg>
-  void operator()(const asio::error_code& ec, Arg&& arg)
+  void operator()(const asio_sockio::error_code& ec, Arg&& arg)
   {
     typename awaiter<Executor>::ptr ptr(std::move(this->awaiter_));
     if (ec)
     {
       this->awaitee_->set_except(
-          std::make_exception_ptr(asio::system_error(ec)));
+          std::make_exception_ptr(asio_sockio::system_error(ec)));
     }
     else
       this->awaitee_->return_value(std::forward<Arg>(arg));
@@ -622,20 +622,20 @@ public:
 };
 
 template <typename Executor, typename... Ts>
-class await_handler<Executor, asio::error_code, Ts...>
+class await_handler<Executor, asio_sockio::error_code, Ts...>
   : public await_handler_base<Executor, std::tuple<Ts...>>
 {
 public:
   using await_handler_base<Executor, std::tuple<Ts...>>::await_handler_base;
 
   template <typename... Args>
-  void operator()(const asio::error_code& ec, Args&&... args)
+  void operator()(const asio_sockio::error_code& ec, Args&&... args)
   {
     typename awaiter<Executor>::ptr ptr(std::move(this->awaiter_));
     if (ec)
     {
       this->awaitee_->set_except(
-          std::make_exception_ptr(asio::system_error(ec)));
+          std::make_exception_ptr(asio_sockio::system_error(ec)));
     }
     else
     {
@@ -851,22 +851,22 @@ private:
 
 #endif // !defined(ASIO_NO_DEPRECATED)
 
-} // namespace asio
+} // namespace asio_sockio
 
 namespace std { namespace experimental {
 
 template <typename Executor, typename... Args>
 struct coroutine_traits<
-  asio::experimental::detail::awaiter<Executor>*, Args...>
+  asio_sockio::experimental::detail::awaiter<Executor>*, Args...>
 {
-  typedef asio::experimental::detail::awaiter<Executor> promise_type;
+  typedef asio_sockio::experimental::detail::awaiter<Executor> promise_type;
 };
 
 template <typename T, typename Executor, typename... Args>
 struct coroutine_traits<
-  asio::experimental::awaitable<T, Executor>, Args...>
+  asio_sockio::experimental::awaitable<T, Executor>, Args...>
 {
-  typedef asio::experimental::detail::awaitee<T, Executor> promise_type;
+  typedef asio_sockio::experimental::detail::awaitee<T, Executor> promise_type;
 };
 
 }} // namespace std::experimental

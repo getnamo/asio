@@ -26,7 +26,7 @@ alternative approaches:
 
 * An explicit strand is an instance of `strand<>` or `io_context::strand`. All
   event handler function objects need to be bound to the strand using
-  `asio::bind_executor()` or otherwise posted/dispatched through the strand
+  `asio_sockio::bind_executor()` or otherwise posted/dispatched through the strand
   object.
 
 In the case of composed asynchronous operations, such as `async_read()` or
@@ -39,7 +39,7 @@ which the caller can `close()` to cancel the operation).
 To achieve this, all asynchronous operations obtain the handler's associated
 executor by using the `get_associated_executor` function. For example:
 
-  asio::associated_executor_t<Handler> a = asio::get_associated_executor(h);
+  asio_sockio::associated_executor_t<Handler> a = asio_sockio::get_associated_executor(h);
 
 The associated executor must satisfy the Executor requirements. It will be used
 by the asynchronous operation to submit both intermediate and final handlers
@@ -71,7 +71,7 @@ specialised directly:
     void operator()() { ... }
   };
 
-  namespace asio {
+  namespace asio_sockio {
 
     template <class Executor>
     struct associated_executor<my_handler, Executor>
@@ -87,15 +87,15 @@ specialised directly:
       }
     };
 
-  } // namespace asio
+  } // namespace asio_sockio
 
-The `asio::bind_executor()` function is a helper to bind a specific executor
+The `asio_sockio::bind_executor()` function is a helper to bind a specific executor
 object, such as a strand, to a completion handler. This binding automatically
 associates an executor as shown above. For example, to bind a strand to a
 completion handler we would simply write:
 
   my_socket.async_read_some(my_buffer,
-      asio::bind_executor(my_strand,
+      asio_sockio::bind_executor(my_strand,
         [](error_code ec, size_t length)
         {
           // ...

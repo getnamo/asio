@@ -19,9 +19,9 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
-/** @defgroup asio_handler_invoke asio::asio_handler_invoke
+/** @defgroup asio_handler_invoke asio_sockio::asio_handler_invoke
  *
  * @brief Default invoke function for handlers.
  *
@@ -78,7 +78,7 @@ inline void asio_handler_invoke(const Function& function, ...)
 
 /*@}*/
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -29,7 +29,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 class execution_context;
 
@@ -76,7 +76,7 @@ class deadline_timer_service;
 #define ASIO_BASIC_WAITABLE_TIMER_FWD_DECL
 
 template <typename Clock,
-    typename WaitTraits = asio::wait_traits<Clock>
+    typename WaitTraits = asio_sockio::wait_traits<Clock>
     ASIO_SVC_TPARAM_DEF2(= waitable_timer_service<Clock, WaitTraits>)>
 class basic_waitable_timer;
 
@@ -188,7 +188,7 @@ class tcp;
 class udp;
 
 } // namespace ip
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

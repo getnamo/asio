@@ -24,7 +24,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Handler>
@@ -41,12 +41,12 @@ public:
   }
 
   static void do_complete(void* owner, operation* base,
-      const asio::error_code& /*ec*/,
+      const asio_sockio::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
     completion_handler* h(static_cast<completion_handler*>(base));
-    ptr p = { asio::detail::addressof(h->handler_), h, h };
+    ptr p = { asio_sockio::detail::addressof(h->handler_), h, h };
     handler_work<Handler> w(h->handler_);
 
     ASIO_HANDLER_COMPLETION((*h));
@@ -58,7 +58,7 @@ public:
     // to ensure that any owning sub-object remains valid until after we have
     // deallocated the memory here.
     Handler handler(ASIO_MOVE_CAST(Handler)(h->handler_));
-    p.h = asio::detail::addressof(handler);
+    p.h = asio_sockio::detail::addressof(handler);
     p.reset();
 
     // Make the upcall if required.
@@ -76,7 +76,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

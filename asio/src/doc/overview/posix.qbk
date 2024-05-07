@@ -83,7 +83,7 @@ system never fail with `EAGAIN` or `EWOULDBLOCK`. (This assumption normally
 holds for buffered file I/O.)  Synchronous and asynchronous read and write
 operations on file descriptors will succeed but the I/O will always be
 performed immediately. Wait operations, and operations involving
-`asio::null_buffers`, are not portably supported.
+`asio_sockio::null_buffers`, are not portably supported.
 
 For example, to perform read and write operations on standard input
 and output, the following objects may be created:
@@ -120,15 +120,15 @@ recreate any internal file descriptors (such as the "self-pipe trick"
 descriptor used for waking up a reactor). The notification is usually performed
 as follows:
 
-  io_context_.notify_fork(asio::io_context::fork_prepare);
+  io_context_.notify_fork(asio_sockio::io_context::fork_prepare);
   if (fork() == 0)
   {
-    io_context_.notify_fork(asio::io_context::fork_child);
+    io_context_.notify_fork(asio_sockio::io_context::fork_child);
     ...
   }
   else
   {
-    io_context_.notify_fork(asio::io_context::fork_parent);
+    io_context_.notify_fork(asio_sockio::io_context::fork_parent);
     ...
   }
 

@@ -22,7 +22,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename>
@@ -142,7 +142,7 @@ using associated_executor_t = typename associated_executor<T, Executor>::type;
 
 #endif // defined(ASIO_HAS_ALIAS_TEMPLATES)
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

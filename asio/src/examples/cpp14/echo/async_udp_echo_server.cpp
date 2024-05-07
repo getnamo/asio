@@ -13,12 +13,12 @@
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 class server
 {
 public:
-  server(asio::io_context& io_context, short port)
+  server(asio_sockio::io_context& io_context, short port)
     : socket_(io_context, udp::endpoint(udp::v4(), port))
   {
     do_receive();
@@ -27,7 +27,7 @@ public:
   void do_receive()
   {
     socket_.async_receive_from(
-        asio::buffer(data_, max_length), sender_endpoint_,
+        asio_sockio::buffer(data_, max_length), sender_endpoint_,
         [this](std::error_code ec, std::size_t bytes_recvd)
         {
           if (!ec && bytes_recvd > 0)
@@ -44,7 +44,7 @@ public:
   void do_send(std::size_t length)
   {
     socket_.async_send_to(
-        asio::buffer(data_, length), sender_endpoint_,
+        asio_sockio::buffer(data_, length), sender_endpoint_,
         [this](std::error_code /*ec*/, std::size_t /*bytes_sent*/)
         {
           do_receive();
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     server s(io_context, std::atoi(argv[1]));
 

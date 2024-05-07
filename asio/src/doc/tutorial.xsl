@@ -78,8 +78,8 @@
     <xsl:when test="contains($name, 'boost::system::is_error_code_enum')">
       <xsl:value-of select="$name"/>
     </xsl:when>
-    <xsl:when test="contains($name, 'asio::')">
-      <xsl:value-of select="substring-after($name, 'asio::')"/>
+    <xsl:when test="contains($name, 'asio_sockio::')">
+      <xsl:value-of select="substring-after($name, 'asio_sockio::')"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:value-of select="$name"/>
@@ -347,7 +347,7 @@
       <xsl:value-of select="concat(' ', .)"/>
       <xsl:text>]</xsl:text>
     </xsl:when>
-    <xsl:when test="contains($name, 'asio::')">
+    <xsl:when test="contains($name, 'asio_sockio::')">
       <xsl:variable name="ref-name">
         <xsl:call-template name="strip-asio-ns">
           <xsl:with-param name="name" select="$name"/>

@@ -21,7 +21,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 template <typename Service>
 inline Service& use_service(execution_context& e)
@@ -100,7 +100,7 @@ inline execution_context& execution_context::service::context()
   return owner_;
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

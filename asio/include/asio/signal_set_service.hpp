@@ -26,20 +26,20 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Default service implementation for a signal set.
 class signal_set_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 #else
-  : public asio::detail::service_base<signal_set_service>
+  : public asio_sockio::detail::service_base<signal_set_service>
 #endif
 {
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 #endif
 
 public:
@@ -51,8 +51,8 @@ public:
 #endif
 
   /// Construct a new signal set service for the specified io_context.
-  explicit signal_set_service(asio::io_context& io_context)
-    : asio::detail::service_base<signal_set_service>(io_context),
+  explicit signal_set_service(asio_sockio::io_context& io_context)
+    : asio_sockio::detail::service_base<signal_set_service>(io_context),
       service_impl_(io_context)
   {
   }
@@ -71,7 +71,7 @@ public:
 
   /// Add a signal to a signal_set.
   ASIO_SYNC_OP_VOID add(implementation_type& impl,
-      int signal_number, asio::error_code& ec)
+      int signal_number, asio_sockio::error_code& ec)
   {
     service_impl_.add(impl, signal_number, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -79,7 +79,7 @@ public:
 
   /// Remove a signal to a signal_set.
   ASIO_SYNC_OP_VOID remove(implementation_type& impl,
-      int signal_number, asio::error_code& ec)
+      int signal_number, asio_sockio::error_code& ec)
   {
     service_impl_.remove(impl, signal_number, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -87,7 +87,7 @@ public:
 
   /// Remove all signals from a signal_set.
   ASIO_SYNC_OP_VOID clear(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.clear(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -95,7 +95,7 @@ public:
 
   /// Cancel all operations associated with the signal set.
   ASIO_SYNC_OP_VOID cancel(implementation_type& impl,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     service_impl_.cancel(impl, ec);
     ASIO_SYNC_OP_VOID_RETURN(ec);
@@ -104,12 +104,12 @@ public:
   // Start an asynchronous operation to wait for a signal to be delivered.
   template <typename SignalHandler>
   ASIO_INITFN_RESULT_TYPE(SignalHandler,
-      void (asio::error_code, int))
+      void (asio_sockio::error_code, int))
   async_wait(implementation_type& impl,
       ASIO_MOVE_ARG(SignalHandler) handler)
   {
     async_completion<SignalHandler,
-      void (asio::error_code, int)> init(handler);
+      void (asio_sockio::error_code, int)> init(handler);
 
     service_impl_.async_wait(impl, init.completion_handler);
 
@@ -124,7 +124,7 @@ private:
   }
 
   // Perform any fork-related housekeeping.
-  void notify_fork(asio::io_context::fork_event event)
+  void notify_fork(asio_sockio::io_context::fork_event event)
   {
     service_impl_.notify_fork(event);
   }
@@ -133,7 +133,7 @@ private:
   detail::signal_set_service service_impl_;
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

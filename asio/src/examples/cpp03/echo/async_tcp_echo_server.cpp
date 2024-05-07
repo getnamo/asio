@@ -13,12 +13,12 @@
 #include <boost/bind.hpp>
 #include "asio.hpp"
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 class session
 {
 public:
-  session(asio::io_context& io_context)
+  session(asio_sockio::io_context& io_context)
     : socket_(io_context)
   {
   }
@@ -30,22 +30,22 @@ public:
 
   void start()
   {
-    socket_.async_read_some(asio::buffer(data_, max_length),
+    socket_.async_read_some(asio_sockio::buffer(data_, max_length),
         boost::bind(&session::handle_read, this,
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred));
   }
 
 private:
-  void handle_read(const asio::error_code& error,
+  void handle_read(const asio_sockio::error_code& error,
       size_t bytes_transferred)
   {
     if (!error)
     {
-      asio::async_write(socket_,
-          asio::buffer(data_, bytes_transferred),
+      asio_sockio::async_write(socket_,
+          asio_sockio::buffer(data_, bytes_transferred),
           boost::bind(&session::handle_write, this,
-            asio::placeholders::error));
+            asio_sockio::placeholders::error));
     }
     else
     {
@@ -53,14 +53,14 @@ private:
     }
   }
 
-  void handle_write(const asio::error_code& error)
+  void handle_write(const asio_sockio::error_code& error)
   {
     if (!error)
     {
-      socket_.async_read_some(asio::buffer(data_, max_length),
+      socket_.async_read_some(asio_sockio::buffer(data_, max_length),
           boost::bind(&session::handle_read, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
     else
     {
@@ -76,7 +76,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context, short port)
+  server(asio_sockio::io_context& io_context, short port)
     : io_context_(io_context),
       acceptor_(io_context, tcp::endpoint(tcp::v4(), port))
   {
@@ -89,11 +89,11 @@ private:
     session* new_session = new session(io_context_);
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(session* new_session,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -107,7 +107,7 @@ private:
     start_accept();
   }
 
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
   tcp::acceptor acceptor_;
 };
 
@@ -121,7 +121,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

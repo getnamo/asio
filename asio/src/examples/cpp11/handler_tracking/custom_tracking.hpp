@@ -72,7 +72,7 @@ struct custom_tracking
   }
 
   // Record the creation of a tracked handler.
-  static void creation(asio::execution_context& /*ctx*/,
+  static void creation(asio_sockio::execution_context& /*ctx*/,
       tracked_handler& h, const char* object_type, void* /*object*/,
       std::uintmax_t native_handle, const char* op_name)
   {
@@ -141,14 +141,14 @@ struct custom_tracking
   }
 
   // Record an operation that is not directly associated with a handler.
-  static void operation(asio::execution_context& /*ctx*/,
+  static void operation(asio_sockio::execution_context& /*ctx*/,
       const char* /*object_type*/, void* /*object*/,
       std::uintmax_t /*native_handle*/, const char* /*op_name*/)
   {
   }
 
   // Record that a descriptor has been registered with the reactor.
-  static void reactor_registration(asio::execution_context& context,
+  static void reactor_registration(asio_sockio::execution_context& context,
       uintmax_t native_handle, uintmax_t registration)
   {
     std::printf("Adding to reactor native_handle = %" PRIuMAX
@@ -156,7 +156,7 @@ struct custom_tracking
   }
 
   // Record that a descriptor has been deregistered from the reactor.
-  static void reactor_deregistration(asio::execution_context& context,
+  static void reactor_deregistration(asio_sockio::execution_context& context,
       uintmax_t native_handle, uintmax_t registration)
   {
     std::printf("Removing from reactor native_handle = %" PRIuMAX
@@ -164,7 +164,7 @@ struct custom_tracking
   }
 
   // Record reactor-based readiness events associated with a descriptor.
-  static void reactor_events(asio::execution_context& context,
+  static void reactor_events(asio_sockio::execution_context& context,
       uintmax_t registration, unsigned events)
   {
     std::printf(
@@ -177,7 +177,7 @@ struct custom_tracking
 
   // Record a reactor-based operation that is associated with a handler.
   static void reactor_operation(const tracked_handler& h,
-      const char* op_name, const asio::error_code& ec)
+      const char* op_name, const asio_sockio::error_code& ec)
   {
     std::printf(
         "Performed operation %s.%s for native_handle = %" PRIuMAX
@@ -187,7 +187,7 @@ struct custom_tracking
 
   // Record a reactor-based operation that is associated with a handler.
   static void reactor_operation(const tracked_handler& h,
-      const char* op_name, const asio::error_code& ec,
+      const char* op_name, const asio_sockio::error_code& ec,
       std::size_t bytes_transferred)
   {
     std::printf(

@@ -34,7 +34,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 #if defined(NSIG) && (NSIG > 0)
@@ -45,7 +45,7 @@ enum { max_signal_number = 128 };
 
 extern ASIO_DECL struct signal_state* get_signal_state();
 
-extern "C" ASIO_DECL void asio_signal_handler(int signal_number);
+extern "C" ASIO_DECL void asio_sockio_signal_handler(int signal_number);
 
 class signal_set_service :
   public service_base<signal_set_service>
@@ -109,7 +109,7 @@ public:
   };
 
   // Constructor.
-  ASIO_DECL signal_set_service(asio::io_context& io_context);
+  ASIO_DECL signal_set_service(asio_sockio::io_context& io_context);
 
   // Destructor.
   ASIO_DECL ~signal_set_service();
@@ -119,7 +119,7 @@ public:
 
   // Perform fork-related housekeeping.
   ASIO_DECL void notify_fork(
-      asio::io_context::fork_event fork_ev);
+      asio_sockio::io_context::fork_event fork_ev);
 
   // Construct a new signal_set implementation.
   ASIO_DECL void construct(implementation_type& impl);
@@ -128,20 +128,20 @@ public:
   ASIO_DECL void destroy(implementation_type& impl);
 
   // Add a signal to a signal_set.
-  ASIO_DECL asio::error_code add(implementation_type& impl,
-      int signal_number, asio::error_code& ec);
+  ASIO_DECL asio_sockio::error_code add(implementation_type& impl,
+      int signal_number, asio_sockio::error_code& ec);
 
   // Remove a signal to a signal_set.
-  ASIO_DECL asio::error_code remove(implementation_type& impl,
-      int signal_number, asio::error_code& ec);
+  ASIO_DECL asio_sockio::error_code remove(implementation_type& impl,
+      int signal_number, asio_sockio::error_code& ec);
 
   // Remove all signals from a signal_set.
-  ASIO_DECL asio::error_code clear(implementation_type& impl,
-      asio::error_code& ec);
+  ASIO_DECL asio_sockio::error_code clear(implementation_type& impl,
+      asio_sockio::error_code& ec);
 
   // Cancel all operations associated with the signal set.
-  ASIO_DECL asio::error_code cancel(implementation_type& impl,
-      asio::error_code& ec);
+  ASIO_DECL asio_sockio::error_code cancel(implementation_type& impl,
+      asio_sockio::error_code& ec);
 
   // Start an asynchronous operation to wait for a signal to be delivered.
   template <typename Handler>
@@ -149,7 +149,7 @@ public:
   {
     // Allocate and construct an operation to wrap the handler.
     typedef signal_handler<Handler> op;
-    typename op::ptr p = { asio::detail::addressof(handler),
+    typename op::ptr p = { asio_sockio::detail::addressof(handler),
       op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
@@ -206,7 +206,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

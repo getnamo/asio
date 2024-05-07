@@ -15,13 +15,13 @@
 namespace http {
 namespace server4 {
 
-server::server(asio::io_context& io_context,
+server::server(asio_sockio::io_context& io_context,
     const std::string& address, const std::string& port,
     boost::function<void(const request&, reply&)> request_handler)
   : request_handler_(request_handler)
 {
   tcp::resolver resolver(io_context);
-  asio::ip::tcp::endpoint endpoint =
+  asio_sockio::ip::tcp::endpoint endpoint =
     *resolver.resolve(address, port).begin();
   acceptor_.reset(new tcp::acceptor(io_context, endpoint));
 }
@@ -29,7 +29,7 @@ server::server(asio::io_context& io_context,
 // Enable the pseudo-keywords reenter, yield and fork.
 #include <asio/yield.hpp>
 
-void server::operator()(asio::error_code ec, std::size_t length)
+void server::operator()(asio_sockio::error_code ec, std::size_t length)
 {
   // In this example we keep the error handling code in one place by
   // hoisting it outside the coroutine. An alternative approach would be to
@@ -76,7 +76,7 @@ void server::operator()(asio::error_code ec, std::size_t length)
         // Receive some more data. When control resumes at the following line,
         // the ec and length parameters reflect the result of the asynchronous
         // operation.
-        yield socket_->async_read_some(asio::buffer(*buffer_), *this);
+        yield socket_->async_read_some(asio_sockio::buffer(*buffer_), *this);
 
         // Parse the data we just received.
         boost::tie(valid_request_, boost::tuples::ignore)
@@ -102,7 +102,7 @@ void server::operator()(asio::error_code ec, std::size_t length)
       }
 
       // Send the reply back to the client.
-      yield asio::async_write(*socket_, reply_->to_buffers(), *this);
+      yield asio_sockio::async_write(*socket_, reply_->to_buffers(), *this);
 
       // Initiate graceful connection closure.
       socket_->shutdown(tcp::socket::shutdown_both, ec);

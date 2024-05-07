@@ -18,18 +18,18 @@
 #include <set>
 #include "protocol.hpp"
 
-using asio::ip::tcp;
-using asio::ip::udp;
+using asio_sockio::ip::tcp;
+using asio_sockio::ip::udp;
 
 typedef boost::shared_ptr<tcp::socket> tcp_socket_ptr;
-typedef boost::shared_ptr<asio::steady_timer> timer_ptr;
+typedef boost::shared_ptr<asio_sockio::steady_timer> timer_ptr;
 typedef boost::shared_ptr<control_request> control_request_ptr;
 
 class server
 {
 public:
   // Construct the server to wait for incoming control connections.
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)),
       timer_(io_context),
       udp_socket_(io_context, udp::endpoint(udp::v4(), 0)),
@@ -40,23 +40,23 @@ public:
         new tcp::socket(acceptor_.get_executor().context()));
     acceptor_.async_accept(*new_socket,
         boost::bind(&server::handle_accept, this,
-          asio::placeholders::error, new_socket));
+          asio_sockio::placeholders::error, new_socket));
 
     // Start the timer used to generate outgoing frames.
-    timer_.expires_after(asio::chrono::milliseconds(100));
+    timer_.expires_after(asio_sockio::chrono::milliseconds(100));
     timer_.async_wait(boost::bind(&server::handle_timer, this));
   }
 
   // Handle a new control connection.
-  void handle_accept(const asio::error_code& ec, tcp_socket_ptr socket)
+  void handle_accept(const asio_sockio::error_code& ec, tcp_socket_ptr socket)
   {
     if (!ec)
     {
       // Start receiving control requests on the connection.
       control_request_ptr request(new control_request);
-      asio::async_read(*socket, request->to_buffers(),
+      asio_sockio::async_read(*socket, request->to_buffers(),
           boost::bind(&server::handle_control_request, this,
-            asio::placeholders::error, socket, request));
+            asio_sockio::placeholders::error, socket, request));
     }
 
     // Start waiting for a new control connection.
@@ -64,19 +64,19 @@ public:
         new tcp::socket(acceptor_.get_executor().context()));
     acceptor_.async_accept(*new_socket,
         boost::bind(&server::handle_accept, this,
-          asio::placeholders::error, new_socket));
+          asio_sockio::placeholders::error, new_socket));
   }
 
   // Handle a new control request.
-  void handle_control_request(const asio::error_code& ec,
+  void handle_control_request(const asio_sockio::error_code& ec,
       tcp_socket_ptr socket, control_request_ptr request)
   {
     if (!ec)
     {
       // Delay handling of the control request to simulate network latency.
       timer_ptr delay_timer(
-          new asio::steady_timer(acceptor_.get_executor().context()));
-      delay_timer->expires_after(asio::chrono::seconds(2));
+          new asio_sockio::steady_timer(acceptor_.get_executor().context()));
+      delay_timer->expires_after(asio_sockio::chrono::seconds(2));
       delay_timer->async_wait(
           boost::bind(&server::handle_control_request_timer, this,
             socket, request, delay_timer));
@@ -90,7 +90,7 @@ public:
     // subscriptions must be stored on the server as a complete endpoint, not
     // just a port. We use the non-throwing overload of remote_endpoint() since
     // it may fail if the socket is no longer connected.
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     tcp::endpoint remote_endpoint = socket->remote_endpoint(ec);
     if (!ec)
     {
@@ -112,9 +112,9 @@ public:
     }
 
     // Wait for next control request on this connection.
-    asio::async_read(*socket, request->to_buffers(),
+    asio_sockio::async_read(*socket, request->to_buffers(),
         boost::bind(&server::handle_control_request, this,
-          asio::placeholders::error, socket, request));
+          asio_sockio::placeholders::error, socket, request));
   }
 
   // Every time the timer fires we will generate a new frame and send it to all
@@ -137,12 +137,12 @@ public:
     std::set<udp::endpoint>::iterator j;
     for (j = subscribers_.begin(); j != subscribers_.end(); ++j)
     {
-      asio::error_code ec;
+      asio_sockio::error_code ec;
       udp_socket_.send_to(f.to_buffers(), *j, 0, ec);
     }
 
     // Wait for next timeout.
-    timer_.expires_after(asio::chrono::milliseconds(100));
+    timer_.expires_after(asio_sockio::chrono::milliseconds(100));
     timer_.async_wait(boost::bind(&server::handle_timer, this));
   }
 
@@ -151,7 +151,7 @@ private:
   tcp::acceptor acceptor_;
 
   // The timer used for generating data.
-  asio::steady_timer timer_;
+  asio_sockio::steady_timer timer_;
 
   // The socket used to send data to subscribers.
   udp::socket udp_socket_;
@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

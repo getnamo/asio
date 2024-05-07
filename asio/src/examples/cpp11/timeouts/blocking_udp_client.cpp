@@ -15,7 +15,7 @@
 #include <functional>
 #include <iostream>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
@@ -52,14 +52,14 @@ public:
   {
   }
 
-  std::size_t receive(const asio::mutable_buffer& buffer,
+  std::size_t receive(const asio_sockio::mutable_buffer& buffer,
       std::chrono::steady_clock::duration timeout,
       std::error_code& error)
   {
     // Start the asynchronous operation. The handle_receive function used as a
     // callback will update the error and length variables.
     std::size_t length = 0;
-    socket_.async_receive(asio::buffer(buffer),
+    socket_.async_receive(asio_sockio::buffer(buffer),
         std::bind(&client::handle_receive, _1, _2, &error, &length));
 
     // Run the operation until it completes, or until the timeout.
@@ -103,7 +103,7 @@ private:
   }
 
 private:
-  asio::io_context io_context_;
+  asio_sockio::io_context io_context_;
   udp::socket socket_;
 };
 
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
     }
 
     udp::endpoint listen_endpoint(
-        asio::ip::make_address(argv[1]),
+        asio_sockio::ip::make_address(argv[1]),
         std::atoi(argv[2]));
 
     client c(listen_endpoint);
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
     {
       char data[1024];
       std::error_code error;
-      std::size_t n = c.receive(asio::buffer(data),
+      std::size_t n = c.receive(asio_sockio::buffer(data),
           std::chrono::seconds(10), error);
 
       if (error)

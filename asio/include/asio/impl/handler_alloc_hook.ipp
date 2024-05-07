@@ -22,7 +22,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 void* asio_handler_allocate(std::size_t size, ...)
 {
@@ -45,7 +45,7 @@ void asio_handler_deallocate(void* pointer, std::size_t size, ...)
 #endif // !defined(ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -12,7 +12,7 @@ stackless coroutines. Stackless coroutines enable programs to implement
 asynchronous logic in a synchronous manner, with minimal overhead, as shown in
 the following example:
 
-  struct session : asio::coroutine
+  struct session : asio_sockio::coroutine
   {
     boost::shared_ptr<tcp::socket> socket_;
     boost::shared_ptr<std::vector<char> > buffer_;
@@ -23,14 +23,14 @@ the following example:
     {
     }
 
-    void operator()(asio::error_code ec = asio::error_code(), std::size_t n = 0)
+    void operator()(asio_sockio::error_code ec = asio_sockio::error_code(), std::size_t n = 0)
     {
       if (!ec) reenter (this)
       {
         for (;;)
         {
-          yield socket_->async_read_some(asio::buffer(*buffer_), *this);
-          yield asio::async_write(*socket_, asio::buffer(*buffer_, n), *this);
+          yield socket_->async_read_some(asio_sockio::buffer(*buffer_), *this);
+          yield asio_sockio::async_write(*socket_, asio_sockio::buffer(*buffer_, n), *this);
         }
       }
     }

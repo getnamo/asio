@@ -36,15 +36,15 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class winrt_timer_scheduler
-  : public asio::detail::service_base<winrt_timer_scheduler>
+  : public asio_sockio::detail::service_base<winrt_timer_scheduler>
 {
 public:
   // Constructor.
-  ASIO_DECL winrt_timer_scheduler(asio::io_context& io_context);
+  ASIO_DECL winrt_timer_scheduler(asio_sockio::io_context& io_context);
 
   // Destructor.
   ASIO_DECL ~winrt_timer_scheduler();
@@ -54,7 +54,7 @@ public:
 
   // Recreate internal descriptors following a fork.
   ASIO_DECL void notify_fork(
-      asio::io_context::fork_event fork_ev);
+      asio_sockio::io_context::fork_event fork_ev);
 
   // Initialise the task. No effect as this class uses its own thread.
   ASIO_DECL void init_task();
@@ -104,16 +104,16 @@ private:
   io_context_impl& io_context_;
 
   // Mutex used to protect internal variables.
-  asio::detail::mutex mutex_;
+  asio_sockio::detail::mutex mutex_;
 
   // Event used to wake up background thread.
-  asio::detail::event event_;
+  asio_sockio::detail::event event_;
 
   // The timer queues.
   timer_queue_set timer_queues_;
 
   // The background thread that is waiting for timers to expire.
-  asio::detail::thread* thread_;
+  asio_sockio::detail::thread* thread_;
 
   // Does the background thread need to stop.
   bool stop_thread_;
@@ -123,7 +123,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

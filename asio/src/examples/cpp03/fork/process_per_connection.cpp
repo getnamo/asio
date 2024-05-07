@@ -20,12 +20,12 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
 class server
 {
 public:
-  server(asio::io_context& io_context, unsigned short port)
+  server(asio_sockio::io_context& io_context, unsigned short port)
     : io_context_(io_context),
       signal_(io_context, SIGCHLD),
       acceptor_(io_context, tcp::endpoint(tcp::v4(), port)),
@@ -61,21 +61,21 @@ private:
         boost::bind(&server::handle_accept, this, _1));
   }
 
-  void handle_accept(const asio::error_code& ec)
+  void handle_accept(const asio_sockio::error_code& ec)
   {
     if (!ec)
     {
       // Inform the io_context that we are about to fork. The io_context cleans
       // up any internal resources, such as threads, that may interfere with
       // forking.
-      io_context_.notify_fork(asio::io_context::fork_prepare);
+      io_context_.notify_fork(asio_sockio::io_context::fork_prepare);
 
       if (fork() == 0)
       {
         // Inform the io_context that the fork is finished and that this is the
         // child process. The io_context uses this opportunity to create any
         // internal file descriptors that must be private to the new process.
-        io_context_.notify_fork(asio::io_context::fork_child);
+        io_context_.notify_fork(asio_sockio::io_context::fork_child);
 
         // The child won't be accepting new connections, so we can close the
         // acceptor. It remains open in the parent.
@@ -92,7 +92,7 @@ private:
         // this is the parent process. The io_context uses this opportunity to
         // recreate any internal resources that were cleaned up during
         // preparation for the fork.
-        io_context_.notify_fork(asio::io_context::fork_parent);
+        io_context_.notify_fork(asio_sockio::io_context::fork_parent);
 
         socket_.close();
         start_accept();
@@ -107,11 +107,11 @@ private:
 
   void start_read()
   {
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         boost::bind(&server::handle_read, this, _1, _2));
   }
 
-  void handle_read(const asio::error_code& ec, std::size_t length)
+  void handle_read(const asio_sockio::error_code& ec, std::size_t length)
   {
     if (!ec)
       start_write(length);
@@ -119,18 +119,18 @@ private:
 
   void start_write(std::size_t length)
   {
-    asio::async_write(socket_, asio::buffer(data_, length),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(data_, length),
         boost::bind(&server::handle_write, this, _1));
   }
 
-  void handle_write(const asio::error_code& ec)
+  void handle_write(const asio_sockio::error_code& ec)
   {
     if (!ec)
       start_read();
   }
 
-  asio::io_context& io_context_;
-  asio::signal_set signal_;
+  asio_sockio::io_context& io_context_;
+  asio_sockio::signal_set signal_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
   boost::array<char, 1024> data_;
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

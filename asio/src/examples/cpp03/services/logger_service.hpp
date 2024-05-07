@@ -24,11 +24,11 @@ namespace services {
 
 /// Service implementation for the logger.
 class logger_service
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 {
 public:
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 
   /// The backend implementation of a logger.
   struct logger_impl
@@ -41,12 +41,12 @@ public:
   typedef logger_impl* impl_type;
 
   /// Constructor creates a thread to run a private io_context.
-  logger_service(asio::io_context& io_context)
-    : asio::io_context::service(io_context),
+  logger_service(asio_sockio::io_context& io_context)
+    : asio_sockio::io_context::service(io_context),
       work_io_context_(),
-      work_(asio::make_work_guard(work_io_context_)),
-      work_thread_(new asio::thread(
-            boost::bind(&asio::io_context::run, &work_io_context_)))
+      work_(asio_sockio::make_work_guard(work_io_context_)),
+      work_thread_(new asio_sockio::thread(
+            boost::bind(&asio_sockio::io_context::run, &work_io_context_)))
   {
   }
 
@@ -91,7 +91,7 @@ public:
   void use_file(impl_type& /*impl*/, const std::string& file)
   {
     // Pass the work of opening the file to the background thread.
-    asio::post(work_io_context_, boost::bind(
+    asio_sockio::post(work_io_context_, boost::bind(
           &logger_service::use_file_impl, this, file));
   }
 
@@ -103,7 +103,7 @@ public:
     os << impl->identifier << ": " << message;
 
     // Pass the work of writing to the file to the background thread.
-    asio::post(work_io_context_, boost::bind(
+    asio_sockio::post(work_io_context_, boost::bind(
           &logger_service::log_impl, this, os.str()));
   }
 
@@ -125,16 +125,16 @@ private:
   }
 
   /// Private io_context used for performing logging operations.
-  asio::io_context work_io_context_;
+  asio_sockio::io_context work_io_context_;
 
   /// Work for the private io_context to perform. If we do not give the
   /// io_context some work to do then the io_context::run() function will exit
   /// immediately.
-  asio::executor_work_guard<
-      asio::io_context::executor_type> work_;
+  asio_sockio::executor_work_guard<
+      asio_sockio::io_context::executor_type> work_;
 
   /// Thread used for running the work io_context's run loop.
-  boost::scoped_ptr<asio::thread> work_thread_;
+  boost::scoped_ptr<asio_sockio::thread> work_thread_;
 
   /// The file to which log messages will be written.
   std::ofstream ofstream_;

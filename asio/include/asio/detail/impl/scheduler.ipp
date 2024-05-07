@@ -26,7 +26,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 struct scheduler::task_cleanup
@@ -35,7 +35,7 @@ struct scheduler::task_cleanup
   {
     if (this_thread_->private_outstanding_work > 0)
     {
-      asio::detail::increment(
+      asio_sockio::detail::increment(
           scheduler_->outstanding_work_,
           this_thread_->private_outstanding_work);
     }
@@ -60,7 +60,7 @@ struct scheduler::work_cleanup
   {
     if (this_thread_->private_outstanding_work > 1)
     {
-      asio::detail::increment(
+      asio_sockio::detail::increment(
           scheduler_->outstanding_work_,
           this_thread_->private_outstanding_work - 1);
     }
@@ -85,8 +85,8 @@ struct scheduler::work_cleanup
 };
 
 scheduler::scheduler(
-    asio::execution_context& ctx, int concurrency_hint)
-  : asio::detail::execution_context_service_base<scheduler>(ctx),
+    asio_sockio::execution_context& ctx, int concurrency_hint)
+  : asio_sockio::detail::execution_context_service_base<scheduler>(ctx),
     one_thread_(concurrency_hint == 1
         || !ASIO_CONCURRENCY_HINT_IS_LOCKING(
           SCHEDULER, concurrency_hint)
@@ -134,9 +134,9 @@ void scheduler::init_task()
   }
 }
 
-std::size_t scheduler::run(asio::error_code& ec)
+std::size_t scheduler::run(asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   if (outstanding_work_ == 0)
   {
     stop();
@@ -156,9 +156,9 @@ std::size_t scheduler::run(asio::error_code& ec)
   return n;
 }
 
-std::size_t scheduler::run_one(asio::error_code& ec)
+std::size_t scheduler::run_one(asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   if (outstanding_work_ == 0)
   {
     stop();
@@ -174,9 +174,9 @@ std::size_t scheduler::run_one(asio::error_code& ec)
   return do_run_one(lock, this_thread, ec);
 }
 
-std::size_t scheduler::wait_one(long usec, asio::error_code& ec)
+std::size_t scheduler::wait_one(long usec, asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   if (outstanding_work_ == 0)
   {
     stop();
@@ -192,9 +192,9 @@ std::size_t scheduler::wait_one(long usec, asio::error_code& ec)
   return do_wait_one(lock, this_thread, usec, ec);
 }
 
-std::size_t scheduler::poll(asio::error_code& ec)
+std::size_t scheduler::poll(asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   if (outstanding_work_ == 0)
   {
     stop();
@@ -223,9 +223,9 @@ std::size_t scheduler::poll(asio::error_code& ec)
   return n;
 }
 
-std::size_t scheduler::poll_one(asio::error_code& ec)
+std::size_t scheduler::poll_one(asio_sockio::error_code& ec)
 {
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   if (outstanding_work_ == 0)
   {
     stop();
@@ -355,7 +355,7 @@ void scheduler::abandon_operations(
 
 std::size_t scheduler::do_run_one(mutex::scoped_lock& lock,
     scheduler::thread_info& this_thread,
-    const asio::error_code& ec)
+    const asio_sockio::error_code& ec)
 {
   while (!stopped_)
   {
@@ -414,7 +414,7 @@ std::size_t scheduler::do_run_one(mutex::scoped_lock& lock,
 
 std::size_t scheduler::do_wait_one(mutex::scoped_lock& lock,
     scheduler::thread_info& this_thread, long usec,
-    const asio::error_code& ec)
+    const asio_sockio::error_code& ec)
 {
   if (stopped_)
     return 0;
@@ -484,7 +484,7 @@ std::size_t scheduler::do_wait_one(mutex::scoped_lock& lock,
 
 std::size_t scheduler::do_poll_one(mutex::scoped_lock& lock,
     scheduler::thread_info& this_thread,
-    const asio::error_code& ec)
+    const asio_sockio::error_code& ec)
 {
   if (stopped_)
     return 0;
@@ -564,7 +564,7 @@ void scheduler::wake_one_thread_and_unlock(
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

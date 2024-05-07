@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 template <typename Handler, typename Alloc,
@@ -42,7 +42,7 @@ public:
   }
 
   static void do_complete(void* owner, Operation* base,
-      const asio::error_code& /*ec*/,
+      const asio_sockio::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
     // Take ownership of the handler object.
@@ -77,7 +77,7 @@ private:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

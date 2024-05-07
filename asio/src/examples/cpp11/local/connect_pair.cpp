@@ -16,7 +16,7 @@
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 
-using asio::local::stream_protocol;
+using asio_sockio::local::stream_protocol;
 
 class uppercase_filter
 {
@@ -30,7 +30,7 @@ public:
 private:
   void read()
   {
-    socket_.async_read_some(asio::buffer(data_),
+    socket_.async_read_some(asio_sockio::buffer(data_),
         [this](std::error_code ec, std::size_t size)
         {
           if (!ec)
@@ -44,14 +44,14 @@ private:
           }
           else
           {
-            throw asio::system_error(ec);
+            throw asio_sockio::system_error(ec);
           }
         });
   }
 
   void write(std::size_t size)
   {
-    asio::async_write(socket_, asio::buffer(data_, size),
+    asio_sockio::async_write(socket_, asio_sockio::buffer(data_, size),
         [this](std::error_code ec, std::size_t /*size*/)
         {
           if (!ec)
@@ -61,7 +61,7 @@ private:
           }
           else
           {
-            throw asio::system_error(ec);
+            throw asio_sockio::system_error(ec);
           }
         });
   }
@@ -74,16 +74,16 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Create a connected pair and pass one end to a filter.
     stream_protocol::socket socket(io_context);
     stream_protocol::socket filter_socket(io_context);
-    asio::local::connect_pair(socket, filter_socket);
+    asio_sockio::local::connect_pair(socket, filter_socket);
     uppercase_filter filter(std::move(filter_socket));
 
     // The io_context runs in a background thread to perform filtering.
-    asio::thread thread(
+    asio_sockio::thread thread(
         [&io_context]()
         {
           try
@@ -105,11 +105,11 @@ int main()
       std::getline(std::cin, request);
 
       // Send request to filter.
-      asio::write(socket, asio::buffer(request));
+      asio_sockio::write(socket, asio_sockio::buffer(request));
 
       // Wait for reply from filter.
       std::vector<char> reply(request.size());
-      asio::read(socket, asio::buffer(reply));
+      asio_sockio::read(socket, asio_sockio::buffer(reply));
 
       // Show reply to user.
       std::cout << "Result: ";

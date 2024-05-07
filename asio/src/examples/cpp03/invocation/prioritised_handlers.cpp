@@ -13,9 +13,9 @@
 #include <iostream>
 #include <queue>
 
-using asio::ip::tcp;
+using asio_sockio::ip::tcp;
 
-class handler_priority_queue : public asio::execution_context
+class handler_priority_queue : public asio_sockio::execution_context
 {
 public:
   void add(int priority, boost::function<void()> function)
@@ -83,10 +83,10 @@ public:
   };
 
   template <typename Handler>
-  asio::executor_binder<Handler, executor>
+  asio_sockio::executor_binder<Handler, executor>
   wrap(int priority, Handler handler)
   {
-    return asio::bind_executor(executor(*this, priority), handler);
+    return asio_sockio::bind_executor(executor(*this, priority), handler);
   }
 
 private:
@@ -119,12 +119,12 @@ private:
 
 //----------------------------------------------------------------------
 
-void high_priority_handler(const asio::error_code& /*ec*/)
+void high_priority_handler(const asio_sockio::error_code& /*ec*/)
 {
   std::cout << "High priority handler\n";
 }
 
-void middle_priority_handler(const asio::error_code& /*ec*/)
+void middle_priority_handler(const asio_sockio::error_code& /*ec*/)
 {
   std::cout << "Middle priority handler\n";
 }
@@ -136,15 +136,15 @@ void low_priority_handler()
 
 int main()
 {
-  asio::io_context io_context;
+  asio_sockio::io_context io_context;
 
   handler_priority_queue pri_queue;
 
   // Post a completion handler to be run immediately.
-  asio::post(io_context, pri_queue.wrap(0, low_priority_handler));
+  asio_sockio::post(io_context, pri_queue.wrap(0, low_priority_handler));
 
   // Start an asynchronous accept that will complete immediately.
-  tcp::endpoint endpoint(asio::ip::address_v4::loopback(), 0);
+  tcp::endpoint endpoint(asio_sockio::ip::address_v4::loopback(), 0);
   tcp::acceptor acceptor(io_context, endpoint);
   tcp::socket server_socket(io_context);
   acceptor.async_accept(server_socket,
@@ -153,8 +153,8 @@ int main()
   client_socket.connect(acceptor.local_endpoint());
 
   // Set a deadline timer to expire immediately.
-  asio::steady_timer timer(io_context);
-  timer.expires_at(asio::steady_timer::time_point::min());
+  asio_sockio::steady_timer timer(io_context);
+  timer.expires_at(asio_sockio::steady_timer::time_point::min());
   timer.async_wait(pri_queue.wrap(42, middle_priority_handler));
 
   while (io_context.run_one())

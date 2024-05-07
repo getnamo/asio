@@ -24,13 +24,13 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 win_object_handle_service::win_object_handle_service(
-    asio::io_context& io_context)
+    asio_sockio::io_context& io_context)
   : service_base<win_object_handle_service>(io_context),
-    io_context_(asio::use_service<io_context_impl>(io_context)),
+    io_context_(asio_sockio::use_service<io_context_impl>(io_context)),
     mutex_(),
     impl_list_(0),
     shutdown_(false)
@@ -114,7 +114,7 @@ void win_object_handle_service::move_assign(
     win_object_handle_service& other_service,
     win_object_handle_service::implementation_type& other_impl)
 {
-  asio::error_code ignored_ec;
+  asio_sockio::error_code ignored_ec;
   close(impl, ignored_ec);
 
   mutex::scoped_lock lock(mutex_);
@@ -187,7 +187,7 @@ void win_object_handle_service::destroy(
     op_queue<operation> ops;
     while (wait_op* op = impl.op_queue_.front())
     {
-      op->ec_ = asio::error::operation_aborted;
+      op->ec_ = asio_sockio::error::operation_aborted;
       impl.op_queue_.pop();
       ops.push(op);
     }
@@ -207,24 +207,24 @@ void win_object_handle_service::destroy(
   }
 }
 
-asio::error_code win_object_handle_service::assign(
+asio_sockio::error_code win_object_handle_service::assign(
     win_object_handle_service::implementation_type& impl,
-    const native_handle_type& handle, asio::error_code& ec)
+    const native_handle_type& handle, asio_sockio::error_code& ec)
 {
   if (is_open(impl))
   {
-    ec = asio::error::already_open;
+    ec = asio_sockio::error::already_open;
     return ec;
   }
 
   impl.handle_ = handle;
-  ec = asio::error_code();
+  ec = asio_sockio::error_code();
   return ec;
 }
 
-asio::error_code win_object_handle_service::close(
+asio_sockio::error_code win_object_handle_service::close(
     win_object_handle_service::implementation_type& impl,
-    asio::error_code& ec)
+    asio_sockio::error_code& ec)
 {
   if (is_open(impl))
   {
@@ -240,7 +240,7 @@ asio::error_code win_object_handle_service::close(
     while (wait_op* op = impl.op_queue_.front())
     {
       impl.op_queue_.pop();
-      op->ec_ = asio::error::operation_aborted;
+      op->ec_ = asio_sockio::error::operation_aborted;
       completed_ops.push(op);
     }
 
@@ -255,28 +255,28 @@ asio::error_code win_object_handle_service::close(
     if (::CloseHandle(impl.handle_))
     {
       impl.handle_ = INVALID_HANDLE_VALUE;
-      ec = asio::error_code();
+      ec = asio_sockio::error_code();
     }
     else
     {
       DWORD last_error = ::GetLastError();
-      ec = asio::error_code(last_error,
-          asio::error::get_system_category());
+      ec = asio_sockio::error_code(last_error,
+          asio_sockio::error::get_system_category());
     }
 
     io_context_.post_deferred_completions(completed_ops);
   }
   else
   {
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
   }
 
   return ec;
 }
 
-asio::error_code win_object_handle_service::cancel(
+asio_sockio::error_code win_object_handle_service::cancel(
     win_object_handle_service::implementation_type& impl,
-    asio::error_code& ec)
+    asio_sockio::error_code& ec)
 {
   if (is_open(impl))
   {
@@ -291,7 +291,7 @@ asio::error_code win_object_handle_service::cancel(
     op_queue<operation> completed_ops;
     while (wait_op* op = impl.op_queue_.front())
     {
-      op->ec_ = asio::error::operation_aborted;
+      op->ec_ = asio_sockio::error::operation_aborted;
       impl.op_queue_.pop();
       completed_ops.push(op);
     }
@@ -304,13 +304,13 @@ asio::error_code win_object_handle_service::cancel(
     if (wait_handle != INVALID_HANDLE_VALUE)
       ::UnregisterWaitEx(wait_handle, INVALID_HANDLE_VALUE);
 
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
 
     io_context_.post_deferred_completions(completed_ops);
   }
   else
   {
-    ec = asio::error::bad_descriptor;
+    ec = asio_sockio::error::bad_descriptor;
   }
 
   return ec;
@@ -318,21 +318,21 @@ asio::error_code win_object_handle_service::cancel(
 
 void win_object_handle_service::wait(
     win_object_handle_service::implementation_type& impl,
-    asio::error_code& ec)
+    asio_sockio::error_code& ec)
 {
   switch (::WaitForSingleObject(impl.handle_, INFINITE))
   {
   case WAIT_FAILED:
     {
       DWORD last_error = ::GetLastError();
-      ec = asio::error_code(last_error,
-          asio::error::get_system_category());
+      ec = asio_sockio::error_code(last_error,
+          asio_sockio::error::get_system_category());
       break;
     }
   case WAIT_OBJECT_0:
   case WAIT_ABANDONED:
   default:
-    ec = asio::error_code();
+    ec = asio_sockio::error_code();
     break;
   }
 }
@@ -363,7 +363,7 @@ void win_object_handle_service::start_wait_op(
   }
   else
   {
-    op->ec_ = asio::error::bad_descriptor;
+    op->ec_ = asio_sockio::error::bad_descriptor;
     io_context_.post_deferred_completion(op);
   }
 }
@@ -379,8 +379,8 @@ void win_object_handle_service::register_wait_callback(
         &impl, INFINITE, WT_EXECUTEONLYONCE))
   {
     DWORD last_error = ::GetLastError();
-    asio::error_code ec(last_error,
-        asio::error::get_system_category());
+    asio_sockio::error_code ec(last_error,
+        asio_sockio::error::get_system_category());
 
     op_queue<operation> completed_ops;
     while (wait_op* op = impl.op_queue_.front())
@@ -410,7 +410,7 @@ void win_object_handle_service::wait_callback(PVOID param, BOOLEAN)
   {
     op_queue<operation> completed_ops;
 
-    op->ec_ = asio::error_code();
+    op->ec_ = asio_sockio::error_code();
     impl->op_queue_.pop();
     completed_ops.push(op);
 
@@ -421,8 +421,8 @@ void win_object_handle_service::wait_callback(PVOID param, BOOLEAN)
             param, INFINITE, WT_EXECUTEONLYONCE))
       {
         DWORD last_error = ::GetLastError();
-        asio::error_code ec(last_error,
-            asio::error::get_system_category());
+        asio_sockio::error_code ec(last_error,
+            asio_sockio::error::get_system_category());
 
         while ((op = impl->op_queue_.front()) != 0)
         {
@@ -440,7 +440,7 @@ void win_object_handle_service::wait_callback(PVOID param, BOOLEAN)
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

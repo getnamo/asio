@@ -25,12 +25,12 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ip {
 
 /// Encapsulates the flags needed for UDP.
 /**
- * The asio::ip::udp class contains flags necessary for UDP sockets.
+ * The asio_sockio::ip::udp class contains flags necessary for UDP sockets.
  *
  * @par Thread Safety
  * @e Distinct @e objects: Safe.@n
@@ -104,7 +104,7 @@ private:
 };
 
 } // namespace ip
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

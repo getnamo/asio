@@ -13,50 +13,50 @@
 #include <boost/bind.hpp>
 #include "asio.hpp"
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 class server
 {
 public:
-  server(asio::io_context& io_context, short port)
+  server(asio_sockio::io_context& io_context, short port)
     : socket_(io_context, udp::endpoint(udp::v4(), port))
   {
     socket_.async_receive_from(
-        asio::buffer(data_, max_length), sender_endpoint_,
+        asio_sockio::buffer(data_, max_length), sender_endpoint_,
         boost::bind(&server::handle_receive_from, this,
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred));
   }
 
-  void handle_receive_from(const asio::error_code& error,
+  void handle_receive_from(const asio_sockio::error_code& error,
       size_t bytes_recvd)
   {
     if (!error && bytes_recvd > 0)
     {
       socket_.async_send_to(
-          asio::buffer(data_, bytes_recvd), sender_endpoint_,
+          asio_sockio::buffer(data_, bytes_recvd), sender_endpoint_,
           boost::bind(&server::handle_send_to, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
     else
     {
       socket_.async_receive_from(
-          asio::buffer(data_, max_length), sender_endpoint_,
+          asio_sockio::buffer(data_, max_length), sender_endpoint_,
           boost::bind(&server::handle_receive_from, this,
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
   }
 
-  void handle_send_to(const asio::error_code& /*error*/,
+  void handle_send_to(const asio_sockio::error_code& /*error*/,
       size_t /*bytes_sent*/)
   {
     socket_.async_receive_from(
-        asio::buffer(data_, max_length), sender_endpoint_,
+        asio_sockio::buffer(data_, max_length), sender_endpoint_,
         boost::bind(&server::handle_receive_from, this,
-          asio::placeholders::error,
-          asio::placeholders::bytes_transferred));
+          asio_sockio::placeholders::error,
+          asio_sockio::placeholders::bytes_transferred));
   }
 
 private:
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]));

@@ -24,7 +24,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Exception thrown when trying to access an empty polymorphic executor.
 class bad_executor
@@ -305,7 +305,7 @@ private:
     if (!impl_)
     {
       bad_executor ex;
-      asio::detail::throw_exception(ex);
+      asio_sockio::detail::throw_exception(ex);
     }
     return impl_;
   }
@@ -327,9 +327,9 @@ private:
 #endif // !defined(GENERATING_DOCUMENTATION)
 };
 
-} // namespace asio
+} // namespace asio_sockio
 
-ASIO_USES_ALLOCATOR(asio::executor)
+ASIO_USES_ALLOCATOR(asio_sockio::executor)
 
 #include "asio/detail/pop_options.hpp"
 

@@ -22,7 +22,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 template <typename CompletionToken>
 ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
@@ -71,7 +71,7 @@ inline ASIO_INITFN_RESULT_TYPE(CompletionToken, void()) dispatch(
       ASIO_MOVE_CAST(CompletionToken)(token));
 }
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

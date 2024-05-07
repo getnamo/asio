@@ -20,26 +20,26 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 class resolver_service_base::work_io_context_runner
 {
 public:
-  work_io_context_runner(asio::io_context& io_context)
+  work_io_context_runner(asio_sockio::io_context& io_context)
     : io_context_(io_context) {}
   void operator()() { io_context_.run(); }
 private:
-  asio::io_context& io_context_;
+  asio_sockio::io_context& io_context_;
 };
 
 resolver_service_base::resolver_service_base(
-    asio::io_context& io_context)
-  : io_context_impl_(asio::use_service<io_context_impl>(io_context)),
-    work_io_context_(new asio::io_context(-1)),
-    work_io_context_impl_(asio::use_service<
+    asio_sockio::io_context& io_context)
+  : io_context_impl_(asio_sockio::use_service<io_context_impl>(io_context)),
+    work_io_context_(new asio_sockio::io_context(-1)),
+    work_io_context_impl_(asio_sockio::use_service<
         io_context_impl>(*work_io_context_)),
-    work_(asio::make_work_guard(*work_io_context_)),
+    work_(asio_sockio::make_work_guard(*work_io_context_)),
     work_thread_(0)
 {
 }
@@ -65,11 +65,11 @@ void resolver_service_base::base_shutdown()
 }
 
 void resolver_service_base::base_notify_fork(
-    asio::io_context::fork_event fork_ev)
+    asio_sockio::io_context::fork_event fork_ev)
 {
   if (work_thread_.get())
   {
-    if (fork_ev == asio::io_context::fork_prepare)
+    if (fork_ev == asio_sockio::io_context::fork_prepare)
     {
       work_io_context_->stop();
       work_thread_->join();
@@ -77,7 +77,7 @@ void resolver_service_base::base_notify_fork(
     else
     {
       work_io_context_->restart();
-      work_thread_.reset(new asio::detail::thread(
+      work_thread_.reset(new asio_sockio::detail::thread(
             work_io_context_runner(*work_io_context_)));
     }
   }
@@ -131,23 +131,23 @@ void resolver_service_base::start_resolve_op(resolve_op* op)
   }
   else
   {
-    op->ec_ = asio::error::operation_not_supported;
+    op->ec_ = asio_sockio::error::operation_not_supported;
     io_context_impl_.post_immediate_completion(op, false);
   }
 }
 
 void resolver_service_base::start_work_thread()
 {
-  asio::detail::mutex::scoped_lock lock(mutex_);
+  asio_sockio::detail::mutex::scoped_lock lock(mutex_);
   if (!work_thread_.get())
   {
-    work_thread_.reset(new asio::detail::thread(
+    work_thread_.reset(new asio_sockio::detail::thread(
           work_io_context_runner(*work_io_context_)));
   }
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

@@ -22,11 +22,11 @@ server, to receive the first line of an HTTP request from a client:
 
     void start()
     {
-      asio::async_read_until(socket_, data_, "\r\n",
+      asio_sockio::async_read_until(socket_, data_, "\r\n",
           boost::bind(&http_connection::handle_request_line, this, _1));
     }
 
-    void handle_request_line(asio::error_code ec)
+    void handle_request_line(asio_sockio::error_code ec)
     {
       if (!ec)
       {
@@ -41,8 +41,8 @@ server, to receive the first line of an HTTP request from a client:
 
     ...
 
-    asio::ip::tcp::socket socket_;
-    asio::streambuf data_;
+    asio_sockio::ip::tcp::socket socket_;
+    asio_sockio::streambuf data_;
   };
 
 The `streambuf` data member serves as a place to store the data that has been
@@ -57,8 +57,8 @@ include overloads that accept a user-defined function object called a match
 condition. For example, to read data into a streambuf until whitespace is
 encountered:
 
-  typedef asio::buffers_iterator<
-      asio::streambuf::const_buffers_type> iterator;
+  typedef asio_sockio::buffers_iterator<
+      asio_sockio::streambuf::const_buffers_type> iterator;
 
   std::pair<iterator, bool>
   match_whitespace(iterator begin, iterator end)
@@ -70,8 +70,8 @@ encountered:
     return std::make_pair(i, false);
   }
   ...
-  asio::streambuf b;
-  asio::read_until(s, b, match_whitespace);
+  asio_sockio::streambuf b;
+  asio_sockio::read_until(s, b, match_whitespace);
 
 To read data into a streambuf until a matching character is found:
 
@@ -95,13 +95,13 @@ To read data into a streambuf until a matching character is found:
     char c_;
   };
 
-  namespace asio {
+  namespace asio_sockio {
     template <> struct is_match_condition<match_char>
       : public boost::true_type {};
-  } // namespace asio
+  } // namespace asio_sockio
   ...
-  asio::streambuf b;
-  asio::read_until(s, b, match_char('a'));
+  asio_sockio::streambuf b;
+  asio_sockio::read_until(s, b, match_char('a'));
 
 The `is_match_condition<>` type trait automatically evaluates to true for
 functions, and for function objects with a nested `result_type` typedef. For

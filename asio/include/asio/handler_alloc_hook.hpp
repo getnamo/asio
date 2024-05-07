@@ -20,7 +20,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Default allocation function for handlers.
 /**
@@ -70,7 +70,7 @@ ASIO_DECL void* asio_handler_allocate(
 ASIO_DECL void asio_handler_deallocate(
     void* pointer, std::size_t size, ...);
 
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

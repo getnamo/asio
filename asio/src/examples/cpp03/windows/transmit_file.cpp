@@ -18,9 +18,9 @@
 
 #if defined(ASIO_HAS_WINDOWS_OVERLAPPED_PTR)
 
-using asio::ip::tcp;
-using asio::windows::overlapped_ptr;
-using asio::windows::random_access_handle;
+using asio_sockio::ip::tcp;
+using asio_sockio::windows::overlapped_ptr;
+using asio_sockio::windows::random_access_handle;
 
 // A wrapper for the TransmitFile overlapped I/O operation.
 template <typename Handler>
@@ -41,8 +41,8 @@ void transmit_file(tcp::socket& socket,
     // The operation completed immediately, so a completion notification needs
     // to be posted. When complete() is called, ownership of the OVERLAPPED-
     // derived object passes to the io_context.
-    asio::error_code ec(last_error,
-        asio::error::get_system_category());
+    asio_sockio::error_code ec(last_error,
+        asio_sockio::error::get_system_category());
     overlapped.complete(ec, 0);
   }
   else
@@ -59,7 +59,7 @@ class connection
 public:
   typedef boost::shared_ptr<connection> pointer;
 
-  static pointer create(asio::io_context& io_context,
+  static pointer create(asio_sockio::io_context& io_context,
       const std::string& filename)
   {
     return pointer(new connection(io_context, filename));
@@ -72,30 +72,30 @@ public:
 
   void start()
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
     file_.assign(::CreateFile(filename_.c_str(), GENERIC_READ, 0, 0,
           OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, 0), ec);
     if (file_.is_open())
     {
       transmit_file(socket_, file_,
           boost::bind(&connection::handle_write, shared_from_this(),
-            asio::placeholders::error,
-            asio::placeholders::bytes_transferred));
+            asio_sockio::placeholders::error,
+            asio_sockio::placeholders::bytes_transferred));
     }
   }
 
 private:
-  connection(asio::io_context& io_context, const std::string& filename)
+  connection(asio_sockio::io_context& io_context, const std::string& filename)
     : socket_(io_context),
       filename_(filename),
       file_(io_context)
   {
   }
 
-  void handle_write(const asio::error_code& /*error*/,
+  void handle_write(const asio_sockio::error_code& /*error*/,
       size_t /*bytes_transferred*/)
   {
-    asio::error_code ignored_ec;
+    asio_sockio::error_code ignored_ec;
     socket_.shutdown(tcp::socket::shutdown_both, ignored_ec);
   }
 
@@ -107,7 +107,7 @@ private:
 class server
 {
 public:
-  server(asio::io_context& io_context,
+  server(asio_sockio::io_context& io_context,
       unsigned short port, const std::string& filename)
     : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)),
       filename_(filename)
@@ -123,11 +123,11 @@ private:
 
     acceptor_.async_accept(new_connection->socket(),
         boost::bind(&server::handle_accept, this, new_connection,
-          asio::placeholders::error));
+          asio_sockio::placeholders::error));
   }
 
   void handle_accept(connection::pointer new_connection,
-      const asio::error_code& error)
+      const asio_sockio::error_code& error)
   {
     if (!error)
     {
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     using namespace std; // For atoi.
     server s(io_context, atoi(argv[1]), argv[2]);

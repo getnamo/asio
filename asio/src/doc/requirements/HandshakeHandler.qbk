@@ -17,7 +17,7 @@ of type `const error_code`.
 A free function as a handshake handler:
 
   void handshake_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
@@ -28,7 +28,7 @@ A handshake handler function object:
   {
     ...
     void operator()(
-        const asio::error_code& ec)
+        const asio_sockio::error_code& ec)
     {
       ...
     }
@@ -38,7 +38,7 @@ A handshake handler function object:
 A lambda as a handshake handler:
 
   ssl_stream.async_handshake(...,
-      [](const asio::error_code& ec)
+      [](const asio_sockio::error_code& ec)
       {
         ...
       });
@@ -47,7 +47,7 @@ A non-static class member function adapted to a handshake handler using
 `std::bind()`:
 
   void my_class::handshake_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
@@ -60,13 +60,13 @@ A non-static class member function adapted to a handshake handler using
 `boost::bind()`:
 
   void my_class::handshake_handler(
-      const asio::error_code& ec)
+      const asio_sockio::error_code& ec)
   {
     ...
   }
   ...
   ssl_stream.async_handshake(...,
       boost::bind(&my_class::handshake_handler,
-        this, asio::placeholders::error));
+        this, asio_sockio::placeholders::error));
 
 [endsect]

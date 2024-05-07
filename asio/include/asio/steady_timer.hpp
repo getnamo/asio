@@ -22,7 +22,7 @@
 #include "asio/basic_waitable_timer.hpp"
 #include "asio/detail/chrono.hpp"
 
-namespace asio {
+namespace asio_sockio {
 
 /// Typedef for a timer based on the steady clock.
 /**
@@ -35,7 +35,7 @@ namespace asio {
  */
 typedef basic_waitable_timer<chrono::steady_clock> steady_timer;
 
-} // namespace asio
+} // namespace asio_sockio
 
 #endif // defined(ASIO_HAS_CHRONO) || defined(GENERATING_DOCUMENTATION)
 

@@ -18,12 +18,12 @@
 #include <syslog.h>
 #include <unistd.h>
 
-using asio::ip::udp;
+using asio_sockio::ip::udp;
 
 class udp_daytime_server
 {
 public:
-  udp_daytime_server(asio::io_context& io_context)
+  udp_daytime_server(asio_sockio::io_context& io_context)
     : socket_(io_context, udp::endpoint(udp::v4(), 13))
   {
     start_receive();
@@ -33,11 +33,11 @@ private:
   void start_receive()
   {
     socket_.async_receive_from(
-        asio::buffer(recv_buffer_), remote_endpoint_,
+        asio_sockio::buffer(recv_buffer_), remote_endpoint_,
         boost::bind(&udp_daytime_server::handle_receive, this, _1));
   }
 
-  void handle_receive(const asio::error_code& ec)
+  void handle_receive(const asio_sockio::error_code& ec)
   {
     if (!ec)
     {
@@ -45,8 +45,8 @@ private:
       time_t now = time(0);
       std::string message = ctime(&now);
 
-      asio::error_code ignored_ec;
-      socket_.send_to(asio::buffer(message),
+      asio_sockio::error_code ignored_ec;
+      socket_.send_to(asio_sockio::buffer(message),
           remote_endpoint_, 0, ignored_ec);
     }
 
@@ -62,7 +62,7 @@ int main()
 {
   try
   {
-    asio::io_context io_context;
+    asio_sockio::io_context io_context;
 
     // Initialise the server before becoming a daemon. If the process is
     // started from a shell, this means any errors will be reported back to the
@@ -72,14 +72,14 @@ int main()
     // Register signal handlers so that the daemon may be shut down. You may
     // also want to register for other signals, such as SIGHUP to trigger a
     // re-read of a configuration file.
-    asio::signal_set signals(io_context, SIGINT, SIGTERM);
+    asio_sockio::signal_set signals(io_context, SIGINT, SIGTERM);
     signals.async_wait(
-        boost::bind(&asio::io_context::stop, &io_context));
+        boost::bind(&asio_sockio::io_context::stop, &io_context));
 
     // Inform the io_context that we are about to become a daemon. The
     // io_context cleans up any internal resources, such as threads, that may
     // interfere with forking.
-    io_context.notify_fork(asio::io_context::fork_prepare);
+    io_context.notify_fork(asio_sockio::io_context::fork_prepare);
 
     // Fork the process and have the parent exit. If the process was started
     // from a shell, this returns control to the user. Forking a new process is
@@ -95,12 +95,12 @@ int main()
         // destroyed. As the io_context object is a local variable, this means
         // we do not have to call:
         //
-        //   io_context.notify_fork(asio::io_context::fork_parent);
+        //   io_context.notify_fork(asio_sockio::io_context::fork_parent);
         //
         // However, this line should be added before each call to exit() if
         // using a global io_context object. An additional call:
         //
-        //   io_context.notify_fork(asio::io_context::fork_prepare);
+        //   io_context.notify_fork(asio_sockio::io_context::fork_prepare);
         //
         // should also precede the second fork().
         exit(0);
@@ -174,7 +174,7 @@ int main()
     // Inform the io_context that we have finished becoming a daemon. The
     // io_context uses this opportunity to create any internal file descriptors
     // that need to be private to the new process.
-    io_context.notify_fork(asio::io_context::fork_child);
+    io_context.notify_fork(asio_sockio::io_context::fork_child);
 
     // The io_context can now be used normally.
     syslog(LOG_INFO | LOG_USER, "Daemon started");

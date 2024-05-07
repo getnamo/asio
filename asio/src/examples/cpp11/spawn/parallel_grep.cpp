@@ -17,11 +17,11 @@
 #include <iostream>
 #include <string>
 
-using asio::dispatch;
-using asio::spawn;
-using asio::strand;
-using asio::thread_pool;
-using asio::yield_context;
+using asio_sockio::dispatch;
+using asio_sockio::spawn;
+using asio_sockio::strand;
+using asio_sockio::thread_pool;
+using asio_sockio::yield_context;
 
 int main(int argc, char* argv[])
 {

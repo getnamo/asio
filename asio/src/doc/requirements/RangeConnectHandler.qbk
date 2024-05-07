@@ -19,8 +19,8 @@ function.
 A free function as a range connect handler:
 
   void connect_handler(
-      const asio::error_code& ec,
-      const asio::ip::tcp::endpoint& endpoint)
+      const asio_sockio::error_code& ec,
+      const asio_sockio::ip::tcp::endpoint& endpoint)
   {
     ...
   }
@@ -32,8 +32,8 @@ A range connect handler function object:
     ...
     template <typename Range>
     void operator()(
-        const asio::error_code& ec,
-        const asio::ip::tcp::endpoint& endpoint)
+        const asio_sockio::error_code& ec,
+        const asio_sockio::ip::tcp::endpoint& endpoint)
     {
       ...
     }
@@ -42,9 +42,9 @@ A range connect handler function object:
 
 A lambda as a range connect handler:
 
-  asio::async_connect(...,
-      [](const asio::error_code& ec,
-        const asio::ip::tcp::endpoint& endpoint)
+  asio_sockio::async_connect(...,
+      [](const asio_sockio::error_code& ec,
+        const asio_sockio::ip::tcp::endpoint& endpoint)
       {
         ...
       });
@@ -53,13 +53,13 @@ A non-static class member function adapted to a range connect handler using
 `std::bind()`:
 
   void my_class::connect_handler(
-      const asio::error_code& ec,
-      const asio::ip::tcp::endpoint& endpoint)
+      const asio_sockio::error_code& ec,
+      const asio_sockio::ip::tcp::endpoint& endpoint)
   {
     ...
   }
   ...
-  asio::async_connect(...,
+  asio_sockio::async_connect(...,
       std::bind(&my_class::connect_handler,
         this, std::placeholders::_1,
         std::placeholders::_2));
@@ -68,15 +68,15 @@ A non-static class member function adapted to a range connect handler using
 `boost::bind()`:
 
   void my_class::connect_handler(
-      const asio::error_code& ec,
-      const asio::ip::tcp::endpoint& endpoint)
+      const asio_sockio::error_code& ec,
+      const asio_sockio::ip::tcp::endpoint& endpoint)
   {
     ...
   }
   ...
-  asio::async_connect(...,
+  asio_sockio::async_connect(...,
       boost::bind(&my_class::connect_handler,
-        this, asio::placeholders::error,
-        asio::placeholders::endpoint));
+        this, asio_sockio::placeholders::error,
+        asio_sockio::placeholders::endpoint));
 
 [endsect]

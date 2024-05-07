@@ -32,13 +32,13 @@ inline bool is_continuation(Context& context)
 #if !defined(ASIO_HAS_HANDLER_HOOKS)
   return false;
 #else
-  using asio::asio_handler_is_continuation;
+  using asio_sockio::asio_handler_is_continuation;
   return asio_handler_is_continuation(
-      asio::detail::addressof(context));
+      asio_sockio::detail::addressof(context));
 #endif
 }
 
-} // namespace asio_handler_cont_helpers
+} // namespace asio_sockio_handler_cont_helpers
 
 #include "asio/detail/pop_options.hpp"
 

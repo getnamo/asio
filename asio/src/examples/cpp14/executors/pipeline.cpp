@@ -8,13 +8,13 @@
 #include <vector>
 #include <cctype>
 
-using asio::execution_context;
-using asio::executor_binder;
-using asio::get_associated_executor;
-using asio::post;
-using asio::system_executor;
-using asio::use_future;
-using asio::use_service;
+using asio_sockio::execution_context;
+using asio_sockio::executor_binder;
+using asio_sockio::get_associated_executor;
+using asio_sockio::post;
+using asio_sockio::system_executor;
+using asio_sockio::use_future;
+using asio_sockio::use_service;
 
 // An executor that launches a new thread for each function submitted to it.
 // This class satisfies the Executor requirements.
@@ -247,8 +247,8 @@ std::future<void> pipeline(F f, Tail... t)
 #include <iostream>
 #include <string>
 
-using asio::bind_executor;
-using asio::thread_pool;
+using asio_sockio::bind_executor;
+using asio_sockio::thread_pool;
 
 void reader(queue_front<std::string> out)
 {

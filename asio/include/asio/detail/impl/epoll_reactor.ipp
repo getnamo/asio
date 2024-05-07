@@ -31,10 +31,10 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
-epoll_reactor::epoll_reactor(asio::execution_context& ctx)
+epoll_reactor::epoll_reactor(asio_sockio::execution_context& ctx)
   : execution_context_service_base<epoll_reactor>(ctx),
     scheduler_(use_service<scheduler>(ctx)),
     mutex_(ASIO_CONCURRENCY_HINT_IS_LOCKING(
@@ -91,9 +91,9 @@ void epoll_reactor::shutdown()
 }
 
 void epoll_reactor::notify_fork(
-    asio::execution_context::fork_event fork_ev)
+    asio_sockio::execution_context::fork_event fork_ev)
 {
-  if (fork_ev == asio::execution_context::fork_child)
+  if (fork_ev == asio_sockio::execution_context::fork_child)
   {
     if (epoll_fd_ != -1)
       ::close(epoll_fd_);
@@ -134,9 +134,9 @@ void epoll_reactor::notify_fork(
       int result = epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, state->descriptor_, &ev);
       if (result != 0)
       {
-        asio::error_code ec(errno,
-            asio::error::get_system_category());
-        asio::detail::throw_error(ec, "epoll re-registration");
+        asio_sockio::error_code ec(errno,
+            asio_sockio::error::get_system_category());
+        asio_sockio::detail::throw_error(ec, "epoll re-registration");
       }
     }
   }
@@ -234,7 +234,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
 {
   if (!descriptor_data)
   {
-    op->ec_ = asio::error::bad_descriptor;
+    op->ec_ = asio_sockio::error::bad_descriptor;
     post_immediate_completion(op, is_continuation);
     return;
   }
@@ -268,7 +268,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
 
       if (descriptor_data->registered_events_ == 0)
       {
-        op->ec_ = asio::error::operation_not_supported;
+        op->ec_ = asio_sockio::error::operation_not_supported;
         scheduler_.post_immediate_completion(op, is_continuation);
         return;
       }
@@ -286,8 +286,8 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
           }
           else
           {
-            op->ec_ = asio::error_code(errno,
-                asio::error::get_system_category());
+            op->ec_ = asio_sockio::error_code(errno,
+                asio_sockio::error::get_system_category());
             scheduler_.post_immediate_completion(op, is_continuation);
             return;
           }
@@ -296,7 +296,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
     }
     else if (descriptor_data->registered_events_ == 0)
     {
-      op->ec_ = asio::error::operation_not_supported;
+      op->ec_ = asio_sockio::error::operation_not_supported;
       scheduler_.post_immediate_completion(op, is_continuation);
       return;
     }
@@ -331,7 +331,7 @@ void epoll_reactor::cancel_ops(socket_type,
   {
     while (reactor_op* op = descriptor_data->op_queue_[i].front())
     {
-      op->ec_ = asio::error::operation_aborted;
+      op->ec_ = asio_sockio::error::operation_aborted;
       descriptor_data->op_queue_[i].pop();
       ops.push(op);
     }
@@ -368,7 +368,7 @@ void epoll_reactor::deregister_descriptor(socket_type descriptor,
     {
       while (reactor_op* op = descriptor_data->op_queue_[i].front())
       {
-        op->ec_ = asio::error::operation_aborted;
+        op->ec_ = asio_sockio::error::operation_aborted;
         descriptor_data->op_queue_[i].pop();
         ops.push(op);
       }
@@ -594,9 +594,9 @@ int epoll_reactor::do_epoll_create()
 
   if (fd == -1)
   {
-    asio::error_code ec(errno,
-        asio::error::get_system_category());
-    asio::detail::throw_error(ec, "epoll");
+    asio_sockio::error_code ec(errno,
+        asio_sockio::error::get_system_category());
+    asio_sockio::detail::throw_error(ec, "epoll");
   }
 
   return fd;
@@ -768,7 +768,7 @@ operation* epoll_reactor::descriptor_state::perform_io(uint32_t events)
 
 void epoll_reactor::descriptor_state::do_complete(
     void* owner, operation* base,
-    const asio::error_code& ec, std::size_t bytes_transferred)
+    const asio_sockio::error_code& ec, std::size_t bytes_transferred)
 {
   if (owner)
   {
@@ -782,7 +782,7 @@ void epoll_reactor::descriptor_state::do_complete(
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

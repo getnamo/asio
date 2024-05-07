@@ -29,11 +29,11 @@ sub source_contains_asio_thread_usage
   # Open the input file.
   open(my $input, "<$from") or die("Can't open $from for reading");
 
-  # Check file for use of asio::thread.
+  # Check file for use of asio_sockio::thread.
   while (my $line = <$input>)
   {
     chomp($line);
-    if ($line =~ /asio::thread/)
+    if ($line =~ /asio_sockio::thread/)
     {
       close($input);
       return 1;
@@ -80,7 +80,7 @@ sub copy_source_file
   $dir =~ s/[^\/]*$//;
   mkpath($dir);
 
-  # First determine whether the file makes any use of asio::thread.
+  # First determine whether the file makes any use of asio_sockio::thread.
   my $uses_asio_thread = source_contains_asio_thread_usage($from);
 
   my $includes_asio = source_contains_asio_include($from);
@@ -117,16 +117,16 @@ sub copy_source_file
     $line =~ s/[\\@]ref boost_bind/boost::bind()/g;
     if ($from =~ /.*\.txt$/)
     {
-      $line =~ s/[\\@]ref async_read/boost::asio::async_read()/g;
-      $line =~ s/[\\@]ref async_write/boost::asio::async_write()/g;
+      $line =~ s/[\\@]ref async_read/boost::asio_sockio::async_read()/g;
+      $line =~ s/[\\@]ref async_write/boost::asio_sockio::async_write()/g;
     }
     if ($line =~ /asio_detail_posix_thread_function/)
     {
       $line =~ s/asio_detail_posix_thread_function/boost_asio_detail_posix_thread_function/g;
     }
-    if ($line =~ /asio_signal_handler/)
+    if ($line =~ /asio_sockio_signal_handler/)
     {
-      $line =~ s/asio_signal_handler/boost_asio_signal_handler/g;
+      $line =~ s/asio_sockio_signal_handler/boost_asio_sockio_signal_handler/g;
     }
     if ($line =~ /ASIO_/ && !($line =~ /BOOST_ASIO_/))
     {
@@ -159,7 +159,7 @@ sub copy_source_file
     {
       if ($is_qbk)
       {
-        print_line($output, $1 . "namespace boost { namespace asio {", $from, $lineno);
+        print_line($output, $1 . "namespace boost { namespace asio_sockio {", $from, $lineno);
       }
       else
       {
@@ -243,19 +243,19 @@ sub copy_source_file
     {
       # Line is removed.
     }
-    elsif ($line =~ /asio::thread\b/)
+    elsif ($line =~ /asio_sockio::thread\b/)
     {
       if ($is_test)
       {
-        $line =~ s/asio::thread/asio::detail::thread/g;
+        $line =~ s/asio_sockio::thread/asio_sockio::detail::thread/g;
       }
       else
       {
-        $line =~ s/asio::thread/boost::thread/g;
+        $line =~ s/asio_sockio::thread/boost::thread/g;
       }
-      if (!($line =~ /boost::asio::/))
+      if (!($line =~ /boost::asio_sockio::/))
       {
-        $line =~ s/asio::/boost::asio::/g;
+        $line =~ s/asio_sockio::/boost::asio_sockio::/g;
       }
       print_line($output, $line, $from, $lineno);
     }
@@ -263,7 +263,7 @@ sub copy_source_file
     {
       if ($is_test)
       {
-        print_line($output, $1 . "boost::asio::detail::thread" . $2, $from, $lineno);
+        print_line($output, $1 . "boost::asio_sockio::detail::thread" . $2, $from, $lineno);
       }
       else
       {
@@ -278,7 +278,7 @@ sub copy_source_file
     elsif ($line =~ /std::error_code/)
     {
       $line =~ s/std::error_code/boost::system::error_code/g;
-      $line =~ s/asio::/boost::asio::/g if !$is_xsl;
+      $line =~ s/asio_sockio::/boost::asio_sockio::/g if !$is_xsl;
       print_line($output, $line, $from, $lineno);
     }
     elsif ($line =~ /^} \/\/ namespace std/)
@@ -286,18 +286,18 @@ sub copy_source_file
       print_line($output, "} // namespace system", $from, $lineno);
       print_line($output, "} // namespace boost", $from, $lineno);
     }
-    elsif ($line =~ /asio::/ && !($line =~ /boost::asio::/))
+    elsif ($line =~ /asio_sockio::/ && !($line =~ /boost::asio_sockio::/))
     {
-      $line =~ s/asio::error_code/boost::system::error_code/g;
-      $line =~ s/asio::error_category/boost::system::error_category/g;
-      $line =~ s/asio::system_category/boost::system::system_category/g;
-      $line =~ s/asio::system_error/boost::system::system_error/g;
-      $line =~ s/asio::/boost::asio::/g if !$is_xsl;
+      $line =~ s/asio_sockio::error_code/boost::system::error_code/g;
+      $line =~ s/asio_sockio::error_category/boost::system::error_category/g;
+      $line =~ s/asio_sockio::system_category/boost::system::system_category/g;
+      $line =~ s/asio_sockio::system_error/boost::system::system_error/g;
+      $line =~ s/asio_sockio::/boost::asio_sockio::/g if !$is_xsl;
       print_line($output, $line, $from, $lineno);
     }
-    elsif ($line =~ /using namespace asio/)
+    elsif ($line =~ /using namespace asio_sockio/)
     {
-      $line =~ s/using namespace asio/using namespace boost::asio/g;
+      $line =~ s/using namespace asio_sockio/using namespace boost::asio/g;
       print_line($output, $line, $from, $lineno);
     }
     elsif ($line =~ /asio_handler_alloc_helpers/)

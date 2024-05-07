@@ -31,12 +31,12 @@ namespace ip_network_v4_compile {
 
 void test()
 {
-  using namespace asio;
-  namespace ip = asio::ip;
+  using namespace asio_sockio;
+  namespace ip = asio_sockio::ip;
 
   try
   {
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // network_v4 constructors.
 
@@ -133,10 +133,10 @@ namespace ip_network_v4_runtime {
 
 void test()
 {
-  using asio::ip::address_v4;
-  using asio::ip::make_address_v4;
-  using asio::ip::network_v4;
-  using asio::ip::make_network_v4;
+  using asio_sockio::ip::address_v4;
+  using asio_sockio::ip::make_address_v4;
+  using asio_sockio::ip::network_v4;
+  using asio_sockio::ip::make_network_v4;
 
   address_v4 addr = make_address_v4("1.2.3.4");
 
@@ -221,7 +221,7 @@ void test()
   ASIO_CHECK(make_network_v4("192.168.77.128/25").network() == make_address_v4("192.168.77.128"));
 
   // construct network from invalid string
-  asio::error_code ec;
+  asio_sockio::error_code ec;
   make_network_v4("10.0.0.256/24", ec);
   ASIO_CHECK(!!ec);
   make_network_v4("10.0.0.0/33", ec);

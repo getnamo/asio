@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 // Helper template to determine the maximum number of prepared buffers.
@@ -81,7 +81,7 @@ public:
       next_elem_(0),
       next_elem_offset_(0)
   {
-    using asio::buffer_size;
+    using asio_sockio::buffer_size;
     total_size_ = buffer_size(buffers);
   }
 
@@ -96,15 +96,15 @@ public:
   {
     prepared_buffers_type result;
 
-    Buffer_Iterator next = asio::buffer_sequence_begin(buffers_);
-    Buffer_Iterator end = asio::buffer_sequence_end(buffers_);
+    Buffer_Iterator next = asio_sockio::buffer_sequence_begin(buffers_);
+    Buffer_Iterator end = asio_sockio::buffer_sequence_end(buffers_);
 
     std::advance(next, next_elem_);
     std::size_t elem_offset = next_elem_offset_;
     while (next != end && max_size > 0 && (result.count) < result.max_buffers)
     {
       Buffer next_buf = Buffer(*next) + elem_offset;
-      result.elems[result.count] = asio::buffer(next_buf, max_size);
+      result.elems[result.count] = asio_sockio::buffer(next_buf, max_size);
       max_size -= result.elems[result.count].size();
       elem_offset = 0;
       if (result.elems[result.count].size() > 0)
@@ -120,8 +120,8 @@ public:
   {
     total_consumed_ += size;
 
-    Buffer_Iterator next = asio::buffer_sequence_begin(buffers_);
-    Buffer_Iterator end = asio::buffer_sequence_end(buffers_);
+    Buffer_Iterator next = asio_sockio::buffer_sequence_begin(buffers_);
+    Buffer_Iterator end = asio_sockio::buffer_sequence_end(buffers_);
 
     std::advance(next, next_elem_);
     while (next != end && size > 0)
@@ -178,7 +178,7 @@ public:
   // Get the buffer for a single transfer, with a size.
   Buffer prepare(std::size_t max_size)
   {
-    return asio::buffer(buffer_ + total_consumed_, max_size);
+    return asio_sockio::buffer(buffer_ + total_consumed_, max_size);
   }
 
   // Consume the specified number of bytes from the buffers.
@@ -294,8 +294,8 @@ public:
     boost::array<Buffer, 2> result = {{
       Buffer(buffers_[0]), Buffer(buffers_[1]) }};
     std::size_t buffer0_size = result[0].size();
-    result[0] = asio::buffer(result[0] + total_consumed_, max_size);
-    result[1] = asio::buffer(
+    result[0] = asio_sockio::buffer(result[0] + total_consumed_, max_size);
+    result[1] = asio_sockio::buffer(
         result[1] + (total_consumed_ < buffer0_size
           ? 0 : total_consumed_ - buffer0_size),
         max_size - result[0].size());
@@ -346,8 +346,8 @@ public:
     std::array<Buffer, 2> result = {{
       Buffer(buffers_[0]), Buffer(buffers_[1]) }};
     std::size_t buffer0_size = result[0].size();
-    result[0] = asio::buffer(result[0] + total_consumed_, max_size);
-    result[1] = asio::buffer(
+    result[0] = asio_sockio::buffer(result[0] + total_consumed_, max_size);
+    result[1] = asio_sockio::buffer(
         result[1] + (total_consumed_ < buffer0_size
           ? 0 : total_consumed_ - buffer0_size),
         max_size - result[0].size());
@@ -377,7 +377,7 @@ private:
 // always passed through to the underlying read or write operation.
 template <typename Buffer>
 class consuming_buffers<Buffer, null_buffers, const mutable_buffer*>
-  : public asio::null_buffers
+  : public asio_sockio::null_buffers
 {
 public:
   consuming_buffers(const null_buffers&)
@@ -407,7 +407,7 @@ public:
 };
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

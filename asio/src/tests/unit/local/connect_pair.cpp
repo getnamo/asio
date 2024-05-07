@@ -33,15 +33,15 @@ namespace local_connect_pair_compile {
 void test()
 {
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
-  using namespace asio;
-  namespace local = asio::local;
+  using namespace asio_sockio;
+  namespace local = asio_sockio::local;
   typedef local::datagram_protocol dp;
   typedef local::stream_protocol sp;
 
   try
   {
-    asio::io_context io_context;
-    asio::error_code ec1;
+    asio_sockio::io_context io_context;
+    asio_sockio::error_code ec1;
 
     dp::socket s1(io_context);
     dp::socket s2(io_context);

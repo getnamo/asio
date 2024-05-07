@@ -30,23 +30,23 @@
 
 namespace posix_stream_descriptor_compile {
 
-void wait_handler(const asio::error_code&)
+void wait_handler(const asio_sockio::error_code&)
 {
 }
 
-void write_some_handler(const asio::error_code&, std::size_t)
+void write_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
-void read_some_handler(const asio::error_code&, std::size_t)
+void read_some_handler(const asio_sockio::error_code&, std::size_t)
 {
 }
 
 void test()
 {
 #if defined(ASIO_HAS_POSIX_STREAM_DESCRIPTOR)
-  using namespace asio;
-  namespace posix = asio::posix;
+  using namespace asio_sockio;
+  namespace posix = asio_sockio::posix;
 
   try
   {
@@ -55,7 +55,7 @@ void test()
     const char const_char_buffer[128] = "";
     posix::descriptor_base::bytes_readable io_control_command;
     archetypes::lazy_handler lazy;
-    asio::error_code ec;
+    asio_sockio::error_code ec;
 
     // basic_stream_descriptor constructors.
 

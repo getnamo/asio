@@ -23,7 +23,7 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace detail {
 
 timer_queue<time_traits<boost::posix_time::ptime> >::timer_queue()
@@ -82,7 +82,7 @@ void timer_queue<time_traits<boost::posix_time::ptime> >::move_timer(
 }
 
 } // namespace detail
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 

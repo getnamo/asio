@@ -34,23 +34,23 @@
 
 #include "asio/detail/push_options.hpp"
 
-namespace asio {
+namespace asio_sockio {
 namespace ip {
 
 /// Default service implementation for a resolver.
 template <typename InternetProtocol>
 class resolver_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public asio::io_context::service
+  : public asio_sockio::io_context::service
 #else
-  : public asio::detail::service_base<
+  : public asio_sockio::detail::service_base<
       resolver_service<InternetProtocol> >
 #endif
 {
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static asio::io_context::id id;
+  static asio_sockio::io_context::id id;
 #endif
 
   /// The protocol type.
@@ -71,10 +71,10 @@ public:
 private:
   // The type of the platform-specific implementation.
 #if defined(ASIO_WINDOWS_RUNTIME)
-  typedef asio::detail::winrt_resolver_service<InternetProtocol>
+  typedef asio_sockio::detail::winrt_resolver_service<InternetProtocol>
     service_impl_type;
 #else
-  typedef asio::detail::resolver_service<InternetProtocol>
+  typedef asio_sockio::detail::resolver_service<InternetProtocol>
     service_impl_type;
 #endif
 
@@ -87,8 +87,8 @@ public:
 #endif
 
   /// Construct a new resolver service for the specified io_context.
-  explicit resolver_service(asio::io_context& io_context)
-    : asio::detail::service_base<
+  explicit resolver_service(asio_sockio::io_context& io_context)
+    : asio_sockio::detail::service_base<
         resolver_service<InternetProtocol> >(io_context),
       service_impl_(io_context)
   {
@@ -131,7 +131,7 @@ public:
 
   /// Resolve a query to a list of entries.
   results_type resolve(implementation_type& impl, const query_type& query,
-      asio::error_code& ec)
+      asio_sockio::error_code& ec)
   {
     return service_impl_.resolve(impl, query, ec);
   }
@@ -139,12 +139,12 @@ public:
   /// Asynchronously resolve a query to a list of entries.
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(implementation_type& impl, const query_type& query,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
+    asio_sockio::async_completion<ResolveHandler,
+      void (asio_sockio::error_code, results_type)> init(handler);
 
     service_impl_.async_resolve(impl, query, init.completion_handler);
 
@@ -153,7 +153,7 @@ public:
 
   /// Resolve an endpoint to a list of entries.
   results_type resolve(implementation_type& impl,
-      const endpoint_type& endpoint, asio::error_code& ec)
+      const endpoint_type& endpoint, asio_sockio::error_code& ec)
   {
     return service_impl_.resolve(impl, endpoint, ec);
   }
@@ -161,12 +161,12 @@ public:
   /// Asynchronously resolve an endpoint to a list of entries.
   template <typename ResolveHandler>
   ASIO_INITFN_RESULT_TYPE(ResolveHandler,
-      void (asio::error_code, results_type))
+      void (asio_sockio::error_code, results_type))
   async_resolve(implementation_type& impl, const endpoint_type& endpoint,
       ASIO_MOVE_ARG(ResolveHandler) handler)
   {
-    asio::async_completion<ResolveHandler,
-      void (asio::error_code, results_type)> init(handler);
+    asio_sockio::async_completion<ResolveHandler,
+      void (asio_sockio::error_code, results_type)> init(handler);
 
     service_impl_.async_resolve(impl, endpoint, init.completion_handler);
 
@@ -181,7 +181,7 @@ private:
   }
 
   // Perform any fork-related housekeeping.
-  void notify_fork(asio::io_context::fork_event event)
+  void notify_fork(asio_sockio::io_context::fork_event event)
   {
     service_impl_.notify_fork(event);
   }
@@ -191,7 +191,7 @@ private:
 };
 
 } // namespace ip
-} // namespace asio
+} // namespace asio_sockio
 
 #include "asio/detail/pop_options.hpp"
 
